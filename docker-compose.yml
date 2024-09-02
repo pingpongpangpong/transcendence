@@ -1,0 +1,42 @@
+networks:
+  pingpong:
+    name: pingpong
+    driver: bridge
+
+services:
+  postgresql:
+    container_name: postgresql
+    build: ./postgresql
+    image: postgresql:pingpong
+    networks:
+      - pingpong
+    env_file:
+      - ./.env
+    restart: on-failure
+
+  django:
+    container_name: django
+    build: ./django
+    image: django:pingpong
+    networks:
+      - pingpong
+    env_file:
+      - ./.env
+    depends_on:
+      - postgresql
+    restart: on-failure
+
+  nginx:
+    container_name: nginx
+    build: ./nginx
+    image: nginx:pingpong
+    networks:
+      - pingpong
+    env_file:
+      - ./.env
+    depends_on:
+      - postgresql
+      - django
+    restart: on-failure
+    ports:
+      - 80:80/tcp
