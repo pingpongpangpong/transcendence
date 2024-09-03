@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .forms import UserSignupForm
+from django.contrib.auth.models import User
 import json
 
 def signup(request):
@@ -9,6 +10,10 @@ def signup(request):
 			data = json.loads(request.body)
 			form = UserSignupForm(data)
 			if form.is_valid():
+				user_id = form.cleaned_data.get('user_id')
+				password = form.cleaned_data.get('password')
+				email = form.cleaned_data.get('email')
+				User.objects.create_user(username=user_id, password=password, email=email)
 				return JsonResponse({'result': 'ok'}, status=200)
 			else:
 				first_error = next(iter(form.errors.values()))[0]
