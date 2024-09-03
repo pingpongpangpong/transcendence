@@ -21,3 +21,5 @@ def signup(request):
 # email authentication
 # 코드 받기 -> 코드 확인 -> 회원가입
 # 프론트는 전달만하고, 코드 생성은 백엔드에서 처리
+# db erd대로 
+# 저장이  되는 코드
