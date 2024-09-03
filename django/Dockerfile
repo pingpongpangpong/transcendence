@@ -6,7 +6,7 @@ ENV  DJANGO_SETTINGS_MODULE=pingpong.settings
 RUN  apt-get update
 RUN  apt-get install -y libpq-dev
 RUN  apt-get install -y netcat-openbsd
-RUN  pip3 install django daphne channels psycopg2-binary requests
+RUN  pip3 install django daphne channels psycopg2-binary requests djangorestframework-simplejwt djangorestframework
 
 COPY ./src /root/src
 COPY ./entrypoint.sh /root/entrypoint.sh
