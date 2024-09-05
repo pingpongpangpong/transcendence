@@ -4,7 +4,7 @@ import re
 
 
 class CustomPasswordValidator:
-	def __call__(self, value): # 1)
+	def __call__(self, value):
 		try:
 			validate_password(value)
 		except ValidationError as e:

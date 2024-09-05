@@ -1,19 +1,21 @@
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .forms import UserSignupForm
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 import json
+from .forms import UserSignupForm
 
+User = get_user_model()
 def signup(request):
+	print(f"request Data : {request}\n")
 	if request.method == 'POST':
 		try:
 			data = json.loads(request.body)
+			print(f"Parse Data : {data}")
 			form = UserSignupForm(data)
 			if form.is_valid():
-				user_id = form.cleaned_data.get('user_id')
+				username = form.cleaned_data.get('userId')
 				password = form.cleaned_data.get('password')
 				email = form.cleaned_data.get('email')
-				User.objects.create_user(username=user_id, password=password, email=email)
+				User.objects.create_user(username=username, password=password, email=email)
 				return JsonResponse({'result': 'ok'}, status=200)
 			else:
 				first_error = next(iter(form.errors.values()))[0]
