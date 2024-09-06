@@ -17,22 +17,23 @@ document.getElementById("sign-in-btn").addEventListener("click", () => {
 		alert(lang[langIndex].nullPw);
 	} else {
 		const body = {
-			"userId": idInput,
+			"username": idInput,
 			"password": pwInput
 		};
-		const uri = "/user/login";
+		const uri = "/user/login/";
 		fetch(uri, {
 			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
 			body: JSON.stringify(body),
 		}).then((response) => {
 			if (response.status === 200) {
 				document.getElementById("sign").style.display = "none";
 				document.getElementById("window-content").style.display = "block";
 			} else {
-				return response.json();
+				alert(lang[langIndex].failSingin);
 			}
-		}).then((response) => {
-			console.log(response.error);
 		});
 	}
 });
@@ -49,9 +50,25 @@ document.getElementById("email-auth-btn").addEventListener("click", () => {
 	if (email.length === 0 || email === "") {
 		alert(lang[langIndex].nullEmail);
 	} else {
-		alert(lang[langIndex].sendCode);
-		document.getElementById("email-signup-auth-label").style.display = "block";
-		document.getElementById("email-check").style.display = "block";
+		const body = {
+			"email": document.getElementById("")
+		};
+		const uri = "/user/email/";
+		fetch(uri, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(body),
+		}).then((response) => {
+			if (response.status === 200) {
+				alert(lang[langIndex].sendCode);
+				document.getElementById("email-signup-auth-label").style.display = "block";
+				document.getElementById("email-check").style.display = "block";
+			} else {
+				alert(lang[langIndex].failCode);
+			}
+		});
 	}
 });
 
@@ -60,7 +77,23 @@ document.getElementById("email-signup-auth-check").addEventListener("click", () 
 	if (code.length === 0 || code === "") {
 		alert(lang[langIndex].nullCode);
 	} else {
-		// 인증확인
+		const baseUri = "/user/email-check/";
+		const param = {
+			code: code,
+		};
+		const queryString = new URLSearchParams(param).toString();
+		const uri = `${baseUri}?${queryString}/`;
+		try {
+			fetch(uri).then((response) => {
+				if (response.status === 200) {
+					alert(lang[langIndex].successVerify);
+				} else {
+					alert(lang[langIndex].failVerify);
+				}
+			});
+		} catch (error) {
+			console.log(error);
+		}
 		document.getElementById("signup-clear").style.display = "block";
 	}
 });
@@ -91,13 +124,16 @@ document.getElementById("signup-clear").addEventListener("click", () => {
 		alert(lang[langIndex].notSame);
 	} else {
 		const body = {
-			"userId": idInput,
+			"username": idInput,
 			"password": pwInput,
 			"email": email
 		};
 		const uri = "/user/signup";
 		fetch(uri, {
 			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
 			body: JSON.stringify(body),
 		}).then((response) => {
 			if (response.status === 200) {
