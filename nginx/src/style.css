@@ -1,0 +1,90 @@
+@font-face {
+	font-family: "DungGeunMo";
+	src: url("./font/DungGeunMo.ttf") format("truetype");
+}
+@font-face {
+	font-family: "PixelMplus12";
+	src: url("./font/PixelMplus12-Regular.ttf") format("truetype");
+}
+
+body {
+	margin: 0px;
+	background-color:#008080;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100vw;
+	height: 100vh;
+}
+select {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+h1 {
+	margin-bottom: 100px;
+}
+
+#signin-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+#signin-input {
+	display: grid;
+	margin-top: 10px;
+	margin-bottom: 30px;
+}
+#signup-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+#signup-btn-list {
+	display: flex;
+	justify-content: space-between;
+	width: 500px;
+	margin-top: 20px;
+}
+#offline-tab {
+	border: 0px;
+}
+#input-list {
+	height: 380px;
+	overflow: auto;
+}
+#window-content {
+	margin: 10px;
+}
+#t-button {
+	margin: 20px;
+}
+#bracket {
+	width: 950px;
+	height: 600px;
+}
+#lang-op {
+	width: 0px;
+}
+#status-bar p {
+	height: 30px;
+}
+
+.content {
+	width: 990px;
+	height: 640px;
+	padding: 20px;
+}
+.input {
+	height: 30px;
+}
+.setting {
+	width: 450px;
+}
+.field-row-stacked {
+	width: 200px;
+}
+.field-row {
+	justify-content: flex-end;
+}

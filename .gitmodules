@@ -1,3 +1,0 @@
-[submodule "nginx/src"]
-	path = nginx/src
-	url = git@github.com:pingpongpangpong/3D-pong.git
