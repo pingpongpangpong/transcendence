@@ -12,10 +12,10 @@ class UserLoginSerializer(TokenObtainPairSerializer):
         return token
 
 class UserSignupSerializer(serializers.ModelSerializer):
-    #username = serializers.CharField(required=True)
+    username = serializers.CharField(required=True)
     password = serializers.CharField(write_only=True, required=True)
     #password2 = serializers.CharField(write_only=True, required=True)
-    #email = serializers.EmailField(required=True)
+    email = serializers.EmailField(required=True)
 
     class Meta:
         model = User
