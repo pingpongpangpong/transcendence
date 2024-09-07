@@ -1,28 +1,28 @@
+import json
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
-import json
 from .forms import UserSignupForm
+from django.views.decorators.http import require_http_methods
 
 User = get_user_model()
+@require_http_methods(["POST"])
 def signup(request):
-	print(f"request Data : {request}\n")
-	if request.method == 'POST':
-		try:
-			data = json.loads(request.body)
-			print(f"Parse Data : {data}")
-			form = UserSignupForm(data)
-			if form.is_valid():
-				username = form.cleaned_data.get('userId')
-				password = form.cleaned_data.get('password')
-				email = form.cleaned_data.get('email')
-				User.objects.create_user(username=username, password=password, email=email)
-				return JsonResponse({'result': 'ok'}, status=200)
-			else:
-				first_error = next(iter(form.errors.values()))[0]
-				return JsonResponse({'errors': first_error}, status=400)
-		except json.JSONDecodeError:
-			return JsonResponse({'error': 'Invalid JSON data'}, status=400)
-	return JsonResponse({'error': 'Invalid request method'}, status=405)
+	try:
+		print(f"request Data : {request.body}\n")
+		data = json.loads(request.body)
+		print(f"Parse Data : {data}")
+		form = UserSignupForm(data)
+		if form.is_valid():
+			username = form.cleaned_data.get('username')
+			password = form.cleaned_data.get('password')
+			email = form.cleaned_data.get('email')
+			User.objects.create_user(username=username, password=password, email=email)
+			return JsonResponse({'result': 'ok'}, status=200)
+		else:
+			first_error = next(iter(form.errors.values()))[0]
+			return JsonResponse({'errors': first_error}, status=400)
+	except json.JSONDecodeError:
+		return JsonResponse({'error': 'Invalid JSON data'}, status=400)
 
 # Todo
 # email authentication
