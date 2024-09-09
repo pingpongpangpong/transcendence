@@ -3,6 +3,8 @@ import { lang, langIndex } from "./lang.js";
 const signin = document.getElementById("signin-content");
 const signup = document.getElementById("signup-content");
 
+const passwordPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[\W_]).{8,20}$/;
+
 history.pushState(null, null, location.href);
 window.onpopstate = function () {
 	history.go(1);
@@ -120,6 +122,8 @@ document.getElementById("signup-clear").addEventListener("click", () => {
 		alert(lang[langIndex].nullId);
 	} else if (pwInput.length === 0 || pwInput === "") {
 		alert(lang[langIndex].nullPw);
+	} else if (!passwordPattern.test(pwInput)) {
+		alert(lang[langIndex].wrongPw);
 	} else if (pwCheck != pwInput) {
 		alert(lang[langIndex].notSame);
 	} else {
