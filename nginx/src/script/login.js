@@ -128,7 +128,7 @@ document.getElementById("signup-clear").addEventListener("click", () => {
 			"password": pwInput,
 			"email": email
 		};
-		const uri = "/user/signup";
+		const uri = "/user/signup/";
 		fetch(uri, {
 			method: "POST",
 			headers: {
@@ -139,11 +139,13 @@ document.getElementById("signup-clear").addEventListener("click", () => {
 			if (response.status === 200) {
 				signin.style.display = "flex";
 				signin.style.display = "none";
-			} else {
-				return response.json();
+			} else if (response.username) {
+				alert(lang[langIndex].wrongId);
+			} else if (response.password) {
+				alert(lang[langIndex].wrongPw);
+			} else if (response.email) {
+				alert(lang[langIndex].wrongEmail);
 			}
-		}).then((response) => {
-			console.log(response.error);
-		})
+		});
 	}
 });
