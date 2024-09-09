@@ -30,6 +30,8 @@ class UserSignupSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("ID가 이미 존재합니다.")
         if not (5 <= len(value) <= 20):
             raise serializers.ValidationError("ID는 최소 5글자부터 20글자까지 가능합니다.")
+        if ' ' in value:
+            raise serializers.ValidationError("ID에는 공백을 포함할 수 없습니다.")
         return value
 
     # Password 유효성 검사
@@ -53,6 +55,8 @@ class UserSignupSerializer(serializers.ModelSerializer):
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("Email이 이미 존재합니다.")
+        if ' ' in value:
+            raise serializers.ValidationError("Email에는 공백을 포함할 수 없습니다.")
         return value
 
     def create(self, validated_data):
