@@ -16,8 +16,10 @@ services:
 
   django:
     container_name: django
-    build: ./django
     image: django:pingpong
+    build:
+      context: .
+      dockerfile: django/Dockerfile 
     networks:
       - pingpong
     env_file:
@@ -28,8 +30,10 @@ services:
 
   nginx:
     container_name: nginx
-    build: ./nginx
     image: nginx:pingpong
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
     networks:
       - pingpong
     env_file:
@@ -39,4 +43,4 @@ services:
       - django
     restart: on-failure
     ports:
-      - 80:80/tcp
+      - 443:443/tcp

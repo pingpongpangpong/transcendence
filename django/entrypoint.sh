@@ -11,4 +11,5 @@ done
 cd /root/src
 python3 manage.py makemigrations
 python3 manage.py migrate
-daphne --bind $DJANGO_HOST --port $DJANGO_PORT pingpong.asgi:application
+#daphne --bind $DJANGO_HOST --port $DJANGO_PORT -e ssl:$DJANGO_PORT:privateKey=private.key:certKey=private.crt pingpong.asgi:application
+daphne -e ssl:$DJANGO_PORT:privateKey=private.key:certKey=private.crt pingpong.asgi:application

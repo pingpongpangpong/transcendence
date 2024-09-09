@@ -12,13 +12,17 @@ map \$http_upgrade \$connection_upgrade {
 
 
 server {
-	listen 80;
+	listen 443 ssl;
 	server_name pingpong;
 	index index.html;
 	root /var/www/html;
 
+	ssl_certificate /etc/nginx/private.crt;
+    ssl_certificate_key /etc/nginx/private.key;
+    ssl_protocols TLSv1.3;
+
 	location /user {
-		proxy_pass http://django;
+		proxy_pass https://django;
 	}
 
 	location / {
@@ -26,7 +30,7 @@ server {
 	}
 
 	location /ws {
-                proxy_pass http://django;
+                proxy_pass https://django;
 				proxy_http_version 1.1;
                 proxy_set_header Upgrade \$http_upgrade;
                 proxy_set_header Connection \"Upgrade\";
