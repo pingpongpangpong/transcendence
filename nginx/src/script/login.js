@@ -3,6 +3,7 @@ import { lang, langIndex } from "./lang.js";
 const signin = document.getElementById("signin-content");
 const signup = document.getElementById("signup-content");
 
+const usernamePattern = /^\S+$/;
 const passwordPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[\W_]).{8,20}$/;
 
 history.pushState(null, null, location.href);
@@ -120,6 +121,8 @@ document.getElementById("signup-clear").addEventListener("click", () => {
 	const emailInput = document.getElementById("email-signup").value;
 	if (idInput.length === 0 || idInput === "") {
 		alert(lang[langIndex].nullId);
+	} else if (!usernamePattern.test(idInput)) {
+		alert(lang[langIndex].wrongId);
 	} else if (pwInput.length === 0 || pwInput === "") {
 		alert(lang[langIndex].nullPw);
 	} else if (!passwordPattern.test(pwInput)) {
@@ -130,7 +133,7 @@ document.getElementById("signup-clear").addEventListener("click", () => {
 		const body = {
 			"username": idInput,
 			"password": pwInput,
-			"email": email
+			"email": emailInput
 		};
 		const uri = "/user/signup/";
 		fetch(uri, {
