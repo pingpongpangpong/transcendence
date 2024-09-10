@@ -32,7 +32,7 @@ document.getElementById('m-tab').addEventListener('click', () => {
 	closeBracket();
 });
 
-function removeValue() {
+export function removeValue() {
 	const select = document.getElementById('select-num');
 	select.options[0].selected = true;
 	

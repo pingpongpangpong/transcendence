@@ -17,6 +17,7 @@
 		<div class="title-bar">
 			<div class="title-bar-text">핑퐁팡퐁</div>
 			<div class="title-bar-controls">
+				<button id="logout-btn" style="display: none;">로그아웃</button>
 				<button aria-label="Minimize"></button>
 				<button aria-label="Maximize"></button>
 				<button aria-label="Close"></button>
@@ -80,6 +81,7 @@
 			</menu>
 			<div class="window content" role="tabpanel">
 				<canvas id="bracket" style="display: none;"></canvas>
+				<div id="content"></div>
 				<div id="offline">
 					<p id="l-set">오프라인 플레이 진행을 위해 플레이어의 이름과 게임 포인트를 입력합니다.<br>플레이어의 이름은 4글자 이상, 20글자 이하만 가능하며, 게임 포인트는 2점이상 20점이하만 가능합니다.<br></p>
 					<p id="l-name1">
