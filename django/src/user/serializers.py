@@ -3,7 +3,8 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 # from django.contrib.auth import authenticate
 # from django.utils import timezone
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
+from rest_framework_simplejwt.exceptions import InvalidToken
 
 # Email 발송
 class UserSendEmail(serializers.Serializer):  # ModelSerializer 대신 Serializer 사용
@@ -22,6 +23,15 @@ class UserLoginSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['username'] = user.username
         return token
+
+class UserTokenRefreshSerializer(TokenRefreshSerializer):
+    refresh = None
+    def validate(self, attrs):
+        attrs['refresh'] = self.context['request'].COOKIES.get('refresh')
+        if attrs['refresh']:
+            return super().validate(attrs)
+        else:
+            raise InvalidToken('No valid token found in cookie \'refresh\'')
 
 # 회원가입
 class UserSignupSerializer(serializers.ModelSerializer):
