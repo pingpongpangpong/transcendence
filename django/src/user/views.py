@@ -1,6 +1,9 @@
+import random
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from .serializers import UserSignupSerializer, UserLoginSerializer
+from django.conf import settings
+from django.core.mail import send_mail
+from .serializers import UserSignupSerializer, UserLoginSerializer, UserSendEmail
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,7 +12,26 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-# Create your views here.
+class UserSendEmailView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = UserSendEmail(data=request.data)
+
+        email = request.data.get('email')
+        # 랜덤 6자리 숫자 생성
+        verification_code = random.randint(100000, 999999)
+
+        # 이메일 발송
+        send_mail(
+            subject='PingPongPangPong Email Verification Code',
+            message=f'Your verification code is {verification_code}',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            fail_silently=False,
+        )
+        return Response({"message": "Email sent successfully."}, status=status.HTTP_200_OK)
+
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 class UserRegistrationView(generics.CreateAPIView):
     serializer_class = UserSignupSerializer
 

@@ -1,5 +1,7 @@
 import { lang, langIndex } from "./lang.js";
 
+export let accessToken = "";
+
 const signin = document.getElementById("signin-content");
 const signup = document.getElementById("signup-content");
 
@@ -24,20 +26,27 @@ document.getElementById("sign-in-btn").addEventListener("click", () => {
 			"password": pwInput
 		};
 		const uri = "/user/login/";
-		fetch(uri, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(body),
-		}).then((response) => {
-			if (response.status === 200) {
+		try {
+			fetch(uri, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(body),
+			}).then((response) => {
+				if (response.status !== 200) {
+					throw new Error("");
+				} 
+				return response.json();
+			}).then((data) => {
+				sessionStorage.setItem("refresh", data.refresh);
+				accessToken = data.access;
 				document.getElementById("sign").style.display = "none";
 				document.getElementById("window-content").style.display = "block";
-			} else {
-				alert(lang[langIndex].failSingin);
-			}
-		});
+			});
+		} catch (error) {
+			alert(lang[langIndex].failSingin);
+		}
 	}
 });
 

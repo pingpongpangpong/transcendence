@@ -1,9 +1,19 @@
 import re
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
-from django.utils import timezone
+# from django.contrib.auth import authenticate
+# from django.utils import timezone
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+# Email 발송
+class UserSendEmail(serializers.Serializer):  # ModelSerializer 대신 Serializer 사용
+    email = serializers.EmailField(required=True)
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("이미 존재하는 Email입니다.")
+        return value
+
 
 # 로그인
 class UserLoginSerializer(TokenObtainPairSerializer):
