@@ -172,11 +172,17 @@ document.getElementById("signup-clear").addEventListener("click", () => {
 
 // Log out
 document.getElementById("logout-btn").addEventListener("click", () => {
-	removeValue();
-	exit();
-	closeBracket();
-	document.getElementById("offline").style.display = "block";
-	document.getElementById("sign").style.display = "block";
-	document.getElementById("window-content").style.display = "none";
-	document.getElementById("logout-btn").style.display = "none";
+	fetch("/user/logout/").then((response) => {
+		if (response.status === 205) {
+			removeValue();
+			exit();
+			closeBracket();
+			document.getElementById("offline").style.display = "block";
+			document.getElementById("sign").style.display = "block";
+			document.getElementById("window-content").style.display = "none";
+			document.getElementById("logout-btn").style.display = "none";
+		} else {
+			alert(lang[langIndex].invalidToken);
+		}
+	});
 });
