@@ -35,7 +35,6 @@ document.getElementById("sign-in-btn").addEventListener("click", () => {
 			headers: {
 				"Content-Type": "application/json",
 			},
-			credentials: "include",
 			body: JSON.stringify(body),
 		}).then((response) => {
 			if (response.status === 200) {
