@@ -63,7 +63,7 @@ document.getElementById("email-auth-btn").addEventListener("click", () => {
 		alert(lang[langIndex].nullEmail);
 	} else {
 		const body = {
-			"email": document.getElementById("")
+			"email": document.getElementById("email-signup").value
 		};
 		const uri = "/user/email/";
 		fetch(uri, {
