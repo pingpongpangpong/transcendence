@@ -7,5 +7,6 @@ urlpatterns = [
     path('refresh/', views.UserRefreshView.as_view(), name='refresh'),
     path('signup/', views.UserRegistrationView.as_view(), name='signup'),
     path('email/', views.UserSendEmailView.as_view(), name='email'),
+    path('email-check/', views.UserCheckEmailView.as_view(), name='email-check'),
     path('check/', views.LoginCheckView, name='check'),
 ]

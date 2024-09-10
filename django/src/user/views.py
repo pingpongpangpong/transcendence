@@ -1,6 +1,8 @@
 import random
-from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
+from django.contrib.auth.models import User
+from .models import EmailVerification
+# from django.shortcuts import render
+# from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 from django.core.mail import send_mail
 from .serializers import UserSignupSerializer, UserLoginSerializer, UserSendEmail, UserTokenRefreshSerializer
@@ -14,16 +16,69 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
+class UserCheckEmailView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request, *args, **kwargs):
+        # JSON으로부터 'email'과 'code'를 받음
+        email = request.data.get('email')
+        verification_code = int(request.data.get('code'))
+
+        # 이메일과 코드가 모두 전달되었는지 확인
+        if not email or not verification_code:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # 이메일과 코드가 일치하는 EmailVerification 객체를 찾음
+            email_verification = EmailVerification.objects.get(user__email=email, code=verification_code)
+
+            # 인증이 이미 완료된 경우
+            if email_verification.is_verified:
+                return Response(status=status.HTTP_200_OK)
+
+            email_verification.user.is_active = True  # 사용자를 활성화
+            email_verification.user.save()
+            email_verification.is_verified = True
+            email_verification.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+        except EmailVerification.DoesNotExist:
+            return Response({"error": "Invalid email or verification code."}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserSendEmailView(APIView):
     permission_classes = [AllowAny]
-
+    serializer_class = UserSendEmail
     def post(self, request, *args, **kwargs):
-        serializer = UserSendEmail(data=request.data)
-
         email = request.data.get('email')
+
+        if not email:
+            return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            user = User.objects.create_user(username=email, email=email)
+            user.is_active = False 
+            user.save()
+
         # 랜덤 6자리 숫자 생성
         verification_code = random.randint(100000, 999999)
+
+        # EmailVerification 객체가 이미 있는지 확인, 없으면 생성
+        email_verification, created = EmailVerification.objects.get_or_create(
+            user=user,
+            defaults={
+                'code': verification_code,  # 기본값으로 인증 코드를 설정
+                'is_verified': False  # 기본적으로 인증되지 않음
+            }
+        )
+
+        # 객체가 이미 존재한다면 코드와 인증 상태 업데이트
+        if not created:
+            email_verification.code = verification_code
+            email_verification.is_verified = False
+            email_verification.save()
 
         # 이메일 발송
         send_mail(
@@ -33,9 +88,8 @@ class UserSendEmailView(APIView):
             recipient_list=[email],
             fail_silently=False,
         )
-        return Response({"message": "Email sent successfully."}, status=status.HTTP_200_OK)
 
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Email sent successfully."}, status=status.HTTP_200_OK)
     
 class UserRegistrationView(generics.CreateAPIView):
     permission_classes = [AllowAny]
