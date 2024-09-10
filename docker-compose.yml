@@ -43,4 +43,5 @@ services:
       - django
     restart: on-failure
     ports:
+      - 80:80/tcp
       - 443:443/tcp

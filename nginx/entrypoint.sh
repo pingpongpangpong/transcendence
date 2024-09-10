@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "
-upstream django {
+upstream backend {
 	server $DJANGO_HOST:$DJANGO_PORT;
 }
 
@@ -10,19 +10,28 @@ map \$http_upgrade \$connection_upgrade {
 	\'\' close;
 }
 
+server {
+	listen       80;
+	listen  [::]:80;
+	server_name $SERVER_HOST;
+	
+	return 301 https://\$host\$request_uri;
+}
 
 server {
-	listen 443 ssl;
-	server_name pingpong;
-	index index.html;
-	root /var/www/html;
+	listen       443 ssl;
+	listen  [::]:443 ssl;
+	server_name $SERVER_HOST;
+
+	index 		index.html;
+	root 		/var/www/html;
 
 	ssl_certificate /etc/nginx/private.crt;
-    ssl_certificate_key /etc/nginx/private.key;
-    ssl_protocols TLSv1.3;
+	ssl_certificate_key /etc/nginx/private.key;
+	ssl_protocols TLSv1.3;
 
 	location /user {
-		proxy_pass https://django;
+		proxy_pass https://backend;
 	}
 
 	location / {
@@ -30,11 +39,11 @@ server {
 	}
 
 	location /ws {
-                proxy_pass https://django;
-				proxy_http_version 1.1;
-                proxy_set_header Upgrade \$http_upgrade;
-                proxy_set_header Connection \"Upgrade\";
-                proxy_set_header Host \$host;
+		proxy_pass https://django;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade \$http_upgrade;
+		proxy_set_header Connection \"Upgrade\";
+		proxy_set_header Host \$host;
 	}
 }" > /etc/nginx/sites-available/default
 
