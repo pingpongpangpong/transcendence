@@ -91,14 +91,19 @@ document.getElementById("email-signup-auth-check").addEventListener("click", () 
 	if (code.length === 0 || code === "") {
 		alert(lang[langIndex].nullCode);
 	} else {
-		const baseUri = "/user/email-check/";
-		const param = {
-			code: code,
+		const uri = "/user/email-check/";
+		const body = {
+			"email": document.getElementById("email-signup").value,
+			"code": code
 		};
-		const queryString = new URLSearchParams(param).toString();
-		const uri = `${baseUri}?${queryString}/`;
 		try {
-			fetch(uri).then((response) => {
+			fetch(uri, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(body),
+			}).then((response) => {
 				if (response.status === 200) {
 					alert(lang[langIndex].successVerify);
 				} else {
