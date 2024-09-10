@@ -19,7 +19,7 @@ export class Game {
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
 		this.renderer.setSize(950, 600);
 		this.renderer.domElement.id = 'game';
-		document.querySelector('.content').appendChild(this.renderer.domElement);
+		document.querySelector('#content').appendChild(this.renderer.domElement);
 
 		const light = new THREE.PointLight(0xFFFFFF, 90);
 		light.position.set(0, 0, 5);

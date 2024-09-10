@@ -4,6 +4,7 @@ export let lang = {
 		"id": "아이디",
 		"pw": "비밀번호",
 		"signin": "로그인",
+		"logout": "로그아웃",
 		"failSignin": "로그인에 실패했습니다.",
 		"signin42": "42 로그인",
 		"signup": "회원가입",
@@ -57,6 +58,7 @@ export let lang = {
 		"id": "ID",
 		"pw": "Password",
 		"signin": "Sign in",
+		"logout": "Log out",
 		"failSignin": "Login failed.",
 		"signin42": "42 Sign in",
 		"signup": "Sign up",
@@ -110,6 +112,7 @@ export let lang = {
 		"id": "ID",
 		"pw": "パスワード",
 		"signin": "ログイン",
+		"logout": "ログアウト",
 		"failSignin": "ログインに失敗しました。",
 		"signin42": "42 ログイン",
 		"signup": "会員登録",
@@ -166,6 +169,7 @@ document.getElementById("lang-select").addEventListener("change", (e) => {
 	langIndex = e.target.value;
 	document.querySelector(".title-bar-text").innerText = lang[langIndex].title;
 	document.querySelector("#title").innerText = lang[langIndex].title;
+	document.querySelector("#logout-btn").innerHTML = lang[langIndex].logout;
 	document.querySelector("#id-input-label").innerHTML = lang[langIndex].id;
 	document.querySelector("#pw-input-label").innerHTML = lang[langIndex].pw;
 	document.querySelector("#sign-in-btn").innerHTML = lang[langIndex].signin;
