@@ -1,5 +1,8 @@
 import random
+from .models import LoginSession
 from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.sessions.models import Session
 from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 from django.core.mail import send_mail
@@ -10,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
@@ -53,7 +57,6 @@ class UserRegistrationView(generics.CreateAPIView):
             return Response({first_error_key: first_error_message}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserLogoutView(APIView):
-
     def get(self, request):
         refresh_token = request.COOKIES.get('refresh') or None
 
@@ -64,6 +67,7 @@ class UserLogoutView(APIView):
                 response = Response({"detail": "Logout successful"}, status=status.HTTP_205_RESET_CONTENT)
                 response.delete_cookie('access')
                 response.delete_cookie('refresh')
+                logout(request)
                 return response
             except Exception as e:
                 return Response({"detail": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
@@ -82,10 +86,32 @@ class UserLoginView(TokenObtainPairView):
             response.set_cookie('access', response.data['access'], max_age=cookie_max_age, httponly=True, secure=True)
             del response.data['access']
             del response.data['refresh']
+            
+            user = authenticate(username=request.data.get('username'), password=request.data.get('password'))
+            if Session.objects.filter(pk=request.session.session_key).exists():
+                session = Session.objects.get(pk = request.session.session_key)
+                if LoginSession.objects.filter(session=session).exists():
+                    login_session = LoginSession.objects.get(session=session)
+                    if user != login_session.user:
+                        logout(request)
+
+            if user is not None:
+                login(request, user)
+                session = Session.objects.get(pk = request.session.session_key)
+                if not LoginSession.objects.filter(session=session).exists():
+                    old_sessions = LoginSession.objects.filter(user=user)
+                    for old_session in old_sessions:
+                        old_session.session.delete()
+                    login_session = LoginSession.objects.create(user=user, session=session)
+                    login_session.save()
+            
             response.data = {"detail": "Login successful"}
+
         return super().finalize_response(request, response, *args, **kwargs)
 
 class UserRefreshView(TokenRefreshView):
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
     serializer_class = UserTokenRefreshSerializer
 
     def get(self, request: Request, *args, **kwargs) -> Response:
