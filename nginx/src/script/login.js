@@ -1,4 +1,7 @@
 import { lang, langIndex } from "./lang.js";
+import { closeBracket } from "./content/feature.js";
+import { exit } from "./object/game.js";
+import { removeValue } from "./tab.js";
 
 export let accessToken = "";
 
@@ -13,6 +16,7 @@ window.onpopstate = function () {
 	history.go(1);
 };
 
+// Sign in
 document.getElementById("sign-in-btn").addEventListener("click", () => {
 	const idInput = document.getElementById("id-input").value;
 	const pwInput = document.getElementById("pw-input").value;
@@ -26,30 +30,25 @@ document.getElementById("sign-in-btn").addEventListener("click", () => {
 			"password": pwInput
 		};
 		const uri = "/user/login/";
-		try {
-			fetch(uri, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(body),
-			}).then((response) => {
-				if (response.status !== 200) {
-					throw new Error("");
-				} 
-				return response.json();
-			}).then((data) => {
-				sessionStorage.setItem("refresh", data.refresh);
-				accessToken = data.access;
+		fetch(uri, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(body),
+		}).then((response) => {
+			if (response.status === 200) {
 				document.getElementById("sign").style.display = "none";
 				document.getElementById("window-content").style.display = "block";
-			});
-		} catch (error) {
-			alert(lang[langIndex].failSingin);
-		}
+				document.getElementById("logout-btn").style.display = "block";
+			} else {
+				alert(lang[langIndex].failSignin);
+			}
+		});
 	}
 });
 
+// Sign up button
 document.getElementById("sign-up-btn").addEventListener("click", () => {
 	document.getElementById("id-input").value = "";
 	document.getElementById("pw-input").value = "";
@@ -57,13 +56,14 @@ document.getElementById("sign-up-btn").addEventListener("click", () => {
 	signup.style.display = "flex";
 });
 
+// Verify email
 document.getElementById("email-auth-btn").addEventListener("click", () => {
 	const email = document.getElementById("email-signup").value;
 	if (email.length === 0 || email === "") {
 		alert(lang[langIndex].nullEmail);
 	} else {
 		const body = {
-			"email": document.getElementById("")
+			"email": document.getElementById("email-signup").value
 		};
 		const uri = "/user/email/";
 		fetch(uri, {
@@ -84,19 +84,26 @@ document.getElementById("email-auth-btn").addEventListener("click", () => {
 	}
 });
 
+
+// Verify email code
 document.getElementById("email-signup-auth-check").addEventListener("click", () => {
 	const code = document.getElementById("email-signup-auth").value;
 	if (code.length === 0 || code === "") {
 		alert(lang[langIndex].nullCode);
 	} else {
-		const baseUri = "/user/email-check/";
-		const param = {
-			code: code,
+		const uri = "/user/email-check/";
+		const body = {
+			"email": document.getElementById("email-signup").value,
+			"code": code
 		};
-		const queryString = new URLSearchParams(param).toString();
-		const uri = `${baseUri}?${queryString}/`;
 		try {
-			fetch(uri).then((response) => {
+			fetch(uri, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(body),
+			}).then((response) => {
 				if (response.status === 200) {
 					alert(lang[langIndex].successVerify);
 				} else {
@@ -110,6 +117,7 @@ document.getElementById("email-signup-auth-check").addEventListener("click", () 
 	}
 });
 
+// undo
 document.getElementById("go-back").addEventListener("click", () => {
 	document.getElementById("id-signup").value = "";
 	document.getElementById("pw-signup").value = "";
@@ -123,6 +131,7 @@ document.getElementById("go-back").addEventListener("click", () => {
 	signup.style.display = "none";
 });
 
+// Sign up - send to server
 document.getElementById("signup-clear").addEventListener("click", () => {
 	const idInput = document.getElementById("id-signup").value;
 	const pwInput = document.getElementById("pw-signup").value;
@@ -164,4 +173,21 @@ document.getElementById("signup-clear").addEventListener("click", () => {
 			}
 		});
 	}
+});
+
+// Log out
+document.getElementById("logout-btn").addEventListener("click", () => {
+	fetch("/user/logout/").then((response) => {
+		if (response.status === 205) {
+			removeValue();
+			exit();
+			closeBracket();
+			document.getElementById("offline").style.display = "block";
+			document.getElementById("sign").style.display = "block";
+			document.getElementById("window-content").style.display = "none";
+			document.getElementById("logout-btn").style.display = "none";
+		} else {
+			alert(lang[langIndex].invalidToken);
+		}
+	});
 });

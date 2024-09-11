@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken
 
+# from .models import EmailVerification
+
 # Email 발송
 class UserSendEmail(serializers.Serializer):  # ModelSerializer 대신 Serializer 사용
     email = serializers.EmailField(required=True)
@@ -73,10 +75,10 @@ class UserSignupSerializer(serializers.ModelSerializer):
 
     # Email 유효성 검사 (DRF의 기본 이메일 유효성 검사기를 사용)
     def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Email이 이미 존재합니다.")
         if ' ' in value:
             raise serializers.ValidationError("Email에는 공백을 포함할 수 없습니다.")
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Email이 이미 존재합니다.")
         return value
 
     def create(self, validated_data):

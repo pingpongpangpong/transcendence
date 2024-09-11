@@ -4,7 +4,9 @@ export let lang = {
 		"id": "아이디",
 		"pw": "비밀번호",
 		"signin": "로그인",
+		"logout": "로그아웃",
 		"failSignin": "로그인에 실패했습니다.",
+		"invalidToken": "유효하지 않은 토큰입니다.",
 		"signin42": "42 로그인",
 		"signup": "회원가입",
 		"nullId": "아이디를 입력하세요.",
@@ -15,8 +17,8 @@ export let lang = {
 		"nullEmail": "이메일을 입력하세요",
 		"sendCode": "인증코드를 전송했습니다.",
 		"failCode": "인증코드를 전송하는데 실패했습니다.",
-		"accessEmail": "이메일 인증이 되었습니다.",
-		"failEmail": "이메일 인증에 실패했습니다.",
+		"successVerify": "이메일 인증이 되었습니다.",
+		"failVerify": "이메일 인증에 실패했습니다.",
 		"emailInfo": "메일주소가 정확한지 확인해주세요.\n\n",
 		"authEmail": "인증하기",
 		"emailCode": "인증코드",
@@ -57,7 +59,9 @@ export let lang = {
 		"id": "ID",
 		"pw": "Password",
 		"signin": "Sign in",
+		"logout": "Log out",
 		"failSignin": "Login failed.",
+		"invalidToken": "The token is invalid.",
 		"signin42": "42 Sign in",
 		"signup": "Sign up",
 		"nullId": "Please enter your ID.",
@@ -68,8 +72,8 @@ export let lang = {
 		"nullEmail": "Please enter your email.",
 		"sendCode": "An authentication code has been sent.",
 		"failCode": "Failed to send the verification code.",
-		"accessEmail": "Email verification successful.",
-		"failEmail": "Email verification failed.",
+		"successVerify": "Email verification successful.",
+		"failVerify": "Email verification failed.",
 		"emailInfo": "Please check if the email address is correct.\n\n",
 		"authEmail": "Authenticate",
 		"emailCode": "Authentication Code",
@@ -110,7 +114,9 @@ export let lang = {
 		"id": "ID",
 		"pw": "パスワード",
 		"signin": "ログイン",
+		"logout": "ログアウト",
 		"failSignin": "ログインに失敗しました。",
+		"invalidToken": "トークンが無効です。",
 		"signin42": "42 ログイン",
 		"signup": "会員登録",
 		"nullId": "IDを入力してください",
@@ -121,8 +127,8 @@ export let lang = {
 		"nullEmail": "メールアドレスを入力してください。",
 		"sendCode": "認証コードが送信されました。",
 		"failCode": "認証コードの送信に失敗しました。",
-		"accessEmail": "メール認証が完了しました。",
-		"failEmail": "メール認証に失敗しました。",
+		"successVerify": "メール認証が完了しました。",
+		"failVerify": "メール認証に失敗しました。",
 		"emailInfo": "メールアドレスが正しいか確認してください。\n\n",
 		"authEmail": "認証する",
 		"emailCode": "認証コード",
@@ -166,6 +172,7 @@ document.getElementById("lang-select").addEventListener("change", (e) => {
 	langIndex = e.target.value;
 	document.querySelector(".title-bar-text").innerText = lang[langIndex].title;
 	document.querySelector("#title").innerText = lang[langIndex].title;
+	document.querySelector("#logout-btn").innerHTML = lang[langIndex].logout;
 	document.querySelector("#id-input-label").innerHTML = lang[langIndex].id;
 	document.querySelector("#pw-input-label").innerHTML = lang[langIndex].pw;
 	document.querySelector("#sign-in-btn").innerHTML = lang[langIndex].signin;
