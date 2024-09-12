@@ -70,6 +70,7 @@ document.getElementById('select-num').addEventListener('change',  (e) => {
 		}
 
 		document.getElementById('tournament').style.display = 'none';
+		sessionStorage.setItem("game", "tournament");
 		tournament(gamePoint, nameList);
 	});
 });

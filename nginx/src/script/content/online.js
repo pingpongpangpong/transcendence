@@ -41,5 +41,6 @@ document.getElementById('m-ok').addEventListener('click', () => {
 	
 	roomSettingContainer.style.display = 'none';
 	document.getElementById('online').style.display = 'none';
+	sessionStorage.setItem("game", "online");
 	online(gamePoint);
 });

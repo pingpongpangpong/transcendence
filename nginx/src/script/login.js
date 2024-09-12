@@ -40,19 +40,6 @@ window.onpopstate = function () {
 	history.go(1);
 };
 
-function undo() {
-	signupId.value = "";
-	signupPw.value = "";
-	signupCheckPw.value = "";
-	signupEmail.value = "";
-	signupCode.value = "";
-	signupCodeLabel.style.display = "none";
-	signupCodeSubmit.style.display = "none";
-	signupSubmit.style.display = "none";
-	signin.style.display = "flex";
-	signup.style.display = "none";
-}
-
 // Sign in
 signinBtn.addEventListener("click", () => {
 	const idInput = signinId.value;
@@ -75,9 +62,7 @@ signinBtn.addEventListener("click", () => {
 			body: JSON.stringify(body),
 		}).then((response) => {
 			if (response.status === 200) {
-				signContainer.style.display = "none";
-				windowContainer.style.display = "block";
-				logoutBtn.style.display = "block";
+				toContent();
 			} else {
 				alert(lang[langIndex].failSignin);
 			}
@@ -91,6 +76,7 @@ signupBtn.addEventListener("click", () => {
 	signinPw.value = "";
 	signin.style.display = "none";
 	signup.style.display = "flex";
+	sessionStorage.setItem("status", "signup");
 });
 
 // Verify email
@@ -112,8 +98,7 @@ signupEmailSubmit.addEventListener("click", () => {
 		}).then((response) => {
 			if (response.status === 200) {
 				alert(lang[langIndex].sendCode);
-				signupCodeLabel.style.display = "block";
-				signupCode.style.display = "block";
+				signupCode.style.display = "flex";
 			} else {
 				alert(lang[langIndex].failCode);
 			}
@@ -208,17 +193,48 @@ logoutBtn.addEventListener("click", () => {
 			removeValue();
 			exit();
 			closeBracket();
-			changeToLoginPage();
+			logout();
 		} else {
 			alert(lang[langIndex].invalidToken);
 		}
 	});
 });
 
-export function changeToLoginPage() {
+export function logout() {
 	offlineContainer.style.display = "block";
 	signContainer.style.display = "block";
 	windowContainer.style.display = "none";
 	logoutBtn.style.display = "none";
+	signin.style.display = "flex";
+	sessionStorage.setItem("status", "signin");
 }
 
+export function toSignup() {
+	signContainer.style.display = "block";
+	windowContainer.style.display = "none";
+	signin.style.display = "none";
+	signup.style.display = "flex";
+	sessionStorage.setItem("status", "signup");
+}
+
+export function undo() {
+	signupId.value = "";
+	signupPw.value = "";
+	signupCheckPw.value = "";
+	signupEmail.value = "";
+	signupCodeInput.value = "";
+	signupCode.style.display = "none";
+	signupCodeSubmit.style.display = "none";
+	signupSubmit.style.display = "none";
+	signContainer.style.display = "block";
+	signin.style.display = "flex";
+	signup.style.display = "none";
+	sessionStorage.setItem("status", "signin");
+}
+
+export function toContent() {
+	signContainer.style.display = "none";
+	windowContainer.style.display = "block";
+	logoutBtn.style.display = "block";
+	sessionStorage.setItem("status", "offline");
+}

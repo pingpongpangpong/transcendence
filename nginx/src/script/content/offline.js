@@ -22,5 +22,6 @@ document.getElementById('l-ok').addEventListener('click', () => {
 	}
 	
 	document.getElementById('offline').style.display = 'none';
+	sessionStorage.setItem("game", "offline");
 	offline(gamePoint, name1, name2);
 });
