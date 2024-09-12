@@ -27,38 +27,38 @@
 			<div id="signin-content" class="content">
 				<h1 id="title">핑퐁팡퐁</h1>
 				<div id="signin-input">
-					<label id="id-input-label" for="id-input">아이디</label>
-					<input id="id-input" type="text"/>
-					<label id="pw-input-label" for="pw-input">비밀번호</label>
-					<input id="pw-input" type="password"/>
+					<label id="signin-id-label" for="signin-id">아이디</label>
+					<input id="signin-id" type="text"/>
+					<label id="signin-pw-label" for="signin-pw">비밀번호</label>
+					<input id="signin-pw" type="password"/>
 				</div>
 				<div id="sign-btns">
-					<button id="sign-in-btn">로그인</button>
-					<button id="sign-in-42-btn">42로 로그인</button>
-					<button id="sign-up-btn">회원가입</button>
+					<button id="signin-btn">로그인</button>
+					<button id="signin-42-btn">42로 로그인</button>
+					<button id="signup-btn">회원가입</button>
 				</div>
 			</div>
 			<div id="signup-content" class="content" style="display: none;">
 				<h1 id="signup-title">회원가입</h1>
 				<div id="signup-input-list" style="display: grid;">
-					<label id="id-signup-label" for="id-signup">아이디</label>
-					<input id="id-signup" type="text"/>
-					<label id="pw-signup-label" for="pw-signup">비밀번호</label>
-					<input id="pw-signup" type="password" />
-					<label id="check-pw-label" for="check-pw">비밀번호 확인</label>
-					<input id="check-pw" type="password" />
-					<label id="email-signup-label" for="email-signup">이메일</label>
+					<label for="signup-id">아이디</label>
+					<input id="signup-id" type="text"/>
+					<label for="signup-pw">비밀번호</label>
+					<input id="signup-pw" type="password" />
+					<label for="signup-check-pw">비밀번호 확인</label>
+					<input id="signup-check-pw" type="password" />
+					<label for="signup-email">이메일</label>
 					<div>
-						<input id="email-signup" type="email" />
-						<button id="email-auth-btn">인증하기</button>
+						<input id="signup-email" type="email" />
+						<button id="signup-email-btn">인증하기</button>
 					</div>
 					<div id="email-info">
 						메일주소가 정확한지 확인해주세요.<br /><br />
 					</div>
-					<label id="email-signup-auth-label" for="email-signup-auth" style="display: none;">인증코드</label>
-					<div id="email-check" style="display: none;">
-						<input id="email-signup-auth" type="email"/>
-						<button id="email-signup-auth-check">인증확인</button>
+					<label id="signup-code-label" for="signup-code" style="display: none;">인증코드</label>
+					<div id="signup-code" style="display: none;">
+						<input id="signup-code-input" type="text"/>
+						<button id="signup-code-btn">인증확인</button>
 					</div>
 				</div>
 				<div id="signup-btn-list">

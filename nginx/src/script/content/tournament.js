@@ -1,5 +1,6 @@
 import { tournament, getGamePoint, checkName } from "./feature.js";
 import { lang, langIndex } from "../lang.js";
+import { checkUser } from "../tab.js";
 
 document.getElementById('select-num').addEventListener('change',  (e) => {
 	const inputList = document.getElementById('input-list');
@@ -42,6 +43,7 @@ document.getElementById('select-num').addEventListener('change',  (e) => {
 	buttonSection.appendChild(startButton);
 
 	startButton.addEventListener('click', () => {
+		checkUser();
 		const gamePoint = getGamePoint('t');
 		if (gamePoint < 0) {
 			return;

@@ -1,5 +1,6 @@
 import random
 import requests
+import threading
 from django.utils.crypto import get_random_string
 from .models import LoginSession, EmailVerification, OauthToken
 from django.shortcuts import render
@@ -104,13 +105,14 @@ class UserSendEmailView(APIView):
             email_verification.save()
 
         # 이메일 발송
-        send_mail(
-            subject='PingPongPangPong Email Verification Code',
-            message=f'Your verification code is {verification_code}',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[email],
-            fail_silently=False,
-        )
+
+        thread = threading.Thread(target=send_mail, args=(
+            'PingPongPangPong Email Verification Code',  # subject
+            f'Your verification code is {verification_code}',  # message
+            settings.DEFAULT_FROM_EMAIL,  # from_email
+            [email],  # recipient_list
+        ))
+        thread.start()
         return Response({"message": "Email sent successfully."}, status=status.HTTP_200_OK)
     
 class UserRegistrationView(generics.CreateAPIView):
