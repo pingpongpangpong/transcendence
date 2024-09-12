@@ -21,7 +21,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("JWT_SECRET")
+
+# OAUTH
+OAUTH_42 = {
+    "TOKEN_URI": os.getenv("OAUTH_TOKEN_URL"),
+    "PROFILE_URI": os.getenv("OAUTH_PROFILE_URL"),
+    "REDIRECT_URI": os.getenv("OAUTH_REDIRECT_URL"),
+    "UID": os.getenv("OAUTH_UID"),
+    "SECRET": os.getenv("OAUTH_SECRET"),
+}
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -59,7 +68,9 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,
     'ALGORITHM': 'HS256',
-    'AUTH_COOKIE': 'access'
+    'AUTH_COOKIE': 'access',
+    'ACCESS_COOKIE_AGE': 60 * 30,
+    'REFRESH_COOKIE_AGE': 60 * 60 * 24
 }
 
 # Session

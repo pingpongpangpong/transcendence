@@ -8,15 +8,10 @@ class LoginSession(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	session = models.ForeignKey(Session, on_delete=models.CASCADE)
 
-class AccountToken(models.Model):
-	username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='oauth_accounts')
-	access_token = models.CharField(max_length=255)
-	refresh_token = models.CharField(max_length=255)
-	created_at = models.DateTimeField(auto_now_add=True)
-	expires_in = models.DateTimeField()
-
-	def __str__(self):
-		return f"{self.username} OAuth"
+class OauthToken(models.Model):
+	username = models.CharField(max_length=20)
+	access_token = models.CharField(max_length=100)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class EmailVerification(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
