@@ -1,6 +1,8 @@
+import { checkUser } from "../tab.js";
 import { offline, getGamePoint, checkName } from "./feature.js";
 
 document.getElementById('l-ok').addEventListener('click', () => {
+	checkUser();
 	const gamePoint = getGamePoint('l');
 	if (gamePoint < 0) {
 		return;
