@@ -3,10 +3,34 @@ import { closeBracket } from "./content/feature.js";
 import { exit } from "./object/game.js";
 import { removeValue } from "./tab.js";
 
-export let accessToken = "";
-
+// signin page
 const signin = document.getElementById("signin-content");
+const signinId = document.getElementById("signin-id");
+const signinPw = document.getElementById("signin-pw");
+const signinBtn = document.getElementById("signin-btn");
+const signupBtn = document.getElementById("signup-btn");
+
+// signup page
 const signup = document.getElementById("signup-content");
+const signupId = document.getElementById("signup-id");
+const signupPw = document.getElementById("signup-pw");
+const signupCheckPw = document.getElementById("signup-check-pw");
+// email
+const signupEmail = document.getElementById("signup-email");
+const signupEmailSubmit = document.getElementById("signup-email-btn");
+const signupCodeLabel = document.getElementById("signup-code-label");
+const signupCode = document.getElementById("signup-code");
+const signupCodeInput = document.getElementById("signup-code-input");
+const signupCodeSubmit = document.getElementById("signup-code-btn");
+// other
+const signupSubmit = document.getElementById("signup-clear");
+const goBack = document.getElementById("go-back");
+
+// containers
+const signContainer = document.getElementById("sign");
+const windowContainer = document.getElementById("window-content");
+const logoutBtn = document.getElementById("logout-btn");
+const offlineContainer = document.getElementById("offline");
 
 const usernamePattern = /^\S+$/;
 const passwordPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[\W_]).{8,20}$/;
@@ -17,22 +41,22 @@ window.onpopstate = function () {
 };
 
 function undo() {
-	document.getElementById("id-signup").value = "";
-	document.getElementById("pw-signup").value = "";
-	document.getElementById("check-pw").value = "";
-	document.getElementById("email-signup").value = "";
-	document.getElementById("email-signup-auth").value = "";
-	document.getElementById("email-signup-auth-label").style.display = "none";
-	document.getElementById("email-check").style.display = "none";
-	document.getElementById("signup-clear").style.display = "none";
+	signupId.value = "";
+	signupPw.value = "";
+	signupCheckPw.value = "";
+	signupEmail.value = "";
+	signupCode.value = "";
+	signupCodeLabel.style.display = "none";
+	signupCodeSubmit.style.display = "none";
+	signupSubmit.style.display = "none";
 	signin.style.display = "flex";
 	signup.style.display = "none";
 }
 
 // Sign in
-document.getElementById("sign-in-btn").addEventListener("click", () => {
-	const idInput = document.getElementById("id-input").value;
-	const pwInput = document.getElementById("pw-input").value;
+signinBtn.addEventListener("click", () => {
+	const idInput = signinId.value;
+	const pwInput = signinPw.value;
 	if (idInput.length === 0 || idInput === "") {
 		alert(lang[langIndex].nullId);
 	} else if (pwInput.length === 0 || pwInput === "") {
@@ -51,9 +75,9 @@ document.getElementById("sign-in-btn").addEventListener("click", () => {
 			body: JSON.stringify(body),
 		}).then((response) => {
 			if (response.status === 200) {
-				document.getElementById("sign").style.display = "none";
-				document.getElementById("window-content").style.display = "block";
-				document.getElementById("logout-btn").style.display = "block";
+				signContainer.style.display = "none";
+				windowContainer.style.display = "block";
+				logoutBtn.style.display = "block";
 			} else {
 				alert(lang[langIndex].failSignin);
 			}
@@ -62,21 +86,21 @@ document.getElementById("sign-in-btn").addEventListener("click", () => {
 });
 
 // Sign up button
-document.getElementById("sign-up-btn").addEventListener("click", () => {
-	document.getElementById("id-input").value = "";
-	document.getElementById("pw-input").value = "";
+signupBtn.addEventListener("click", () => {
+	signinId.value = "";
+	signinPw.value = "";
 	signin.style.display = "none";
 	signup.style.display = "flex";
 });
 
 // Verify email
-document.getElementById("email-auth-btn").addEventListener("click", () => {
-	const email = document.getElementById("email-signup").value;
+signupEmailSubmit.addEventListener("click", () => {
+	const email = signupEmail.value;
 	if (email.length === 0 || email === "") {
 		alert(lang[langIndex].nullEmail);
 	} else {
 		const body = {
-			"email": document.getElementById("email-signup").value
+			"email": email
 		};
 		const uri = "/user/email/";
 		fetch(uri, {
@@ -88,8 +112,8 @@ document.getElementById("email-auth-btn").addEventListener("click", () => {
 		}).then((response) => {
 			if (response.status === 200) {
 				alert(lang[langIndex].sendCode);
-				document.getElementById("email-signup-auth-label").style.display = "block";
-				document.getElementById("email-check").style.display = "block";
+				signupCodeLabel.style.display = "block";
+				signupCode.style.display = "block";
 			} else {
 				alert(lang[langIndex].failCode);
 			}
@@ -97,16 +121,15 @@ document.getElementById("email-auth-btn").addEventListener("click", () => {
 	}
 });
 
-
 // Verify email code
-document.getElementById("email-signup-auth-check").addEventListener("click", () => {
-	const code = document.getElementById("email-signup-auth").value;
+signupCodeSubmit.addEventListener("click", () => {
+	const code = signupCodeInput.value;
 	if (code.length === 0 || code === "") {
 		alert(lang[langIndex].nullCode);
 	} else {
 		const uri = "/user/email-check/";
 		const body = {
-			"email": document.getElementById("email-signup").value,
+			"email": signupEmail.value,
 			"code": code
 		};
 		try {
@@ -126,21 +149,21 @@ document.getElementById("email-signup-auth-check").addEventListener("click", () 
 		} catch (error) {
 			console.log(error);
 		}
-		document.getElementById("signup-clear").style.display = "block";
+		signupSubmit.style.display = "block";
 	}
 });
 
 // undo
-document.getElementById("go-back").addEventListener("click", () => {
+goBack.addEventListener("click", () => {
 	undo();
 });
 
 // Sign up - send to server
-document.getElementById("signup-clear").addEventListener("click", () => {
-	const idInput = document.getElementById("id-signup").value;
-	const pwInput = document.getElementById("pw-signup").value;
-	const pwCheck = document.getElementById("check-pw").value;
-	const emailInput = document.getElementById("email-signup").value;
+signupSubmit.addEventListener("click", () => {
+	const idInput = signupId.value;
+	const pwInput = signupPw.value;
+	const checkPw = signupCheckPw.value;
+	const emailInput = document.getElementById("signup-email").value;
 	if (idInput.length === 0 || idInput === "") {
 		alert(lang[langIndex].nullId);
 	} else if (!usernamePattern.test(idInput)) {
@@ -149,7 +172,7 @@ document.getElementById("signup-clear").addEventListener("click", () => {
 		alert(lang[langIndex].nullPw);
 	} else if (!passwordPattern.test(pwInput)) {
 		alert(lang[langIndex].wrongPw);
-	} else if (pwCheck != pwInput) {
+	} else if (checkPw != pwInput) {
 		alert(lang[langIndex].notSame);
 	} else {
 		const body = {
@@ -179,7 +202,7 @@ document.getElementById("signup-clear").addEventListener("click", () => {
 });
 
 // Log out
-document.getElementById("logout-btn").addEventListener("click", () => {
+logoutBtn.addEventListener("click", () => {
 	fetch("/user/logout/").then((response) => {
 		if (response.status === 205) {
 			removeValue();
@@ -193,8 +216,8 @@ document.getElementById("logout-btn").addEventListener("click", () => {
 });
 
 export function changeToLoginPage() {
-	document.getElementById("offline").style.display = "block";
-	document.getElementById("sign").style.display = "block";
-	document.getElementById("window-content").style.display = "none";
-	document.getElementById("logout-btn").style.display = "none";
+	offlineContainer.style.display = "block";
+	signContainer.style.display = "block";
+	windowContainer.style.display = "none";
+	logoutBtn.style.display = "none";
 }
