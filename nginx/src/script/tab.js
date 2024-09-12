@@ -1,4 +1,5 @@
 import { closeBracket } from "./content/feature.js";
+import { changeToLoginPage } from "./login.js";
 import { exit } from "./object/game.js";
 
 const offlineContent = document.getElementById('offline');
@@ -6,6 +7,7 @@ const tournamentContent = document.getElementById('tournament');
 const onlineContent = document.getElementById('online');
 
 document.getElementById('l-tab').addEventListener('click', () => {
+	checkUser();
 	offlineContent.style.display = 'block';
 	tournamentContent.style.display = 'none';
 	onlineContent.style.display = 'none';
@@ -15,6 +17,7 @@ document.getElementById('l-tab').addEventListener('click', () => {
 });
 
 document.getElementById('t-tab').addEventListener('click', () => {
+	checkUser();
 	offlineContent.style.display = 'none';
 	tournamentContent.style.display = 'block';
 	onlineContent.style.display = 'none';
@@ -24,6 +27,7 @@ document.getElementById('t-tab').addEventListener('click', () => {
 });
 
 document.getElementById('m-tab').addEventListener('click', () => {
+	checkUser();
 	offlineContent.style.display = 'none';
 	tournamentContent.style.display = 'none';
 	onlineContent.style.display = 'block';
@@ -62,4 +66,17 @@ export function removeValue() {
 			inputList[i].value = '';
 		}
 	}
+}
+
+export function checkUser() {
+	const uri = "/user/check/";
+	fetch(uri).then((response) => {
+		if (response.status !== 200) {
+			alert("세션이 만료되어 로그인이 필요합니다.");
+			removeValue();
+			exit();
+			closeBracket();
+			changeToLoginPage();
+		}
+	});
 }

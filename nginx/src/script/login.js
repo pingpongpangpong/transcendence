@@ -16,6 +16,19 @@ window.onpopstate = function () {
 	history.go(1);
 };
 
+function undo() {
+	document.getElementById("id-signup").value = "";
+	document.getElementById("pw-signup").value = "";
+	document.getElementById("check-pw").value = "";
+	document.getElementById("email-signup").value = "";
+	document.getElementById("email-signup-auth").value = "";
+	document.getElementById("email-signup-auth-label").style.display = "none";
+	document.getElementById("email-check").style.display = "none";
+	document.getElementById("signup-clear").style.display = "none";
+	signin.style.display = "flex";
+	signup.style.display = "none";
+}
+
 // Sign in
 document.getElementById("sign-in-btn").addEventListener("click", () => {
 	const idInput = document.getElementById("id-input").value;
@@ -119,16 +132,7 @@ document.getElementById("email-signup-auth-check").addEventListener("click", () 
 
 // undo
 document.getElementById("go-back").addEventListener("click", () => {
-	document.getElementById("id-signup").value = "";
-	document.getElementById("pw-signup").value = "";
-	document.getElementById("check-pw").value = "";
-	document.getElementById("email-signup").value = "";
-	document.getElementById("email-signup-auth").value = "";
-	document.getElementById("email-signup-auth-label").style.display = "none";
-	document.getElementById("email-check").style.display = "none";
-	document.getElementById("signup-clear").style.display = "none";
-	signin.style.display = "flex";
-	signup.style.display = "none";
+	undo();
 });
 
 // Sign up - send to server
@@ -161,9 +165,8 @@ document.getElementById("signup-clear").addEventListener("click", () => {
 			},
 			body: JSON.stringify(body),
 		}).then((response) => {
-			if (response.status === 200) {
-				signin.style.display = "flex";
-				signin.style.display = "none";
+			if (response.status === 201) {
+				undo();
 			} else if (response.username) {
 				alert(lang[langIndex].wrongId);
 			} else if (response.password) {
@@ -182,12 +185,16 @@ document.getElementById("logout-btn").addEventListener("click", () => {
 			removeValue();
 			exit();
 			closeBracket();
-			document.getElementById("offline").style.display = "block";
-			document.getElementById("sign").style.display = "block";
-			document.getElementById("window-content").style.display = "none";
-			document.getElementById("logout-btn").style.display = "none";
+			changeToLoginPage();
 		} else {
 			alert(lang[langIndex].invalidToken);
 		}
 	});
 });
+
+export function changeToLoginPage() {
+	document.getElementById("offline").style.display = "block";
+	document.getElementById("sign").style.display = "block";
+	document.getElementById("window-content").style.display = "none";
+	document.getElementById("logout-btn").style.display = "none";
+}

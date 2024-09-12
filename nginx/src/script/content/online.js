@@ -1,3 +1,4 @@
+import { checkUser } from "../tab.js";
 import { online } from "./feature.js";
 
 const roomSettingContainer = document.getElementById('room-setting');
@@ -15,6 +16,7 @@ document.getElementById('cancel').addEventListener('click', () => {
 
 // online game
 document.getElementById('m-ok').addEventListener('click', () => {
+	checkUser();
 	const roomName = document.getElementById('room-name').value;
 	if (roomName === '') {
 		alert(lang[langIndex].alRNempty);
