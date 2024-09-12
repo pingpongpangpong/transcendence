@@ -238,7 +238,3 @@ export function toContent() {
 	logoutBtn.style.display = "block";
 	sessionStorage.setItem("status", "offline");
 }
-
-document.getElementById("signin-42-btn").addEventListener("click", () => {
-    window.location = "https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-444cfc0028fafb27c54d22afebcf9e3852a0d0f6060eb1a9d6280be8d5f2dcbf&redirect_uri=https%3A%2F%2Flocalhost%2Fuser%2Foauth%2F&response_type=code";
-});
