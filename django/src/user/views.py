@@ -1,11 +1,12 @@
 import random
+import requests
 import threading
-from .models import LoginSession, EmailVerification
+from django.utils.crypto import get_random_string
+from .models import LoginSession, EmailVerification, OauthToken
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, update_last_login
 from django.contrib.sessions.models import Session
-from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 from django.core.mail import send_mail
 from .serializers import UserSignupSerializer, UserLoginSerializer, UserSendEmail, UserTokenRefreshSerializer
@@ -19,6 +20,25 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.settings import api_settings
+
+def user_login_session(request, user):
+    if Session.objects.filter(pk=request.session.session_key).exists():
+        session = Session.objects.get(pk = request.session.session_key)
+        if LoginSession.objects.filter(session=session).exists():
+            login_session = LoginSession.objects.get(session=session)
+            if user != login_session.user:
+                logout(request)
+
+    if user is not None:
+        login(request, user)
+        session = Session.objects.get(pk = request.session.session_key)
+        if not LoginSession.objects.filter(session=session).exists():
+            old_sessions = LoginSession.objects.filter(user=user)
+            for old_session in old_sessions:
+                old_session.session.delete()
+            login_session = LoginSession.objects.create(user=user, session=session)
+            login_session.save()
 
 class UserCheckEmailView(APIView):
     permission_classes = [AllowAny]
@@ -85,6 +105,7 @@ class UserSendEmailView(APIView):
             email_verification.save()
 
         # 이메일 발송
+
         thread = threading.Thread(target=send_mail, args=(
             'PingPongPangPong Email Verification Code',  # subject
             f'Your verification code is {verification_code}',  # message
@@ -133,35 +154,100 @@ class UserLoginView(TokenObtainPairView):
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.data.get('refresh', None) and response.data.get('access', None):
-            cookie_max_age = 60 * 60 * 24
-            response.set_cookie('refresh', response.data['refresh'], max_age=cookie_max_age, httponly=True, secure=True)
-            cookie_max_age = 60 * 30
-            response.set_cookie('access', response.data['access'], max_age=cookie_max_age, httponly=True, secure=True)
+            response.set_cookie('refresh', response.data['refresh'], max_age=settings.SIMPLE_JWT['REFRESH_COOKIE_AGE'], httponly=True, secure=True)
+            response.set_cookie('access', response.data['access'], max_age=settings.SIMPLE_JWT['ACCESS_COOKIE_AGE'], httponly=True, secure=True)
             del response.data['access']
             del response.data['refresh']
+            response.data = {"detail": "Login successful"}
             
             user = authenticate(username=request.data.get('username'), password=request.data.get('password'))
-            if Session.objects.filter(pk=request.session.session_key).exists():
-                session = Session.objects.get(pk = request.session.session_key)
-                if LoginSession.objects.filter(session=session).exists():
-                    login_session = LoginSession.objects.get(session=session)
-                    if user != login_session.user:
-                        logout(request)
-
-            if user is not None:
-                login(request, user)
-                session = Session.objects.get(pk = request.session.session_key)
-                if not LoginSession.objects.filter(session=session).exists():
-                    old_sessions = LoginSession.objects.filter(user=user)
-                    for old_session in old_sessions:
-                        old_session.session.delete()
-                    login_session = LoginSession.objects.create(user=user, session=session)
-                    login_session.save()
-            
-            response.data = {"detail": "Login successful"}
+            user_login_session(request, user)
 
         return super().finalize_response(request, response, *args, **kwargs)
+    
+class UserOauthView(APIView):
+    permission_classes = [AllowAny]
 
+    def get_access_token(self, code):
+        data = {
+                "grant_type": "authorization_code",
+                "code": code,
+                "client_id": settings.OAUTH_42['UID'],
+                "client_secret": settings.OAUTH_42['SECRET'],
+                "redirect_uri": settings.OAUTH_42['REDIRECT_URI'],
+                "scope": "public",
+        }
+        headers = {'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'}
+            
+        token_response = requests.post(settings.OAUTH_42['TOKEN_URI'],
+                                    data=data,
+                                    headers=headers)
+        if token_response.status_code != 200:
+            raise Exception("Failed to get access token from oauth server")
+        
+        return token_response.json().get('access_token')
+        
+    def get_user_data(self, token):
+        headers = {"Authorization": f"Bearer {token}",
+                    "Content-type": "application/x-www-form-urlencoded;charset=utf-8"}
+        user_info_response = requests.get(settings.OAUTH_42['PROFILE_URI'],
+                                    headers=headers)
+        return user_info_response.json()
+
+    def create_or_get(self, token, user):
+        username = user.get('login')
+        if OauthToken.objects.filter(username=username).exists():
+            oauth = OauthToken.objects.get(username=user.get('login'))
+            oauth.access_token = token
+            oauth.save()
+            return oauth.user
+        else:
+            while User.objects.filter(username=username).exists():
+                namelength = random.randint(5, 20)
+                username = get_random_string(namelength)
+            auser = User.objects.create(username=username,
+                                        email=user.get('email'),
+                                        first_name="oauth")
+            password = get_random_string(20)
+            auser.set_password(password)
+            auser.save()
+            oauth = OauthToken.objects.create(username=user.get('login'),
+                                              access_token=token,
+                                              user=auser)
+            oauth.save()
+            return oauth.user
+        
+    def session_login(self, request, user):
+        response = Response(status=status.HTTP_301_MOVED_PERMANENTLY)
+        response['location'] = "/"
+
+        refresh = RefreshToken.for_user(user)
+        response.set_cookie('refresh', str(refresh),max_age=settings.SIMPLE_JWT['REFRESH_COOKIE_AGE'], httponly=True, secure=True)
+        response.set_cookie('access', str(refresh.access_token),max_age=settings.SIMPLE_JWT['ACCESS_COOKIE_AGE'], httponly=True, secure=True)
+
+        if api_settings.UPDATE_LAST_LOGIN:
+            update_last_login(None, user)
+
+        user_login_session(request, user)
+        return response
+
+
+    def get(self, request):
+        code = request.query_params.get("code") or None
+        if code is None:
+            return Response({"detail": "Failed to get code"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            access_token = self.get_access_token(code)
+            user_info = self.get_user_data(access_token)
+            user = self.create_or_get(access_token, user_info)
+            response = self.session_login(request, user)
+
+            return response
+        except Exception as e:
+            return Response({"detail": str(e)}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+                          
 class UserRefreshView(TokenRefreshView):
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
@@ -179,10 +265,8 @@ class UserRefreshView(TokenRefreshView):
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.data.get('refresh', None) and response.data.get('access', None):
-            cookie_max_age = 60 * 60 * 24
-            response.set_cookie('refresh', response.data['refresh'], max_age=cookie_max_age, httponly=True, secure=True)
-            cookie_max_age = 60 * 30
-            response.set_cookie('access', response.data['access'], max_age=cookie_max_age, httponly=True, secure=True)
+            response.set_cookie('refresh', response.data['refresh'], max_age=settings.SIMPLE_JWT['REFRESH_COOKIE_AGE'], httponly=True, secure=True)
+            response.set_cookie('access', response.data['access'], max_age=settings.SIMPLE_JWT['ACCESS_COOKIE_AGE'], httponly=True, secure=True)
             del response.data['access']
             del response.data['refresh']
             response.data = {"detail": "Refresh successful"}

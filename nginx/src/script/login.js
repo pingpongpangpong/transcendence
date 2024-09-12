@@ -221,3 +221,4 @@ export function changeToLoginPage() {
 	windowContainer.style.display = "none";
 	logoutBtn.style.display = "none";
 }
+

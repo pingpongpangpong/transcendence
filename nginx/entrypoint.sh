@@ -1,6 +1,12 @@
 #!/bin/bash
 
 echo "
+document.getElementById(\"sign-in-42-btn\").addEventListener(\"click\", () => {
+    window.location = \"$OAUTH_URL\";
+});
+" >> /var/www/html/script/login.js
+
+echo "
 upstream backend {
 	server $DJANGO_HOST:$DJANGO_PORT;
 }
