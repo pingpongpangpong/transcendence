@@ -16,6 +16,7 @@ window.onpopstate = function () {
 	history.go(1);
 };
 
+
 // Sign in
 document.getElementById("sign-in-btn").addEventListener("click", () => {
 	const idInput = document.getElementById("id-input").value;
@@ -182,12 +183,16 @@ document.getElementById("logout-btn").addEventListener("click", () => {
 			removeValue();
 			exit();
 			closeBracket();
-			document.getElementById("offline").style.display = "block";
-			document.getElementById("sign").style.display = "block";
-			document.getElementById("window-content").style.display = "none";
-			document.getElementById("logout-btn").style.display = "none";
+			changeToLoginPage();
 		} else {
 			alert(lang[langIndex].invalidToken);
 		}
 	});
 });
+
+export function changeToLoginPage() {
+	document.getElementById("offline").style.display = "block";
+	document.getElementById("sign").style.display = "block";
+	document.getElementById("window-content").style.display = "none";
+	document.getElementById("logout-btn").style.display = "none";
+}
