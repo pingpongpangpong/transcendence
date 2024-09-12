@@ -99,6 +99,8 @@ signupEmailSubmit.addEventListener("click", () => {
 			if (response.status === 200) {
 				alert(lang[langIndex].sendCode);
 				signupCode.style.display = "flex";
+				signupCodeLabel.style.display = "block";
+				signupCodeSubmit.style.display = "block";
 			} else {
 				alert(lang[langIndex].failCode);
 			}
