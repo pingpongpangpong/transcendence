@@ -22,6 +22,7 @@ class EmailVerification(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	code = models.IntegerField()
 	is_verified = models.BooleanField(default=False)
+	is_used_for_signup = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	@property
