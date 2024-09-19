@@ -1,15 +1,15 @@
-import { Game, winner } from '../object/game.js';
+import { Game, winner } from "../object/game.js";
 import { lang, langIndex } from "../lang.js";
-import { canvas, ctx, initBracket, paintBracket } from './bracket.js';
+import { canvas, ctx, initBracket, paintBracket } from "./bracket.js";
 
-const painGamePoint = document.getElementById('show-gp');
+const painGamePoint = document.getElementById("show-game-point");
 let isRunning = true;
 
 export async function offline(gamePoint, name1, name2) {
 	const game = new Game(gamePoint);
 	game.awake(name1, name2);
 	await game.update();
-	document.getElementById('offline').style.display = 'block';
+	document.getElementById("offline").style.display = "block";
 }
 
 export async function tournament(gamePoint, nameList) {
@@ -28,7 +28,7 @@ export async function tournament(gamePoint, nameList) {
 			paintBracket(players, round);
 			await new Promise((resolve, reject) => setTimeout(() => {
 				if (isRunning) {
-					document.getElementById('bracket').style.display = 'none';
+					document.getElementById("bracket").style.display = "none";
 					resolve();
 				} else {
 					reject(new Error());
@@ -39,7 +39,7 @@ export async function tournament(gamePoint, nameList) {
 			}
 			if (players.length === 1) {
 				alert(`${players[0]} 토너먼트 승리!`);
-				document.getElementById('tournament').style.display = 'block';
+				document.getElementById("tournament").style.display = "block";
 				return;
 			}
 			let winnerList = [];
@@ -58,7 +58,7 @@ export async function tournament(gamePoint, nameList) {
 }
 
 export function online(gamePoint, room) {
-	console.log('online');
+	console.log("online");
 }
 
 export function getGamePoint(type) {
@@ -72,7 +72,7 @@ export function getGamePoint(type) {
 }
 
 export function checkName(name, index) {
-	if (name === '') {
+	if (name === "") {
 		alert(`${index}${lang[langIndex].alPNempty}`);
 		return false;
 	} else if (name.length < 4 || name.length > 20) {
@@ -84,7 +84,7 @@ export function checkName(name, index) {
 
 export function closeBracket() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	canvas.style.display = 'none';
+	canvas.style.display = "none";
 	isRunning = false;
 	clearTimeout();
 }

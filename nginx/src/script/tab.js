@@ -1,6 +1,7 @@
 import { closeBracket } from "./content/feature.js";
-import { logout, toContent, toSignup, undo } from "./login.js";
+import { logout, toContent, undo } from "./login.js";
 import { exit } from "./object/game.js";
+import { closeRoomSetting } from "./content/online.js";
 
 const sign = document.getElementById("sign");
 const signin = document.getElementById("sign-in-content");
@@ -40,28 +41,25 @@ function onOnline() {
 	sessionStorage.setItem("status", "online");
 }
 
-document.getElementById("l-tab").addEventListener("click", () => {
+function changTab(func) {
 	checkUser();
-	onOffline();
 	removeValue();
+	func();
 	exit();
 	closeBracket();
+	closeRoomSetting();
+}
+
+document.getElementById("offline-tab").addEventListener("click", () => {
+	changTab(onOffline);
 });
 
-document.getElementById("t-tab").addEventListener("click", () => {
-	checkUser();
-	onTournament();
-	removeValue();
-	exit();
-	closeBracket();
+document.getElementById("tournament-tab").addEventListener("click", () => {
+	changTab(onTournament);
 });
 
-document.getElementById("m-tab").addEventListener("click", () => {
-	checkUser();
-	onOnline();
-	removeValue();
-	exit();
-	closeBracket();
+document.getElementById("online-tab").addEventListener("click", () => {
+	changTab(onOnline);
 });
 
 window.addEventListener("load", () => {
@@ -75,7 +73,7 @@ window.addEventListener("load", () => {
 	} else if (status === pageStatus[0]) {
 		undo();
 	} else if (status === pageStatus[1]) {
-		toSignup();
+		undo();
 	} else {
 		fetch("/user/check/").then((response) => {
 			if (response.status !== 200) {
@@ -106,7 +104,7 @@ export function removeValue() {
 		}
 	}
 
-	const tournamentStartButton = document.getElementById("t-button");
+	const tournamentStartButton = document.getElementById("tournament-btn");
 	while (tournamentStartButton.firstChild) {
 		tournamentStartButton.removeChild(tournamentStartButton.firstChild);
 	}

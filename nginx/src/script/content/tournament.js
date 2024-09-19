@@ -2,8 +2,8 @@ import { tournament, getGamePoint, checkName } from "./feature.js";
 import { lang, langIndex } from "../lang.js";
 import { checkUser } from "../tab.js";
 
-document.getElementById('select-num').addEventListener('change',  (e) => {
-	const inputList = document.getElementById('input-list');
+document.getElementById("select-num").addEventListener("change",  (e) => {
+	const inputList = document.getElementById("input-list");
 	while (inputList.firstChild) {
 		inputList.removeChild(inputList.firstChild);
 	}
@@ -13,17 +13,17 @@ document.getElementById('select-num').addEventListener('change',  (e) => {
 	}
 
 	for (let i = 0; i < e.target.value; i++) {
-		const container = document.createElement('div');
+		const container = document.createElement("div");
 		container.id = `player-${i + 1}`;
-		container.className = 'field-row-stacked';
+		container.className = "field-row-stacked";
 
-		const label = document.createElement('label');
+		const label = document.createElement("label");
 		label.for = `player-${i + 1}-input`;
 		label.textContent = `${i + 1}${lang[langIndex].playerName}`;
 
-		const input = document.createElement('input');
+		const input = document.createElement("input");
 		input.id = `player-${i + 1}-input`;
-		input.type = 'text';
+		input.type = "text";
 		input.style.width
 		input.required = true;
 
@@ -32,19 +32,19 @@ document.getElementById('select-num').addEventListener('change',  (e) => {
 		inputList.appendChild(container);
 	}
 
-	const buttonSection = document.getElementById('t-button');
+	const buttonSection = document.getElementById("tournament-btn");
 	while (buttonSection.firstChild) {
 		buttonSection.removeChild(buttonSection.firstChild);
 	}
 
-	const startButton = document.createElement('button');
-	startButton.id = 't-ok';
-	startButton.innerText = lang[langIndex].ok;
+	const startButton = document.createElement("button");
+	startButton.id = "tournament-submit";
+	startButton.innerText = lang[langIndex].submit;
 	buttonSection.appendChild(startButton);
 
-	startButton.addEventListener('click', () => {
+	startButton.addEventListener("click", () => {
 		checkUser();
-		const gamePoint = getGamePoint('t');
+		const gamePoint = getGamePoint("tournament");
 		if (gamePoint < 0) {
 			return;
 		}
@@ -69,7 +69,7 @@ document.getElementById('select-num').addEventListener('change',  (e) => {
 			}
 		}
 
-		document.getElementById('tournament').style.display = 'none';
+		document.getElementById("tournament").style.display = "none";
 		sessionStorage.setItem("game", "tournament");
 		tournament(gamePoint, nameList);
 	});

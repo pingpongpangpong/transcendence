@@ -6,15 +6,15 @@ import { removeValue } from "./tab.js";
 // sign-in page
 const signin = document.getElementById("sign-in-content");
 const signinId = document.getElementById("sign-in-id");
-const signinPw = document.getElementById("sign-in-pw");
+const signinPassword = document.getElementById("sign-in-password");
 const signinBtn = document.getElementById("sign-in-btn");
 const signupBtn = document.getElementById("sign-up-btn");
 
 // signup page
 const signup = document.getElementById("sign-up-content");
 const signupId = document.getElementById("sign-up-id");
-const signupPw = document.getElementById("sign-up-pw");
-const signupCheckPw = document.getElementById("sign-up-check-pw");
+const signupPassword = document.getElementById("sign-up-password");
+const signupCheckPassword = document.getElementById("sign-up-check-password");
 // email
 const signupEmail = document.getElementById("sign-up-email");
 const signupEmailSubmit = document.getElementById("sign-up-email-btn");
@@ -24,7 +24,7 @@ const signupCodeInput = document.getElementById("sign-up-code-input");
 const signupCodeSubmit = document.getElementById("sign-up-code-btn");
 // other
 const signupSubmit = document.getElementById("sign-up-submit");
-const goBack = document.getElementById("sign-up-cancel");
+const signupCancel = document.getElementById("sign-up-cancel");
 
 // containers
 const signContainer = document.getElementById("sign");
@@ -43,15 +43,15 @@ window.onpopstate = function () {
 // Sign in
 signinBtn.addEventListener("click", () => {
 	const idInput = signinId.value;
-	const pwInput = signinPw.value;
+	const passwordInput = signinPassword.value;
 	if (idInput.length === 0 || idInput === "") {
 		alert(lang[langIndex].nullId);
-	} else if (pwInput.length === 0 || pwInput === "") {
-		alert(lang[langIndex].nullPw);
+	} else if (passwordInput.length === 0 || passwordInput === "") {
+		alert(lang[langIndex].nullPassword);
 	} else {
 		const body = {
 			"username": idInput,
-			"password": pwInput
+			"password": passwordInput
 		};
 		const uri = "/user/login/";
 		fetch(uri, {
@@ -73,7 +73,7 @@ signinBtn.addEventListener("click", () => {
 // Sign up button
 signupBtn.addEventListener("click", () => {
 	signinId.value = "";
-	signinPw.value = "";
+	signinPassword.value = "";
 	signin.style.display = "none";
 	signup.style.display = "flex";
 	sessionStorage.setItem("status", "signup");
@@ -141,30 +141,30 @@ signupCodeSubmit.addEventListener("click", () => {
 });
 
 // undo
-goBack.addEventListener("click", () => {
+signupCancel.addEventListener("click", () => {
 	undo();
 });
 
 // Sign up - send to server
 signupSubmit.addEventListener("click", () => {
 	const idInput = signupId.value;
-	const pwInput = signupPw.value;
-	const checkPw = signupCheckPw.value;
-	const emailInput = document.getElementById("sign-upemail").value;
+	const passwordInput = signupPassword.value;
+	const checkPassword = signupCheckPassword.value;
+	const emailInput = document.getElementById("sign-up-email").value;
 	if (idInput.length === 0 || idInput === "") {
 		alert(lang[langIndex].nullId);
 	} else if (!usernamePattern.test(idInput)) {
 		alert(lang[langIndex].wrongId);
-	} else if (pwInput.length === 0 || pwInput === "") {
-		alert(lang[langIndex].nullPw);
-	} else if (!passwordPattern.test(pwInput)) {
-		alert(lang[langIndex].wrongPw);
-	} else if (checkPw != pwInput) {
+	} else if (passwordInput.length === 0 || passwordInput === "") {
+		alert(lang[langIndex].nullPassword);
+	} else if (!passwordPattern.test(passwordInput)) {
+		alert(lang[langIndex].wrongPassword);
+	} else if (checkPassword != passwordInput) {
 		alert(lang[langIndex].notSame);
 	} else {
 		const body = {
 			"username": idInput,
-			"password": pwInput,
+			"password": passwordInput,
 			"email": emailInput
 		};
 		const uri = "/user/signup/";
@@ -180,7 +180,7 @@ signupSubmit.addEventListener("click", () => {
 			} else if (response.username) {
 				alert(lang[langIndex].wrongId);
 			} else if (response.password) {
-				alert(lang[langIndex].wrongPw);
+				alert(lang[langIndex].wrongPassword);
 			} else if (response.email) {
 				alert(lang[langIndex].wrongEmail);
 			}
@@ -221,8 +221,8 @@ export function toSignup() {
 
 export function undo() {
 	signupId.value = "";
-	signupPw.value = "";
-	signupCheckPw.value = "";
+	signupPassword.value = "";
+	signupCheckPassword.value = "";
 	signupEmail.value = "";
 	signupCodeInput.value = "";
 	signupCode.style.display = "none";
