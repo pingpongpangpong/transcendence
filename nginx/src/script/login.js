@@ -9,6 +9,10 @@ const signinId = document.getElementById("sign-in-id");
 const signinPassword = document.getElementById("sign-in-password");
 const signinBtn = document.getElementById("sign-in-btn");
 const signupBtn = document.getElementById("sign-up-btn");
+// 2-factors
+const signin2factor = document.getElementById("sign-in-2factor");
+const signinCodeLabel = document.getElementById("sign-in-code-label");
+const signinCode = document.getElementById("sign-in-code");
 
 // signup page
 const signup = document.getElementById("sign-up-content");
@@ -25,21 +29,6 @@ const signupCodeSubmit = document.getElementById("sign-up-code-btn");
 // other
 const signupSubmit = document.getElementById("sign-up-submit");
 const signupCancel = document.getElementById("sign-up-cancel");
-
-// 2-factors
-const signin2factor = document.getElementById("sign-in-2factor");
-// email
-const signin2factorEmail = document.getElementById("sign-in-2factor-email");
-const signin2factorEmailBtn = document.getElementById("sign-in-2factor-email-btn");
-// code
-const signin2factorCodeLabel = document.getElementById("sign-in-2factor-code-label");
-const signin2factorCodeInput = document.getElementById("sign-in-2factor-input");
-const signin2factorCode = document.getElementById("sign-in-2factor-code");
-const signin2factorCodeBtn = document.getElementById("sign-in-2factor-code-btn");
-// button
-const signin2factorCancel = document.getElementById("sign-in-2factor-cancel");
-const signin2factorSubmit = document.getElementById("sign-in-2factor-submit");
-// other
 
 // containers
 const signContainer = document.getElementById("sign");
@@ -62,7 +51,7 @@ window.onpopstate = function () {
 };
 
 // Sign in
-signinBtn.addEventListener("click", () => {
+signin2factor.addEventListener("click", () => {
 	const idInput = signinId.value;
 	const passwordInput = signinPassword.value;
 	if (idInput.length === 0 || idInput === "") {
@@ -74,6 +63,42 @@ signinBtn.addEventListener("click", () => {
 			"username": idInput,
 			"password": passwordInput
 		};
+		const uri = "/user/login-2fa";
+		fetch(uri, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(body),
+		}).then((request) => {
+			if (request.status === 200) {
+				alert(lang[langIndex].sendCode);
+				signinCodeLabel.style.display = "block";
+				signinCode.style.display = "block";
+				signinBtn.style.display = "block";
+			} else {
+				alert(lang[langIndex].failCode);
+			}
+		});
+	}
+});
+// Sign in button
+signinBtn.addEventListener("click", () => {
+	const idInput = signinId.value;
+	const passwordInput = signinPassword.value;
+	const code = signinCode.value;
+	if (idInput.length === 0 || idInput === "") {
+		alert(lang[langIndex].nullId);
+	} else if (passwordInput.length === 0 || passwordInput === "") {
+		alert(lang[langIndex].nullPassword);
+	} else if (code.length === 0 || code === "") {
+		alert(lang[langIndex].nullCode);
+	} else {
+		const body = {
+			"username": idInput,
+			"password": passwordInput,
+			"code": code
+		};
 		const uri = "/user/login/";
 		fetch(uri, {
 			method: "POST",
@@ -83,7 +108,7 @@ signinBtn.addEventListener("click", () => {
 			body: JSON.stringify(body),
 		}).then((response) => {
 			if (response.status === 200) {
-				to2factor();
+				toContent();
 			} else {
 				alert(lang[langIndex].failsignin);
 			}
@@ -217,72 +242,15 @@ logoutBtn.addEventListener("click", () => {
 	});
 });
 
-// 2 factor
-signin2factorEmailBtn.addEventListener("click", () => {
-	const email = signin2factorEmail.value;
-	if (email.length === 0 || email === "") {
-		alert(lang[langIndex].nullEmail);
-	} else {
-		const basicUri = "/user/login-2fa-email";
-		const param = {
-			email: email,
-		};
-		const query = new URLSearchParams(param).toString();
-		const uri = `${basicUri}?${query}/`;
-		fetch(uri).then((request) => {
-			if (request.status === 200) {
-				alert(lang[langIndex].sendCode);
-				signin2factorCodeLabel.style.display = "block";
-				signin2factorCodeInput.style.display = "block";
-			} else {
-				alert(lang[langIndex].failCode);
-			}
-		});
-	}
-});
-// Verify email code
-signin2factorCodeBtn.addEventListener("click", () => {
-	const code = signin2factorCode.value;
-	if (code.length === 0 || code === "") {
-		alert(lang[langIndex].nullCode);
-	} else {
-		const basicUri = "/user/login-2fa";
-		const param = {
-			code: code,
-		};
-		const query = new URLSearchParams(param).toString();
-		const uri = `${basicUri}?${query}/`;
-		fetch(uri).then((request) => {
-			if (request.status === 200) {
-				toContent();
-			} else {
-				alert(lang[langIndex].failsignin);
-			}
-		})
-	}
-});
-// undo
-signin2factorCancel.addEventListener("click", () => {
-	cancel2factor();
-})
-// sign in
-signin2factorSubmit.addEventListener("click", () => {});
-
-function cancel2factor() {
-	signin2factorEmail.value = "";
-	signin2factorCode.value = "";
-	signin.style.display = "flex";
-	signin2factor.style.display = "none";
-	sessionStorage.setItem("status", "signin");
-}
-
 export function logout() {
 	offlineContainer.style.display = "block";
 	signContainer.style.display = "block";
 	windowContainer.style.display = "none";
 	logoutBtn.style.display = "none";
 	signin.style.display = "flex";
-	signin2factor.style.display = "none";
+	signinCodeLabel.style.display = "none";
+	signinCode.style.display = "none";
+	signinBtn.style.display = "none";
 	sessionStorage.setItem("status", "signin");
 }
 
@@ -291,18 +259,9 @@ export function toSignup() {
 	windowContainer.style.display = "none";
 	signin.style.display = "none";
 	signup.style.display = "flex";
-	signin2factor.style.display = "none";
 	sessionStorage.setItem("status", "signup");
 }
 
-export function to2factor() {
-	signContainer.style.display = "block";
-	windowContainer.style.display = "none";
-	signin.style.display = "none";
-	signup.style.display = "none";
-	signin2factor.style.display = "flex";
-	sessionStorage.setItem("status", "2factor");
-}
 export function cancelSignup() {
 	signupId.value = "";
 	signupPassword.value = "";
@@ -314,8 +273,8 @@ export function cancelSignup() {
 	signupSubmit.style.display = "none";
 	signContainer.style.display = "block";
 	signin.style.display = "flex";
+
 	signup.style.display = "none";
-	signin2factor.style.display = "none";
 	sessionStorage.setItem("status", "signin");
 }
 
