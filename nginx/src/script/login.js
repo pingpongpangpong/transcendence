@@ -8,7 +8,6 @@ const signin = document.getElementById("sign-in-content");
 const signinId = document.getElementById("sign-in-id");
 const signinPassword = document.getElementById("sign-in-password");
 const signinBtn = document.getElementById("sign-in-btn");
-const signin2factorBtn = document.getElementById("sign-in-2factor-btn");
 const signupBtn = document.getElementById("sign-up-btn");
 
 // signup page
@@ -84,7 +83,7 @@ signinBtn.addEventListener("click", () => {
 			body: JSON.stringify(body),
 		}).then((response) => {
 			if (response.status === 200) {
-				toContent();
+				to2factor();
 			} else {
 				alert(lang[langIndex].failsignin);
 			}
@@ -159,7 +158,7 @@ signupCodeSubmit.addEventListener("click", () => {
 });
 // undo
 signupCancel.addEventListener("click", () => {
-	cancelSignin();
+	cancelSignup();
 });
 // send to server
 signupSubmit.addEventListener("click", () => {
@@ -192,7 +191,7 @@ signupSubmit.addEventListener("click", () => {
 			body: JSON.stringify(body),
 		}).then((response) => {
 			if (response.status === 201) {
-				undo();
+				cancelSignup();
 			} else if (response.username) {
 				alert(lang[langIndex].wrongId);
 			} else if (response.password) {
@@ -218,13 +217,7 @@ logoutBtn.addEventListener("click", () => {
 	});
 });
 
-// 2-factor sign in
-signin2factorBtn.addEventListener("click", () => {
-	removeSignin();
-	signin2factor.style.display = "flex";
-	sessionStorage.setItem("status", "2factor");
-});
-// Verify email
+// 2 factor
 signin2factorEmailBtn.addEventListener("click", () => {
 	const email = signin2factorEmail.value;
 	if (email.length === 0 || email === "") {
@@ -310,7 +303,7 @@ export function to2factor() {
 	signin2factor.style.display = "flex";
 	sessionStorage.setItem("status", "2factor");
 }
-export function cancelSignin() {
+export function cancelSignup() {
 	signupId.value = "";
 	signupPassword.value = "";
 	signupCheckPassword.value = "";
