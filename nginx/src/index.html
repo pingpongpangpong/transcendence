@@ -24,7 +24,7 @@
 			</div>
 		</div>
 		<div id="sign" style="display: none;">
-			<div id="sign-in-content" class="content">
+			<div id="sign-in-content" class="content sign">
 				<div id="sign-in-input">
 					<label id="sign-in-id-label" for="sign-in-id">아이디</label>
 					<input id="sign-in-id" type="text"/>
@@ -33,11 +33,30 @@
 				</div>
 				<div id="sign-btns">
 					<button id="sign-in-btn">로그인</button>
+					<button id="sign-in-2factor-btn">E-mail로 로그인</button>
 					<button id="sign-in-42-btn">42로 로그인</button>
 					<button id="sign-up-btn">회원가입</button>
 				</div>
 			</div>
-			<div id="sign-up-content" class="content" style="display: none;">
+			<div id="sign-in-2factor" class="content sign" style="display: none;">
+				<div id="sign-in-2factor-input" style="display: grid;">
+					<label id="sign-in-2factor-email-label" for="sign-in-2factor-email">이메일</label>
+					<div>
+						<input id="sign-in-2factor-email" type="email" />
+						<button id="sign-in-2factor-email-btn">인증하기</button>
+					</div>
+					<label id="sign-in-2factor-code-label" for="sign-in-2factor-code" style="display: none;">인증코드</label>
+					<div id="sign-in-2factor-code-input" style="display: none;">
+						<input id="sign-in-2factor-code" />
+						<button id="sign-in-2factor-code-btn">인증확인</button>
+					</div>
+				</div>
+				<div id="sign-in-2factor-btn-list" class="btn-list">
+					<button id="sign-in-2factor-cancel">뒤로가기</button>
+					<button id="sign-in-2factor-submit" style="display: none;">확인</button>
+				</div>
+			</div>
+			<div id="sign-up-content" class="content sign" style="display: none;">
 				<div id="sign-up-input-list" style="display: grid;">
 					<label id="sign-up-id-label" for="sign-up-id">아이디</label>
 					<input id="sign-up-id" type="text"/>
@@ -59,7 +78,7 @@
 						<button id="sign-up-code-btn">인증확인</button>
 					</div>
 				</div>
-				<div id="sign-up-btn-list">
+				<div id="sign-up-btn-list" class="btn-list">
 					<button id="sign-up-cancel">뒤로가기</button>
 					<button id="sign-up-submit" style="display: none;">확인</button>
 				</div>
