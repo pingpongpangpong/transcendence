@@ -1,5 +1,5 @@
 import { closeBracket } from "./content/feature.js";
-import { logout, toContent, undo } from "./login.js";
+import { logout, to2factor, toContent, toSignup } from "./login.js";
 import { exit } from "./object/game.js";
 import { closeRoomSetting } from "./content/online.js";
 
@@ -13,11 +13,12 @@ const onlineContent = document.getElementById("online");
 
 const pageStatus = {
 	0: "signin",
-	1: "signup",
-	2: "offline",
-	3: "tournament",
-	4: "online",
-	5: "ongame",
+	1: "2factor",
+	2: "signup",
+	3: "offline",
+	4: "tournament",
+	5: "online",
+	6: "ongame",
 };
 
 function onOffline() {
@@ -71,14 +72,16 @@ window.addEventListener("load", () => {
 		console.log(status, game);
 		logout();
 	} else if (status === pageStatus[0]) {
-		undo();
+		logout();
 	} else if (status === pageStatus[1]) {
-		undo();
+		to2factor();
+	} else if (status === pageStatus[2]) {
+		toSignup();
 	} else {
 		fetch("/user/check/").then((response) => {
 			if (response.status !== 200) {
 				alert("로그인 페이지로 돌아갑니다.");
-				undo();
+				logout();
 			} else if (status === pageStatus[2] || game === pageStatus[2]) {
 				toContent();
 				onOffline();
