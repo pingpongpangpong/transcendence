@@ -1,5 +1,5 @@
 import { closeBracket } from "./content/feature.js";
-import { logout, to2factor, toContent, toSignup } from "./login.js";
+import { logout, toContent, toSignup } from "./login.js";
 import { exit } from "./object/game.js";
 import { closeRoomSetting } from "./content/online.js";
 
@@ -13,12 +13,11 @@ const onlineContent = document.getElementById("online");
 
 const pageStatus = {
 	0: "signin",
-	1: "2factor",
-	2: "signup",
-	3: "offline",
-	4: "tournament",
-	5: "online",
-	6: "ongame",
+	1: "signup",
+	2: "offline",
+	3: "tournament",
+	4: "online",
+	5: "ongame",
 };
 
 function onOffline() {
@@ -74,8 +73,6 @@ window.addEventListener("load", () => {
 	} else if (status === pageStatus[0]) {
 		logout();
 	} else if (status === pageStatus[1]) {
-		to2factor();
-	} else if (status === pageStatus[2]) {
 		toSignup();
 	} else {
 		fetch("/user/check/").then((response) => {

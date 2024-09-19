@@ -30,30 +30,14 @@
 					<input id="sign-in-id" type="text"/>
 					<label id="sign-in-password-label" for="sign-in-password">비밀번호</label>
 					<input id="sign-in-password" type="password"/>
+					<button id="sign-in-2factor">인증하기</button>
+					<label id="sign-in-code-label" for="sign-in-code" style="display: none; margin-top: 10px">인증코드</label>
+					<input id="sign-in-code" type="text" style="display: none;"/>
+					<button id="sign-in-btn" style="display: none;">로그인</button>
 				</div>
 				<div id="sign-btns">
-					<button id="sign-in-btn">로그인</button>
-					<button id="sign-in-2factor-btn">E-mail로 로그인</button>
 					<button id="sign-in-42-btn">42로 로그인</button>
 					<button id="sign-up-btn">회원가입</button>
-				</div>
-			</div>
-			<div id="sign-in-2factor" class="content sign" style="display: none;">
-				<div id="sign-in-2factor-input" style="display: grid;">
-					<label id="sign-in-2factor-email-label" for="sign-in-2factor-email">이메일</label>
-					<div>
-						<input id="sign-in-2factor-email" type="email" />
-						<button id="sign-in-2factor-email-btn">인증하기</button>
-					</div>
-					<label id="sign-in-2factor-code-label" for="sign-in-2factor-code" style="display: none;">인증코드</label>
-					<div id="sign-in-2factor-code-input" style="display: none;">
-						<input id="sign-in-2factor-code" />
-						<button id="sign-in-2factor-code-btn">인증확인</button>
-					</div>
-				</div>
-				<div id="sign-in-2factor-btn-list" class="btn-list">
-					<button id="sign-in-2factor-cancel">뒤로가기</button>
-					<button id="sign-in-2factor-submit" style="display: none;">확인</button>
 				</div>
 			</div>
 			<div id="sign-up-content" class="content sign" style="display: none;">
