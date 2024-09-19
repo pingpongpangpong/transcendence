@@ -3,28 +3,28 @@ import { closeBracket } from "./content/feature.js";
 import { exit } from "./object/game.js";
 import { removeValue } from "./tab.js";
 
-// signin page
-const signin = document.getElementById("signin-content");
-const signinId = document.getElementById("signin-id");
-const signinPw = document.getElementById("signin-pw");
-const signinBtn = document.getElementById("signin-btn");
-const signupBtn = document.getElementById("signup-btn");
+// sign-in page
+const signin = document.getElementById("sign-in-content");
+const signinId = document.getElementById("sign-in-id");
+const signinPw = document.getElementById("sign-in-pw");
+const signinBtn = document.getElementById("sign-in-btn");
+const signupBtn = document.getElementById("sign-up-btn");
 
 // signup page
-const signup = document.getElementById("signup-content");
-const signupId = document.getElementById("signup-id");
-const signupPw = document.getElementById("signup-pw");
-const signupCheckPw = document.getElementById("signup-check-pw");
+const signup = document.getElementById("sign-up-content");
+const signupId = document.getElementById("sign-up-id");
+const signupPw = document.getElementById("sign-up-pw");
+const signupCheckPw = document.getElementById("sign-up-check-pw");
 // email
-const signupEmail = document.getElementById("signup-email");
-const signupEmailSubmit = document.getElementById("signup-email-btn");
-const signupCodeLabel = document.getElementById("signup-code-label");
-const signupCode = document.getElementById("signup-code");
-const signupCodeInput = document.getElementById("signup-code-input");
-const signupCodeSubmit = document.getElementById("signup-code-btn");
+const signupEmail = document.getElementById("sign-up-email");
+const signupEmailSubmit = document.getElementById("sign-up-email-btn");
+const signupCodeLabel = document.getElementById("sign-up-code-label");
+const signupCode = document.getElementById("sign-up-code");
+const signupCodeInput = document.getElementById("sign-up-code-input");
+const signupCodeSubmit = document.getElementById("sign-up-code-btn");
 // other
-const signupSubmit = document.getElementById("signup-clear");
-const goBack = document.getElementById("go-back");
+const signupSubmit = document.getElementById("sign-up-submit");
+const goBack = document.getElementById("sign-up-cancel");
 
 // containers
 const signContainer = document.getElementById("sign");
@@ -64,7 +64,7 @@ signinBtn.addEventListener("click", () => {
 			if (response.status === 200) {
 				toContent();
 			} else {
-				alert(lang[langIndex].failSignin);
+				alert(lang[langIndex].failsignin);
 			}
 		});
 	}
@@ -150,7 +150,7 @@ signupSubmit.addEventListener("click", () => {
 	const idInput = signupId.value;
 	const pwInput = signupPw.value;
 	const checkPw = signupCheckPw.value;
-	const emailInput = document.getElementById("signup-email").value;
+	const emailInput = document.getElementById("sign-upemail").value;
 	if (idInput.length === 0 || idInput === "") {
 		alert(lang[langIndex].nullId);
 	} else if (!usernamePattern.test(idInput)) {

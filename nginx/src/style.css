@@ -15,24 +15,24 @@ h1 {
 	margin-bottom: 100px;
 }
 
-#signin-content {
+#sign-in-content {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 }
-#signin-input {
+#sign-in-input {
 	display: grid;
 	margin-top: 10px;
 	margin-bottom: 30px;
 }
-#signup-content {
+#sign-upcontent {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 }
-#signup-btn-list {
+#sign-upbtn-list {
 	display: flex;
 	justify-content: space-between;
 	width: 500px;

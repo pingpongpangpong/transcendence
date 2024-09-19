@@ -3,8 +3,8 @@ import { logout, toContent, toSignup, undo } from "./login.js";
 import { exit } from "./object/game.js";
 
 const sign = document.getElementById("sign");
-const signin = document.getElementById("signin-content");
-const signup = document.getElementById("signup-content");
+const signin = document.getElementById("sign-in-content");
+const signup = document.getElementById("sign-upcontent");
 const windowContainer = document.getElementById("window-content");
 const offlineContent = document.getElementById("offline");
 const tournamentContent = document.getElementById("tournament");
