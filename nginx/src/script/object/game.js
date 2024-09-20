@@ -1,12 +1,12 @@
-import * as THREE from 'three';
-import { OrbitControls } from 'three/control/OrbitControls.js';
-import { Player } from './player.js';
-import { Ball } from './ball.js';
-import { lang, langIndex } from '../lang.js';
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { Player } from "./player.js";
+import { Ball } from "./ball.js";
+import { lang, langIndex } from "../lang.js";
 
-const player1Score = document.getElementById('left-player');
-const player2Score = document.getElementById('right-player');
-const painGamePoint = document.getElementById('show-game-point');
+const player1Score = document.getElementById("left-player");
+const player2Score = document.getElementById("right-player");
+const painGamePoint = document.getElementById("show-game-point");
 let animatedId;
 export let winner;
 
@@ -19,8 +19,8 @@ export class Game {
 
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
 		this.renderer.setSize(950, 600);
-		this.renderer.domElement.id = 'game';
-		document.querySelector('#content').appendChild(this.renderer.domElement);
+		this.renderer.domElement.id = "game";
+		document.querySelector("#content").appendChild(this.renderer.domElement);
 
 		const light = new THREE.PointLight(0xFFFFFF, 3);
 		light.position.set(0, 0, 5);
@@ -51,8 +51,8 @@ export class Game {
 	}
 
 	awake(name1, name2) {
-		this.player1 = new Player(-4.8, 0xFF2135, name1, 'w', 's');
-		this.player2 = new Player(4.8, 0x1AAACF, name2, 'ArrowUp', 'ArrowDown');
+		this.player1 = new Player(-4.8, 0xFF2135, name1, "w", "s");
+		this.player2 = new Player(4.8, 0x1AAACF, name2, "ArrowUp", "ArrowDown");
 		this.ball = new Ball();
 
 		this.scene.add(this.player1.mesh);
@@ -118,12 +118,12 @@ export class Game {
 export function exit() {
 	cancelAnimationFrame(animatedId);
 
-	const gameContainer = document.querySelector('#game');
+	const gameContainer = document.querySelector("#game");
 	if (gameContainer) {
 		gameContainer.remove();
 	}
 
-	player1Score.innerHTML = '';
-	player2Score.innerHTML = '';
+	player1Score.innerHTML = "";
+	player2Score.innerHTML = "";
 	painGamePoint.innerHTML = `${lang[langIndex].gamePoint}: `;
 }
