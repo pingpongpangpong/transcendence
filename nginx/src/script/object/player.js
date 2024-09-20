@@ -3,7 +3,7 @@ import * as THREE from 'three';
 export class Player {
 	constructor(position, color, name, up, down) {
 		const geometry = new THREE.BoxGeometry(0.1, 0.8, 0.1);
-		const material = new THREE.MeshPhysicalMaterial({ color: color });
+		const material = new THREE.MeshBasicMaterial({ color: color });
 		this.mesh = new THREE.Mesh(geometry, material);
 		this.mesh.position.set(position, 0, 0);
 

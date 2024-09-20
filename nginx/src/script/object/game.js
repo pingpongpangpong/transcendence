@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { OrbitControls } from 'three/control/OrbitControls.js';
 import { Player } from './player.js';
 import { Ball } from './ball.js';
 import { lang, langIndex } from '../lang.js';
@@ -21,11 +22,32 @@ export class Game {
 		this.renderer.domElement.id = 'game';
 		document.querySelector('#content').appendChild(this.renderer.domElement);
 
-		const light = new THREE.PointLight(0xFFFFFF, 90);
+		const light = new THREE.PointLight(0xFFFFFF, 3);
 		light.position.set(0, 0, 5);
 		this.scene.add(light);
 	
 		this.gamePoint = gamePoint;
+
+		// 불룸 효과
+		this.composer = new EffectComposer(this.renderer);
+		const renderScene = new RenderPass(this.scene, this.camera);
+		this.composer.addPass(renderScene);
+
+		const bloomPass = new UnrealBloomPass(new THREE.Vector2(950, 600), 1.5, 0.4, 0.85);
+		bloomPass.threshold = 0;
+		bloomPass.strength = 2;
+		bloomPass.radius = 0;
+		this.composer.addPass(bloomPass);
+
+		this.composer = new EffectComposer(this.renderer);
+		this.composer.addPass(renderScene);
+		this.composer.addPass(bloomPass);
+
+		// 카메라 회전
+		const orbit = new OrbitControls(this.camera, this.renderer.domElement);
+		orbit.maxPolarAngle = MATH.PI * 0.5;
+		orbit.minDistance = 3;
+		orbit.maxDistance = 8;
 	}
 
 	awake(name1, name2) {
@@ -62,6 +84,7 @@ export class Game {
 					animatedId = requestAnimationFrame(animate);
 					this.renderer.render(this.scene, this.camera);
 				}
+				this.composer.render();
 			}
 			animate(0);
 		});

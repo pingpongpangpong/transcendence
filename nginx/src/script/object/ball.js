@@ -3,7 +3,7 @@ import * as THREE from 'three';
 export class Ball {
 	constructor() {
 		const geometry = new THREE.SphereGeometry(0.1, 32, 16);
-		const material = new THREE.MeshPhysicalMaterial({ color: 0xFFE400 });
+		const material = new THREE.MeshBasicMaterial({ color: 0xFFE400 });
 		this.mesh = new THREE.Mesh(geometry, material);
 		this.velocity = new THREE.Vector3(0, 0, 0);
 		this.isMoving = false;
