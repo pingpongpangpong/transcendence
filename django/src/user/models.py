@@ -14,10 +14,9 @@ class OauthToken(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class EmailVerification(models.Model):
-	user = models.OneToOneField(User, on_delete=models.CASCADE)
+	email = models.EmailField()
 	code = models.IntegerField()
 	is_verified = models.BooleanField(default=False)
-	is_used_for_signup = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	@property

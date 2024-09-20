@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 # from django.contrib.auth import authenticate
 # from django.utils import timezone
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken
 
 from .models import EmailVerification
@@ -16,15 +16,6 @@ class UserSendEmail(serializers.Serializer):  # ModelSerializer 대신 Serialize
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("이미 존재하는 Email입니다.")
         return value
-
-
-# 로그인
-class UserLoginSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        token['username'] = user.username
-        return token
 
 class UserTokenRefreshSerializer(TokenRefreshSerializer):
     refresh = None
@@ -78,9 +69,9 @@ class UserSignupSerializer(serializers.ModelSerializer):
         if ' ' in value:
             raise serializers.ValidationError("Email에는 공백을 포함할 수 없습니다.")
         try:
-            email_verification = EmailVerification.objects.get(user__email=value)
-            if email_verification.is_used_for_signup:
-                raise serializers.ValidationError("이미 사용된 가입된 이메일입니다.")
+            if User.objects.filter(email=value).exists():
+                raise serializers.ValidationError("이미 가입된 이메일입니다.")
+            email_verification = EmailVerification.objects.get(email=value)
             if not email_verification.is_verified:
                 raise serializers.ValidationError("이메일이 아직 인증되지 않았습니다.")
         except EmailVerification.DoesNotExist:
@@ -95,7 +86,6 @@ class UserSignupSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
 
-        email_verification = EmailVerification.objects.get(user__email=validated_data['email'])
-        email_verification.is_used_for_signup = True
-        email_verification.save()
+        email_verification = EmailVerification.objects.get(email=validated_data['email'])
+        email_verification.delete()
         return user
