@@ -22,6 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("JWT_SECRET")
+SERVER_HOST = os.getenv("SERVER_HOST")
 
 # OAUTH
 OAUTH_42 = {
@@ -35,6 +36,16 @@ OAUTH_42 = {
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# CSRF 
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = [
+    "https://localhost",
+    "https://127.0.0.1",
+    "https://[::1]",
+    "https://backend",
+    "https://" + SERVER_HOST,
+]
 # Application definition
 
 INSTALLED_APPS = [
