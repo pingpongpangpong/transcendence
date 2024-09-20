@@ -26,6 +26,7 @@ services:
       - ./.env
     depends_on:
       - postgresql
+      - redis
     restart: on-failure
 
   nginx:
@@ -45,3 +46,11 @@ services:
     ports:
       - 80:80/tcp
       - 443:443/tcp
+
+  redis:
+    container_name: redis
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
+    ports:
+      - "6379:6379"
