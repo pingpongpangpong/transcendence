@@ -1,5 +1,5 @@
-export const canvas = document.getElementById('bracket');
-export const ctx = canvas.getContext('2d');
+export const canvas = document.getElementById("bracket");
+export const ctx = canvas.getContext("2d");
 const dpr = window.devicePixelRatio || 1;
 const desiredWidth = 960;
 const desiredHeight = 600;
@@ -11,15 +11,15 @@ canvas.style.height = `${desiredHeight}px`;
 
 ctx.scale(dpr, dpr);
 ctx.imageSmoothingEnabled = true;
-ctx.imageSmoothingQuality = 'high';
+ctx.imageSmoothingQuality = "high";
 
 ctx.lineWidth = 2;
-ctx.strokeStyle = '#000000';
+ctx.strokeStyle = "#000000";
 
-ctx.font = '20px DungGeunMo';
-ctx.fillStyle = '#000000';
-ctx.textBaseline = 'middle';
-ctx.textAlign = 'center';
+ctx.font = "20px DungGeunMo";
+ctx.fillStyle = "#000000";
+ctx.textBaseline = "middle";
+ctx.textAlign = "center";
 
 let round;
 let height, width;
@@ -111,5 +111,5 @@ export function paintBracket(players, round) {
 			y += marginList[round] + 2 * height;
 		}
 	}
-	canvas.style.display = 'block';
+	canvas.style.display = "block";
 }

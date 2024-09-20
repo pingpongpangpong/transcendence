@@ -3,9 +3,9 @@ import { Player } from './player.js';
 import { Ball } from './ball.js';
 import { lang, langIndex } from '../lang.js';
 
-const player1Score = document.getElementById('l-player');
-const player2Score = document.getElementById('r-player');
-const painGamePoint = document.getElementById('show-gp');
+const player1Score = document.getElementById('left-player');
+const player2Score = document.getElementById('right-player');
+const painGamePoint = document.getElementById('show-game-point');
 let animatedId;
 export let winner;
 
