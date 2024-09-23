@@ -41,6 +41,11 @@ const signin42Container = document.getElementById("42-sign-in-input");
 const usernamePattern = /^\S+$/;
 const passwordPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[\W_]).{8,20}$/;
 
+function getCookie(name) {
+    let value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return value? value[2] : null;
+}
+
 function removeSignin() {
 	signinId.value = "";
 	signinPassword.value = "";
@@ -59,6 +64,7 @@ function sendCode(code) {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
+			"X-CSRFToken": getCookie('csrftoken')
 		},
 		body: JSON.stringify(body),
 	}).then((response) => {

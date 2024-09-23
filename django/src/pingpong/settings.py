@@ -36,8 +36,7 @@ OAUTH_42 = {
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# CSRF 
-CSRF_COOKIE_HTTPONLY = True
+# CSRF
 CSRF_COOKIE_SECURE = True
 CSRF_TRUSTED_ORIGINS = [
     "https://localhost",
