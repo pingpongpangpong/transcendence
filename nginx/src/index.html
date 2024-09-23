@@ -25,38 +25,44 @@
 		</div>
 		<div id="sign" style="display: none;">
 			<div id="sign-in-content" class="content sign">
-				<div id="sign-in-input">
-					<label id="sign-in-id-label" for="sign-in-id">아이디</label>
+				<div id="sign-in-input" class="sign-in-input">
+					<label id="sign-in-id-label" class="id" for="sign-in-id">아이디</label>
 					<input id="sign-in-id" type="text"/>
-					<label id="sign-in-password-label" for="sign-in-password">비밀번호</label>
+					<label id="sign-in-password-label" class="password" for="sign-in-password">비밀번호</label>
 					<input id="sign-in-password" type="password"/>
-					<button id="sign-in-2factor">인증하기</button>
-					<label id="sign-in-code-label" for="sign-in-code" style="display: none; margin-top: 10px">인증코드</label>
+					<button id="sign-in-2factor" class="code">인증하기</button>
+					<label id="sign-in-code-label" class="code-label" for="sign-in-code" style="display: none; margin-top: 10px">인증코드</label>
 					<input id="sign-in-code" type="text" style="display: none;"/>
-					<button id="sign-in-btn" style="display: none;">로그인</button>
+					<button id="sign-in-submit" class="submit" style="display: none;">확인</button>
+				</div>
+				<div id="42-sign-in-input" class="sign-in-input"style="display: none;">
+					<label class="code-label" for="42-sign-in-code">인증코드</label>
+					<input id="42-sign-in-code" type="text" />
+					<button id="42-sign-in-submit" class="code" style="margin-top: 10px;">인증하기</button>
 				</div>
 				<div id="sign-btns">
+					<button id="sign-in-btn">일반 로그인</button>
 					<button id="sign-in-42-btn">42로 로그인</button>
 					<button id="sign-up-btn">회원가입</button>
 				</div>
 			</div>
 			<div id="sign-up-content" class="content sign" style="display: none;">
 				<div id="sign-up-input-list" style="display: grid;">
-					<label id="sign-up-id-label" for="sign-up-id">아이디</label>
+					<label id="sign-up-id-label" class="id" for="sign-up-id">아이디</label>
 					<input id="sign-up-id" type="text"/>
-					<label id="sign-up-password-label" for="sign-up-password">비밀번호</label>
+					<label id="sign-up-password-label" class="password" for="sign-up-password">비밀번호</label>
 					<input id="sign-up-password" type="password" />
 					<label id="sign-up-check-password-label" for="sign-up-check-password">비밀번호 확인</label>
 					<input id="sign-up-check-password" type="password" />
 					<label id="sign-up-email-label" for="sign-up-email">이메일</label>
 					<div>
 						<input id="sign-up-email" type="email" />
-						<button id="sign-up-email-btn">인증하기</button>
+						<button id="sign-up-email-btn" class="code">인증하기</button>
 					</div>
 					<div id="email-info">
 						메일주소가 정확한지 확인해주세요.<br /><br />
 					</div>
-					<label id="sign-up-code-label" for="sign-up-code" style="display: none;">인증코드</label>
+					<label id="sign-up-code-label" class="code-label" for="sign-up-code" style="display: none;">인증코드</label>
 					<div id="sign-up-code" style="display: none;">
 						<input id="sign-up-code-input" type="text"/>
 						<button id="sign-up-code-btn">인증확인</button>
@@ -64,7 +70,7 @@
 				</div>
 				<div id="sign-up-btn-list" class="btn-list">
 					<button id="sign-up-cancel">뒤로가기</button>
-					<button id="sign-up-submit" style="display: none;">확인</button>
+					<button id="sign-up-submit" class="submit" style="display: none;">확인</button>
 				</div>
 			</div>
 		</div>
@@ -94,17 +100,17 @@
 						<input id="name-input2" type="text" required />
 					</p>
 					<p>
-						<label id="offline-game-point-label" for="offline-game-point">게임 포인트</label>
+						<label id="offline-game-point-label" class="game-point-text" for="offline-game-point">게임 포인트</label>
 						<input id="offline-game-point" class="game-point" value="10" type="number" min="2" max="20" required />
 					</p>
 					<section class="field-row">
-						<button id="offline-submit">확인</button>
+						<button id="offline-submit" class="submit">확인</button>
 					</section>
 				</div>
 				<div id="tournament" style="display: none;">
 						<p id="tournament-info">토너먼트 진행을 위해 게임 포인트와 인원 수를 결정하고, 플레이어의 이름을 입력합니다. 게임 포인트는 2점 이상 20점 이하만 가능하며, 플레이어의 이름은 4글자 이상, 20글자 이하만 가능합니다.</p>
 						<p>
-							<label id="tournament-game-point-label" for="tournament-game-point">게임 포인트</label>
+							<label id="tournament-game-point-label" class="game-point-text" for="tournament-game-point">게임 포인트</label>
 							<input id="tournament-game-point" class="game-point" value="10" type="number" min="2" max="20" required />
 						</p>
 						<p>
@@ -121,7 +127,7 @@
 				</div>
 				<div id="online" style="display: none;">
 					<div id="online-top">
-						<input id="search-input" type="text" placeholder="search" />
+						<input id="search-input" type="text" />
 						<button id="search-btn">검색</button>
 						<button id="refresh-btn">새로고침</button>
 						<button id="make-room-btn">방 만들기</button>
@@ -138,16 +144,16 @@
 								<input id="online-room-name" type="text" required />
 							</div>
 							<div class="field-row-stacked">
-								<label id="online-game-point-label" for="online-game-point">게임 포인트</label>
+								<label id="online-game-point-label"class="game-point-text" for="online-game-point">게임 포인트</label>
 								<input id="online-game-point" class="game-point" value="10" type="number" min="2" max="20" required />
 							</div>
 							<div class="field-row-stacked">
-								<label id="online-password-label" for="online-password">비밀번호</label>
+								<label id="online-password-label" class="password" for="online-password">비밀번호</label>
 								<input id="online-password" type="password" />
 							</div>
 						</p>
 						<section class="field-row">
-							<button id="online-room-submit">확인</button>
+							<button id="online-room-submit" class="submit">확인</button>
 							<button id="online-room-cancel">취소</button>
 						</section>
 				</div>
