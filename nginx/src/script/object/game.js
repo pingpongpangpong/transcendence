@@ -1,5 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { Player } from "./player.js";
 import { Ball } from "./ball.js";
 import { lang, langIndex } from "../lang.js";
@@ -39,13 +42,9 @@ export class Game {
 		bloomPass.radius = 0;
 		this.composer.addPass(bloomPass);
 
-		this.composer = new EffectComposer(this.renderer);
-		this.composer.addPass(renderScene);
-		this.composer.addPass(bloomPass);
-
 		// 카메라 회전
 		const orbit = new OrbitControls(this.camera, this.renderer.domElement);
-		orbit.maxPolarAngle = MATH.PI * 0.5;
+		orbit.maxPolarAngle = Math.PI * 0.5;
 		orbit.minDistance = 3;
 		orbit.maxDistance = 8;
 	}
