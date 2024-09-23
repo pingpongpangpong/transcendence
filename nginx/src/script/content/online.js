@@ -9,6 +9,9 @@ const roomListContainer = document.getElementById("room-list");
 
 // room list
 function showRoomList() {
+	if (onlineContainer.style.display === "none") {
+		return;
+	}
 	while (roomListContainer.firstChild) {
 		roomListContainer.removeChild(roomListContainer.firstChild);
 	}

@@ -7,7 +7,7 @@ import { removeValue } from "./tab.js";
 const signin = document.getElementById("sign-in-content");
 const signinId = document.getElementById("sign-in-id");
 const signinPassword = document.getElementById("sign-in-password");
-const signinBtn = document.getElementById("sign-in-btn");
+const signinBtn = document.getElementById("sign-in-submit");
 const signupBtn = document.getElementById("sign-up-btn");
 // 2-factors
 const signin2factor = document.getElementById("sign-in-2factor");
@@ -35,6 +35,8 @@ const signContainer = document.getElementById("sign");
 const windowContainer = document.getElementById("window-content");
 const logoutBtn = document.getElementById("logout-btn");
 const offlineContainer = document.getElementById("offline");
+const signinContainer = document.getElementById("sign-in-input");
+const signin42Container = document.getElementById("42-sign-in-input");
 
 const usernamePattern = /^\S+$/;
 const passwordPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[\W_]).{8,20}$/;
@@ -50,7 +52,13 @@ window.onpopstate = function () {
 	history.go(1);
 };
 
+
 // Sign in
+document.getElementById("sign-in-btn").addEventListener("click", () => {
+	signinContainer.style.display = "block";
+	signin42Container.style.display = "none";
+});
+
 signin2factor.addEventListener("click", () => {
 	const idInput = signinId.value;
 	const passwordInput = signinPassword.value;
@@ -284,3 +292,27 @@ export function toContent() {
 	logoutBtn.style.display = "block";
 	sessionStorage.setItem("status", "offline");
 }
+
+// 42 oauth
+document.getElementById("sign-in-42-btn").addEventListener("click", () => {
+	sessionStorage.setItem("auth", "request");
+});
+
+function isSuccessOauth() {
+	const signinStatus = sessionStorage.getItem("auth");
+	if (signinStatus === null) {
+		signinContainer.style.display = "block";
+		signin42Container.style.display = "none";
+	}
+	const params = new URLSearchParams(window.location.search);
+	const authStatus = params.get("Oauth");
+	if (authStatus === "success") {
+		signinContainer.style.display = "none";
+		signin42Container.style.display = "block";
+	} else {
+		signinContainer.style.display = "block";
+		signin42Container.style.display = "none";
+	}
+}
+
+window.onload = isSuccessOauth();

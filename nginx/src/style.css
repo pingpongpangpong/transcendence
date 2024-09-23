@@ -15,11 +15,6 @@ h1 {
 	margin-bottom: 100px;
 }
 
-#sign-in-input {
-	display: grid;
-	margin-top: 10px;
-	margin-bottom: 30px;
-}
 #offline-tab {
 	border: 0px;
 }
@@ -44,6 +39,11 @@ h1 {
 	height: 30px;
 }
 
+.sign-in-input {
+	display: grid;
+	margin-top: 10px;
+	margin-bottom: 30px;
+}
 .content {
 	width: 990px;
 	height: 640px;
