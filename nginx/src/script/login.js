@@ -70,6 +70,9 @@ function sendCode(code) {
 	}).then((response) => {
 		if (response.status === 200) {
 			sessionStorage.clear();
+			signinContainer.style.display = "grid";
+			signin42Container.style.display = "none";
+			window.history.replaceState({}, document.title, "/");
 			toContent();
 		} else {
 			alert(lang[langIndex].failsignin);
@@ -80,7 +83,7 @@ function sendCode(code) {
 function isSuccessOauth() {
 	const signinStatus = sessionStorage.getItem("auth");
 	if (signinStatus === null) {
-		signinContainer.style.display = "block";
+		signinContainer.style.display = "grid";
 		signin42Container.style.display = "none";
 		return;
 	}
@@ -88,9 +91,9 @@ function isSuccessOauth() {
 	const authStatus = params.get("Oauth");
 	if (authStatus === "Success") {
 		signinContainer.style.display = "none";
-		signin42Container.style.display = "block";
+		signin42Container.style.display = "grid";
 	} else {
-		signinContainer.style.display = "block";
+		signinContainer.style.display = "grid";
 		signin42Container.style.display = "none";
 	}
 }
@@ -103,7 +106,7 @@ window.onpopstate = function () {
 
 // Sign in
 document.getElementById("sign-in-btn").addEventListener("click", () => {
-	signinContainer.style.display = "block";
+	signinContainer.style.display = "grid";
 	signin42Container.style.display = "none";
 });
 
