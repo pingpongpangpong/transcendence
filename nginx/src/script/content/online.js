@@ -15,8 +15,6 @@ function showRoomList() {
 	fetch("/list-room/").then((response) => {
 		if (response.status === 200) {
 			return response.json();
-		} else {
-			alert("방을 불러오는데 실패 했습니다.");
 		}
 	}).then((json) => {
 		const roomList = json.roomlist;
