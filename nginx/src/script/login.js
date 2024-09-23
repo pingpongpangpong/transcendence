@@ -69,6 +69,7 @@ function sendCode(code) {
 		body: JSON.stringify(body),
 	}).then((response) => {
 		if (response.status === 200) {
+			sessionStorage.clear();
 			toContent();
 		} else {
 			alert(lang[langIndex].failsignin);
@@ -331,8 +332,3 @@ document.getElementById("42-sign-in-submit").addEventListener("click", () => {
 });
 
 window.onload = isSuccessOauth();
-// window.addEventListener("beforeunload", () => {
-// 	sessionStorage.clear();
-// 	signinContainer.style.display = "block";
-// 	signin42Container.style.display = "none";
-// })
