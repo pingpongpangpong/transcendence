@@ -49,16 +49,19 @@ function makeRoom(room) {
 	password.id = `room-${room.roomname}-password`;
 	password.className = "room-password";
 
+	let label = null;
+	let input = null;
+
 	if (room.is_public === 0) {
 		const inputId = `room-${room.roomname}-password-input`;
 
-		const label = document.createElement("label");
+		label = document.createElement("label");
 		label.id = `room-${room.roomname}-password-label`;
 		label.class = "password";
 		label.setAttribute("for", inputId);
 		label.innerHTML = lang[langIndex].password;
 
-		const input = document.createElement("input");
+		input = document.createElement("input");
 		input.id = inputId;
 		input.className = "password-input";
 		input.setAttribute("type", "password");
@@ -76,6 +79,28 @@ function makeRoom(room) {
 	container.appendChild(password);
 	container.appendChild(btn);
 	roomListContainer.appendChild(container);
+
+	btn.addEventListener("click", () => {
+		const uri = "/join-room/";
+		const password = (input === null ? null : input.value);
+		const body = {
+			"roomname": room.roomname,
+			"password": password
+		}
+		fetch(uri, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(body)
+		}).then((response) => {
+			if (response.status === 200) {
+				console.log("join");
+			} else {
+				alert(response.body.json());
+			}
+		});
+	});
 }
 
 showRoomList();
