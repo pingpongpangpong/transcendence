@@ -84,7 +84,7 @@ function makeRoom(room) {
 		const uri = "/join-room/";
 		const password = (input === null ? null : input.value);
 		const body = {
-			"roomname": room.roomname,
+			"roomid": room.roomid,
 			"password": password
 		}
 		fetch(uri, {
