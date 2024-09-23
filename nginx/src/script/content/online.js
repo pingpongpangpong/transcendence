@@ -9,7 +9,10 @@ const roomListContainer = document.getElementById("room-list");
 
 // room list
 function showRoomList() {
-	fetch("").then((response) => {
+	while (roomListContainer.firstChild) {
+		roomListContainer.removeChild(roomListContainer.firstChild);
+	}
+	fetch("/list-room/").then((response) => {
 		if (response.status === 200) {
 			return response.json();
 		} else {
