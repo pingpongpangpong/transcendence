@@ -39,6 +39,10 @@ server {
 	location /user {
 		proxy_pass https://backend;
 	}
+	
+	location /game {
+		proxy_pass https://backend;
+	}
 
 	location / {
 		try_files \$uri \$uri/ =404;
