@@ -47,6 +47,47 @@ function removeSignin() {
 	signin.style.display = "none";
 }
 
+function sendCode(code) {
+	if (code === "" || code.length === 0) {
+		alert(lang[langIndex].nullCode);
+		return;
+	}
+	const body = {
+		"code": code
+	};
+	fetch("/user/login/", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(body),
+	}).then((response) => {
+		if (response.status === 200) {
+			toContent();
+		} else {
+			alert(lang[langIndex].failsignin);
+		}
+	});
+}
+
+function isSuccessOauth() {
+	const signinStatus = sessionStorage.getItem("auth");
+	if (signinStatus === null) {
+		signinContainer.style.display = "block";
+		signin42Container.style.display = "none";
+		return;
+	}
+	const params = new URLSearchParams(window.location.search);
+	const authStatus = params.get("Oauth");
+	if (authStatus === "Success") {
+		signinContainer.style.display = "none";
+		signin42Container.style.display = "block";
+	} else {
+		signinContainer.style.display = "block";
+		signin42Container.style.display = "none";
+	}
+}
+
 history.pushState(null, null, location.href);
 window.onpopstate = function () {
 	history.go(1);
@@ -99,28 +140,8 @@ signinBtn.addEventListener("click", () => {
 		alert(lang[langIndex].nullId);
 	} else if (passwordInput.length === 0 || passwordInput === "") {
 		alert(lang[langIndex].nullPassword);
-	} else if (code.length === 0 || code === "") {
-		alert(lang[langIndex].nullCode);
 	} else {
-		const body = {
-			"username": idInput,
-			"password": passwordInput,
-			"code": code
-		};
-		const uri = "/user/login/";
-		fetch(uri, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(body),
-		}).then((response) => {
-			if (response.status === 200) {
-				toContent();
-			} else {
-				alert(lang[langIndex].failsignin);
-			}
-		});
+		sendCode(code);
 	}
 });
 
@@ -300,44 +321,12 @@ document.getElementById("sign-in-42-btn").addEventListener("click", () => {
 
 document.getElementById("42-sign-in-submit").addEventListener("click", () => {
 	const code = document.getElementById("42-sign-in-code").value;
-	if (code.length === 0 || code === "") {
-		alert(lang[langIndex].nullCode);
-	} else {
-		const uri = "/user/login";
-		const body = {
-			code: code,
-		};
-		fetch(uri, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(body),
-		}).then((response) => {
-			if (response.status === 200) {
-				toContent();
-			} else {
-				alert(lang[langIndex].failsignin);
-			}
-		});
-	}
+	sendCode(code);
 });
 
-function isSuccessOauth() {
-	const signinStatus = sessionStorage.getItem("auth");
-	if (signinStatus === null) {
-		signinContainer.style.display = "block";
-		signin42Container.style.display = "none";
-	}
-	const params = new URLSearchParams(window.location.search);
-	const authStatus = params.get("Oauth");
-	if (authStatus === "success") {
-		signinContainer.style.display = "none";
-		signin42Container.style.display = "block";
-	} else {
-		signinContainer.style.display = "block";
-		signin42Container.style.display = "none";
-	}
-}
-
 window.onload = isSuccessOauth();
+// window.addEventListener("beforeunload", () => {
+// 	sessionStorage.clear();
+// 	signinContainer.style.display = "block";
+// 	signin42Container.style.display = "none";
+// })
