@@ -71,7 +71,7 @@ signin2factor.addEventListener("click", () => {
 			"username": idInput,
 			"password": passwordInput
 		};
-		const uri = "/user/login-2fa";
+		const uri = "/user/pre-login/";
 		fetch(uri, {
 			method: "POST",
 			headers: {
@@ -296,6 +296,31 @@ export function toContent() {
 // 42 oauth
 document.getElementById("sign-in-42-btn").addEventListener("click", () => {
 	sessionStorage.setItem("auth", "request");
+});
+
+document.getElementById("42-sign-in-submit").addEventListener("click", () => {
+	const code = document.getElementById("42-sign-in-code").value;
+	if (code.length === 0 || code === "") {
+		alert(lang[langIndex].nullCode);
+	} else {
+		const uri = "/user/login";
+		const body = {
+			code: code,
+		};
+		fetch(uri, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(body),
+		}).then((response) => {
+			if (response.status === 200) {
+				toContent();
+			} else {
+				alert(lang[langIndex].failsignin);
+			}
+		});
+	}
 });
 
 function isSuccessOauth() {
