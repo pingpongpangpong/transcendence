@@ -122,7 +122,7 @@ document.getElementById("online-room-cancel").addEventListener("click", () => {
 	closeRoomSetting();
 });
 
-// start online game
+// make room
 document.getElementById("online-room-submit").addEventListener("click", () => {
 	checkUser();
 	const roomName = document.getElementById("online-room-name").value;
@@ -150,7 +150,26 @@ document.getElementById("online-room-submit").addEventListener("click", () => {
 	roomSettingContainer.style.display = "none";
 	document.getElementById("online").style.display = "none";
 	sessionStorage.setItem("game", "online");
-	online(gamePoint);
+
+	const uri = "/create-room/";
+	const body = {
+		"roomname": roomName,
+		"gamepoint": gamePoint,
+		"password": password
+	};
+	fetch(uri, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(body)
+	}).then((response) => {
+		if (response.status === 200) {
+			online(gamePoint);
+		} else {
+			alert(response.body.json());
+		}
+	});
 });
 
 export function closeRoomSetting() {
