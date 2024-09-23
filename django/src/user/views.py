@@ -210,7 +210,7 @@ class UserOauthView(APIView):
         
     def session_login(self, request, user):
         response = Response(status=status.HTTP_301_MOVED_PERMANENTLY)
-        response['location'] = "/"
+        response['location'] = "/?Oauth=Success"
         login(request, user)
         session = Session.objects.get(pk = request.session.session_key)
         if not LoginSession.objects.filter(session=session).exists():
