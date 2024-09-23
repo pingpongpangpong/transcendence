@@ -56,6 +56,11 @@ function makeRoom(room) {
 
 showRoomList();
 
+// refresh
+document.getElementById("refresh-btn").addEventListener("click", () => {
+	showRoomList();
+});
+
 // open room setting
 document.getElementById("make-room-btn").addEventListener("click", () => {
 	onlineContainer.style.display = "none";
