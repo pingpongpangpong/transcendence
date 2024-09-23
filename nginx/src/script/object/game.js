@@ -1,11 +1,12 @@
-import * as THREE from 'three';
-import { Player } from './player.js';
-import { Ball } from './ball.js';
-import { lang, langIndex } from '../lang.js';
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { Player } from "./player.js";
+import { Ball } from "./ball.js";
+import { lang, langIndex } from "../lang.js";
 
-const player1Score = document.getElementById('left-player');
-const player2Score = document.getElementById('right-player');
-const painGamePoint = document.getElementById('show-game-point');
+const player1Score = document.getElementById("left-player");
+const player2Score = document.getElementById("right-player");
+const painGamePoint = document.getElementById("show-game-point");
 let animatedId;
 export let winner;
 
@@ -18,19 +19,40 @@ export class Game {
 
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
 		this.renderer.setSize(950, 600);
-		this.renderer.domElement.id = 'game';
-		document.querySelector('#content').appendChild(this.renderer.domElement);
+		this.renderer.domElement.id = "game";
+		document.querySelector("#content").appendChild(this.renderer.domElement);
 
-		const light = new THREE.PointLight(0xFFFFFF, 90);
+		const light = new THREE.PointLight(0xFFFFFF, 3);
 		light.position.set(0, 0, 5);
 		this.scene.add(light);
 	
 		this.gamePoint = gamePoint;
+
+		// 불룸 효과
+		this.composer = new EffectComposer(this.renderer);
+		const renderScene = new RenderPass(this.scene, this.camera);
+		this.composer.addPass(renderScene);
+
+		const bloomPass = new UnrealBloomPass(new THREE.Vector2(950, 600), 1.5, 0.4, 0.85);
+		bloomPass.threshold = 0;
+		bloomPass.strength = 2;
+		bloomPass.radius = 0;
+		this.composer.addPass(bloomPass);
+
+		this.composer = new EffectComposer(this.renderer);
+		this.composer.addPass(renderScene);
+		this.composer.addPass(bloomPass);
+
+		// 카메라 회전
+		const orbit = new OrbitControls(this.camera, this.renderer.domElement);
+		orbit.maxPolarAngle = MATH.PI * 0.5;
+		orbit.minDistance = 3;
+		orbit.maxDistance = 8;
 	}
 
 	awake(name1, name2) {
-		this.player1 = new Player(-4.8, 0xFF2135, name1, 'w', 's');
-		this.player2 = new Player(4.8, 0x1AAACF, name2, 'ArrowUp', 'ArrowDown');
+		this.player1 = new Player(-4.8, 0xFF2135, name1, "w", "s");
+		this.player2 = new Player(4.8, 0x1AAACF, name2, "ArrowUp", "ArrowDown");
 		this.ball = new Ball();
 
 		this.scene.add(this.player1.mesh);
@@ -62,6 +84,7 @@ export class Game {
 					animatedId = requestAnimationFrame(animate);
 					this.renderer.render(this.scene, this.camera);
 				}
+				this.composer.render();
 			}
 			animate(0);
 		});
@@ -95,12 +118,12 @@ export class Game {
 export function exit() {
 	cancelAnimationFrame(animatedId);
 
-	const gameContainer = document.querySelector('#game');
+	const gameContainer = document.querySelector("#game");
 	if (gameContainer) {
 		gameContainer.remove();
 	}
 
-	player1Score.innerHTML = '';
-	player2Score.innerHTML = '';
+	player1Score.innerHTML = "";
+	player2Score.innerHTML = "";
 	painGamePoint.innerHTML = `${lang[langIndex].gamePoint}: `;
 }

@@ -1,9 +1,63 @@
+import { lang, langIndex } from "../lang.js";
 import { checkUser } from "../tab.js";
 import { online } from "./feature.js";
 import { getGamePoint } from "./feature.js";
 
 const onlineContainer = document.getElementById("online");
 const roomSettingContainer = document.getElementById("room-setting");
+const roomListContainer = document.getElementById("room-list");
+
+// room list
+function showRoomList() {
+	while (roomListContainer.firstChild) {
+		roomListContainer.removeChild(roomListContainer.firstChild);
+	}
+	fetch("/list-room/").then((response) => {
+		if (response.status === 200) {
+			return response.json();
+		}
+	}).then((json) => {
+		const roomList = json.roomlist;
+		roomList.foreach((room) => {
+			makeRoom(room);
+		});
+	});
+}
+
+function makeRoom(room) {
+	const container = document.createElement("div");
+	container.id = `room-${room.roomname}`;
+	container.className = "window room";
+
+	const info = document.createElement("div");
+	info.id = `room-${room.roomname}-info`;
+	info.className = "window room-info";
+
+	const name = document.createElement("h4");
+	name.textContent = `${lang[langIndex].roomName}: ${room.roomname}`;
+	
+	const player = document.createElement("h6");
+	player.textContent = `${lang[langIndex].roomHost}: ${room.player1}`;
+
+	info.appendChild(name);
+	info.appendChild(player);
+
+	const btn = document.createElement("button");
+	btn.id = `room-${room.roomname}-btn`;
+	btn.className = "room-btn";
+	btn.textContent = lang[langIndex].enter;
+
+	container.appendChild(info);
+	container.appendChild(btn);
+	roomListContainer.appendChild(container);
+}
+
+showRoomList();
+
+// refresh
+document.getElementById("refresh-btn").addEventListener("click", () => {
+	showRoomList();
+});
 
 // open room setting
 document.getElementById("make-room-btn").addEventListener("click", () => {
