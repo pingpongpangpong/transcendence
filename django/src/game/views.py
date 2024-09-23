@@ -20,7 +20,7 @@ def createRoom(request):
                                 'roomname': data_json['roomname']})
         except KeyError:
             return HttpResponse("key error", status=404)
-    
+
 def listRoom(request):
     if request.method == 'GET':
         try:
@@ -28,7 +28,6 @@ def listRoom(request):
             return JsonResponse({"roomlist": room_list})
         except KeyError:
             return HttpResponse("key error", status=400)
-    
 
 # def joinRoom(request):
 #     if request.method == 'POST':
