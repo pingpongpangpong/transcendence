@@ -41,16 +41,39 @@ function makeRoom(room) {
 	
 	const player = document.createElement("h6");
 	player.textContent = `${lang[langIndex].roomHost}: ${room.player1}`;
-
+	
 	info.appendChild(name);
 	info.appendChild(player);
+	
+	const password = document.createElement("div");
+	password.id = `room-${room.roomname}-password`;
+	password.className = "room-password";
 
+	if (room.is_public === 0) {
+		const inputId = `room-${room.roomname}-password-input`;
+
+		const label = document.createElement("label");
+		label.id = `room-${room.roomname}-password-label`;
+		label.class = "password";
+		label.setAttribute("for", inputId);
+		label.innerHTML = lang[langIndex].password;
+
+		const input = document.createElement("input");
+		input.id = inputId;
+		input.className = "password-input";
+		input.setAttribute("type", "password");
+
+		password.appendChild(label);
+		password.appendChild(input);
+	}
+	
 	const btn = document.createElement("button");
 	btn.id = `room-${room.roomname}-btn`;
 	btn.className = "room-btn";
 	btn.textContent = lang[langIndex].enter;
 
 	container.appendChild(info);
+	container.appendChild(password);
 	container.appendChild(btn);
 	roomListContainer.appendChild(container);
 }

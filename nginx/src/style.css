@@ -11,8 +11,8 @@ select {
 	padding-top: 0px;
 	padding-bottom: 0px;
 }
-h1 {
-	margin-bottom: 100px;
+h4, h6 {
+	margin: 0px;
 }
 
 #offline-tab {
@@ -76,6 +76,14 @@ h1 {
 	align-items: center;
 	height: 100%;
 	flex-grow: 1;
+}
+.room-password {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	width: 130px;
 }
 .room-btn {
 	height: 100%;
