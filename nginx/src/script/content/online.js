@@ -15,7 +15,7 @@ function showRoomList() {
 	while (roomListContainer.firstChild) {
 		roomListContainer.removeChild(roomListContainer.firstChild);
 	}
-	fetch("/list-room/").then((response) => {
+	fetch("/game/list-room/").then((response) => {
 		if (response.status === 200) {
 			return response.json();
 		}
@@ -81,7 +81,7 @@ function makeRoom(room) {
 	roomListContainer.appendChild(container);
 
 	btn.addEventListener("click", () => {
-		const uri = "/join-room/";
+		const uri = "/game/join-room/";
 		const password = (input === null ? null : input.value);
 		const body = {
 			"roomid": room.roomid,
@@ -151,7 +151,7 @@ document.getElementById("online-room-submit").addEventListener("click", () => {
 	document.getElementById("online").style.display = "none";
 	sessionStorage.setItem("game", "online");
 
-	const uri = "/create-room/";
+	const uri = "/game/create-room/";
 	const body = {
 		"roomname": roomName,
 		"gamepoint": gamePoint,
