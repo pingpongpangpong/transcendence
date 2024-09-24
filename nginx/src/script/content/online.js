@@ -93,7 +93,7 @@ document.getElementById("search-btn").addEventListener("click", () => {
 	if (str.length === 0 || str === "") {
 		return;
 	}
-	const uri = `/game/search-room/?roomname=${encodeURIComponent(str)}/`;
+	const uri = `/game/search-room/?roomname=${encodeURIComponent(str)}`;
 	fetch(uri).then((response) => {
 		if (response.status === 200) {
 			return response.json();
