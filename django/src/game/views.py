@@ -2,7 +2,7 @@ import json
 import requests
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt # 지워야함
-from .room import save_room, get_roomlist, join_room
+from .room import save_room, get_roomlist, join_room, search_room
 
 @csrf_exempt # 지워야함
 def createRoom(request):
@@ -13,7 +13,7 @@ def createRoom(request):
             data_json = json.loads(request.body)
             roomname = data_json.get('roomname')
             password = data_json.get('password')
-            goal_point = int(data_json.get('goal_point', 10))
+            goal_point = int(data_json.get('goalpoint', 10))
             player1 = request.user.username
             save_room(roomname, password, goal_point, player1)
             return HttpResponse("Create", status=200)
@@ -47,20 +47,14 @@ def joinRoom(request):
         except KeyError:
             return HttpResponse("key error", status=400)
 
-# def searchRoom(request):
-#     if request.method == 'POST':
-#         try:
-#             data_json = json.loads(request.body)
-#             roomList_json = []
-#             roomList = Room.objects.filter(room_name=data_json['roomName'], status='ready')
-#             for room in roomList:
-#                 roomList_json.append({'name': room.room_name,
-#                                       'password': room.password != ""})
-#             return JsonResponse({'total_page': 1,
-#                                  'cur_page': 1,
-#                                  'roomList': roomList_json})
-#         except KeyError:
-#             return HttpResponse("key error", status=400)
+def searchRoom(request):
+    if request.method == 'GET':
+        try:
+            roomname = request.GET.get('roomname')  # roomname 파라미터 가져오기
+            roomlist = search_room(roomname)
+            return JsonResponse({"roomlist": roomlist})
+        except KeyError:
+            return HttpResponse("key error", status=400)
 
 # def finishRoom(request):
 #     if request.method == 'POST':

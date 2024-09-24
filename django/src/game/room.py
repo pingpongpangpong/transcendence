@@ -75,3 +75,13 @@ def join_room(roomid, password, player2) -> bool:
 		return True  # 성공적으로 참가
 	else:
 		return False  # 이미 다른 플레이어가 있어서 참가할 수 없음
+
+def search_room(roomname:str):
+	keys = r.keys('room:*')
+	matching_rooms = []
+
+	for key in keys:
+		room_data = json.loads(r.get(key))
+		if roomname in room_data['roomname']:
+			matching_rooms.append(room_data)
+	return matching_rooms
