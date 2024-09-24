@@ -58,10 +58,12 @@ export async function tournament(gamePoint, nameList) {
 }
 
 export function online(gamePoint, room) {
+	sessionStorage.setItem("status", "inRoom");
 	console.log(gamePoint, room);
 }
 
 export function join() {
+	sessionStorage.setItem("status", "inRoom");
 	console.log("join");
 }
 

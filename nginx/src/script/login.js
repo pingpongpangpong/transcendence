@@ -291,6 +291,7 @@ export function logout() {
 	signinCode.style.display = "none";
 	signinBtn.style.display = "none";
 	sessionStorage.setItem("status", "signin");
+	sessionStorage.removeItem("game");
 }
 
 export function toSignup() {
@@ -299,6 +300,7 @@ export function toSignup() {
 	signin.style.display = "none";
 	signup.style.display = "flex";
 	sessionStorage.setItem("status", "signup");
+	sessionStorage.removeItem("game");
 }
 
 export function cancelSignup() {

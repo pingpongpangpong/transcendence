@@ -7,26 +7,6 @@ const onlineContainer = document.getElementById("online");
 const roomSettingContainer = document.getElementById("room-setting");
 const roomListContainer = document.getElementById("room-list");
 
-// room list
-function showRoomList() {
-	if (onlineContainer.style.display === "none") {
-		return;
-	}
-	while (roomListContainer.firstChild) {
-		roomListContainer.removeChild(roomListContainer.firstChild);
-	}
-	fetch("/game/list-room/").then((response) => {
-		if (response.status === 200) {
-			return response.json();
-		}
-	}).then((json) => {
-		const roomList = json.roomlist;
-		for (let i = 0; i < roomList.length; i++) {
-			makeRoom(roomList[i]);
-		}
-	});
-}
-
 function makeRoom(room) {
 	const container = document.createElement("div");
 	container.id = `room-${room.roomname}`;
@@ -37,10 +17,10 @@ function makeRoom(room) {
 	info.className = "window room-info";
 
 	const name = document.createElement("h4");
-	name.textContent = `${lang[langIndex].roomName}: ${room.roomname}`;
+	name.textContent = `${room.roomname}`;
 	
 	const player = document.createElement("h6");
-	player.textContent = `${lang[langIndex].roomHost}: ${room.player1}`;
+	player.textContent = `${room.player1}`;
 	
 	info.appendChild(name);
 	info.appendChild(player);
@@ -82,10 +62,10 @@ function makeRoom(room) {
 
 	btn.addEventListener("click", () => {
 		const uri = "/game/join-room/";
-		const password = (input === null ? null : input.value);
+		const password = (input ? input.value : "");
 		const body = {
 			"roomid": room.roomid,
-			"password": password
+			"password": password,
 		}
 		fetch(uri, {
 			method: "POST",
@@ -106,6 +86,25 @@ function makeRoom(room) {
 }
 
 showRoomList();
+
+// search
+document.getElementById("search-btn").addEventListener("click", () => {
+	const str = document.getElementById("search-input").value;
+	if (str.length === 0 || str === "") {
+		return;
+	}
+	const uri = `/game/search-room/?roomname=${encodeURIComponent(str)}/`;
+	fetch(uri).then((response) => {
+		if (response.status === 200) {
+			return response.json();
+		}
+	}).then((json) => {
+		roomList = json.roomlist;
+		for (let i = 0; i < roomList.length; i++) {
+			makeRoom(roomList[i]);
+		}
+	});
+});
 
 // refresh
 document.getElementById("refresh-btn").addEventListener("click", () => {
@@ -165,7 +164,7 @@ document.getElementById("online-room-submit").addEventListener("click", () => {
 		body: JSON.stringify(body)
 	}).then((response) => {
 		if (response.status === 200) {
-			online(gamePoint);
+			online(gamePoint, password);
 		} else {
 			alert(lang[langIndex].failMakeRoom);
 		}
@@ -182,4 +181,23 @@ export function closeRoomSetting() {
 	onlineContainer.style.display = "block";
 	roomSettingContainer.style.display = "none";
 	sessionStorage.setItem("status", "online");
+}
+
+export function showRoomList() {
+	if (onlineContainer.style.display === "none") {
+		return;
+	}
+	while (roomListContainer.firstChild) {
+		roomListContainer.removeChild(roomListContainer.firstChild);
+	}
+	fetch("/game/list-room/").then((response) => {
+		if (response.status === 200) {
+			return response.json();
+		}
+	}).then((json) => {
+		const roomList = json.roomlist;
+		for (let i = 0; i < roomList.length; i++) {
+			makeRoom(roomList[i]);
+		}
+	});
 }

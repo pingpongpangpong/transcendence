@@ -1,7 +1,7 @@
 import { closeBracket } from "./content/feature.js";
 import { logout, toContent, toSignup } from "./login.js";
 import { exit } from "./object/game.js";
-import { closeRoomSetting, openRoomSetting } from "./content/online.js";
+import { closeRoomSetting, openRoomSetting, showRoomList } from "./content/online.js";
 
 const sign = document.getElementById("sign");
 const signin = document.getElementById("sign-in-content");
@@ -16,7 +16,8 @@ const pageStatus = {
 	3: "tournament",
 	4: "online",
 	5: "makeRoom",
-	6: "ongame",
+	6: "inRoom",
+	7: "ongame",
 };
 
 function onOffline() {
@@ -24,6 +25,7 @@ function onOffline() {
 	tournamentContent.style.display = "none";
 	onlineContent.style.display = "none";
 	sessionStorage.setItem("status", "offline");
+	sessionStorage.removeItem("game");
 }
 
 function onTournament() {
@@ -31,13 +33,16 @@ function onTournament() {
 	tournamentContent.style.display = "block";
 	onlineContent.style.display = "none";
 	sessionStorage.setItem("status", "tournament");
+	sessionStorage.removeItem("game");
 }
 
 function onOnline() {
 	offlineContent.style.display = "none";
 	tournamentContent.style.display = "none";
 	onlineContent.style.display = "block";
+	showRoomList();
 	sessionStorage.setItem("status", "online");
+	sessionStorage.removeItem("game");
 }
 
 function changTab() {
@@ -93,6 +98,9 @@ window.addEventListener("load", () => {
 				toContent();
 				onOnline();
 				openRoomSetting();
+			} else if (status === pageStatus[6]) {
+				toContent();
+				onOnline();
 			}
 		});
 	}

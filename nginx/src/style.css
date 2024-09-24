@@ -32,6 +32,16 @@ h4, h6 {
 	width: 950px;
 	height: 600px;
 }
+#online-body {
+	height: 540px;;
+	margin-top: 30px;
+	overflow-y: auto;
+}
+#room-list {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
 #lang-option {
 	width: 0px;
 }
