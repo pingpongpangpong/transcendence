@@ -1,6 +1,6 @@
 import { lang, langIndex } from "../lang.js";
 import { checkUser } from "../tab.js";
-import { online } from "./feature.js";
+import { online, join } from "./feature.js";
 import { getGamePoint } from "./feature.js";
 
 const onlineContainer = document.getElementById("online");
@@ -21,9 +21,9 @@ function showRoomList() {
 		}
 	}).then((json) => {
 		const roomList = json.roomlist;
-		roomList.foreach((room) => {
-			makeRoom(room);
-		});
+		for (let i = 0; i < roomList.length; i++) {
+			makeRoom(roomList[i]);
+		}
 	});
 }
 
@@ -95,9 +95,11 @@ function makeRoom(room) {
 			body: JSON.stringify(body)
 		}).then((response) => {
 			if (response.status === 200) {
-				console.log("join");
+				join();
+			} else if (response.status === 409) {
+				alert(lang[langIndex].roomIsFull);
 			} else {
-				alert(response.body.json());
+				alert(lang[langIndex].wrongPassword);
 			}
 		});
 	});
@@ -112,13 +114,11 @@ document.getElementById("refresh-btn").addEventListener("click", () => {
 
 // open room setting
 document.getElementById("make-room-btn").addEventListener("click", () => {
-	onlineContainer.style.display = "none";
-	roomSettingContainer.style.display = "block";
+	openRoomSetting();
 });
 
 // close room setting
 document.getElementById("online-room-cancel").addEventListener("click", () => {
-	onlineContainer.style.display = "block";
 	closeRoomSetting();
 });
 
@@ -167,11 +167,19 @@ document.getElementById("online-room-submit").addEventListener("click", () => {
 		if (response.status === 200) {
 			online(gamePoint);
 		} else {
-			alert(response.body.json());
+			alert(lang[langIndex].failMakeRoom);
 		}
 	});
 });
 
+export function openRoomSetting() {
+	onlineContainer.style.display = "none";
+	roomSettingContainer.style.display = "block";
+	sessionStorage.setItem("status", "makeRoom");
+}
+
 export function closeRoomSetting() {
+	onlineContainer.style.display = "block";
 	roomSettingContainer.style.display = "none";
+	sessionStorage.setItem("status", "online");
 }
