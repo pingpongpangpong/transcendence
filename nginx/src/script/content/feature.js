@@ -58,7 +58,11 @@ export async function tournament(gamePoint, nameList) {
 }
 
 export function online(gamePoint, room) {
-	console.log("online");
+	console.log(gamePoint, room);
+}
+
+export function join() {
+	console.log("join");
 }
 
 export function getGamePoint(type) {

@@ -54,6 +54,8 @@
 		"alRNempty": "방 이름이 비어있습니다.",
 		"alRNlen": "방 이름이 너무 길거나 짧습니다.\n방 이름의 글자는 4글자에서 20글자 사이어야 합니다.",
 		"alPassword": "비밀번호는 4글자 이상이어야 합니다.",
+		"failMakeRoom": "방 만들기에 실패했습니다.",
+		"roomIsFull": "방에 이미 누군가가 있습니다.",
 		"win": " 승리!"
 	},
 	"en": {
@@ -111,6 +113,8 @@
 		"alRNempty": "The room name is empty.",
 		"alRNlen": "The room name is either too long or too short.\nThe room name must be between 4 and 20 characters long.",
 		"alPassword": "The password must be at least 4 characters long.",
+		"failMakeRoom": "Failed to create room.",
+		"roomIsFull": "The room is already full.",
 		"win": " is winner!"
 	},
 	"jp": {
@@ -168,6 +172,8 @@
 		"alRNempty": "ルーム名が空欄です。",
 		"alRNlen": "ルーム名が短すぎるか長すぎます。\nルーム名は4文字から20文字の間でなければなりません。",
 		"alPassword": "パスワードは4文字以上でなければなりません。",
+		"failMakeRoom": "ルームの作成に失敗しました。",
+		"roomIsFull": "ルームはすでに満室です。",
 		"win": "の勝利!"
 	}
 }
