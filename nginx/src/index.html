@@ -128,6 +128,10 @@
 				<div id="online" style="display: none;">
 					<div id="online-top">
 						<input id="search-input" type="text" />
+						<select id="search-option">
+							<option id="search-option-room" value="room">방 이름</option>
+							<option id="search-option-user" value="user">아이디</option>
+						</select>
 						<button id="search-btn">검색</button>
 						<button id="refresh-btn">새로고침</button>
 						<button id="make-room-btn">방 만들기</button>
@@ -144,7 +148,7 @@
 								<input id="online-room-name" type="text" required />
 							</div>
 							<div class="field-row-stacked">
-								<label id="online-game-point-label"class="game-point-text" for="online-game-point">게임 포인트</label>
+								<label id="online-game-point-label" class="game-point-text" for="online-game-point">게임 포인트</label>
 								<input id="online-game-point" class="game-point" value="10" type="number" min="2" max="20" required />
 							</div>
 							<div class="field-row-stacked">

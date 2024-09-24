@@ -8,7 +8,6 @@ document.getElementById("lang-select").addEventListener("change", (e) => {
 	document.querySelector(".title-bar-text").innerText = lang[langIndex].title;
 	document.querySelector("#logout-btn").innerHTML = lang[langIndex].logout;
 	document.querySelector(".id").innerHTML = lang[langIndex].id;
-	document.querySelector(".password").innerHTML = lang[langIndex].password;
 	document.querySelector(".code").innerHTML = lang[langIndex].varify;
 	document.querySelector(".code-label").innerText = lang[langIndex].code;
 	document.querySelector("#sign-in-btn").innerHTML = lang[langIndex].signin;
@@ -27,16 +26,38 @@ document.getElementById("lang-select").addEventListener("change", (e) => {
 	document.querySelector("#offline-info").innerText = lang[langIndex].lSet;
 	document.querySelector("#name-input1-label").innerText = `1${lang[langIndex].playerName}`;
 	document.querySelector("#name-input2-label").innerText = `2${lang[langIndex].playerName}`;
-	document.querySelector(".game-point-text").innerText = lang[langIndex].gamePoint;
 	document.querySelector("#tournament-info").innerText = lang[langIndex].tSet;
 	document.querySelector("#num-people").innerText = lang[langIndex].nPeople;
 	document.querySelector("#index-0").innerText = lang[langIndex].select;
 	document.querySelector("#make-room-btn").innerText = lang[langIndex].roomMake;
 	document.querySelector("#online-info").innerText = lang[langIndex].mSet;
+	document.querySelector("#search-option-room").innerHTML = lang[langIndex].roomName;
+	document.querySelector("#search-option-user").innerHTML = lang[langIndex].id;
 	document.querySelector("#search-btn").innerHTML = lang[langIndex].search;
 	document.querySelector("#refresh-btn").innerHTML = lang[langIndex].refresh;
 	document.querySelector("#make-room-btn").innerHTML = lang[langIndex].roomMake;
 	document.querySelector("#online-room-name-label").innerText = lang[langIndex].roomName;
-	document.querySelector("#online-room-cancel").innerText = lang[langIndex].cancel;
+	document.querySelector("#online-room-cancel").innerText = lang[langIndex].id;
 	document.querySelector("#show-game-point").innerText = `${lang[langIndex].gamePoint}: `;
+
+	const gamePointText = document.querySelectorAll(".game-point-text");
+	for (let i = 0; i < gamePointText.length; i++) {
+		gamePointText[i].innerHTML = lang[langIndex].gamePoint;
+	}
+	const passwordText = document.querySelectorAll(".password");
+	for(let i = 0; i < passwordText.length; i++) {
+		passwordText[i].innerHTML = lang[langIndex].password;
+	}
+	const playerLables = document.querySelectorAll(".player");
+	if (playerLables) {
+		for(let i = 0; i < playerLables.length; i++) {
+			playerLables[i].textContent = `${i + 1}${lang[langIndex].playerName}`;
+		}
+	}
+	const joinBtns = document.querySelectorAll(".room-btn");
+	if (joinBtns) {
+		for (let i = 0; i < joinBtns.length; i++) {
+			joinBtns[i].innerHTML = lang[langIndex].enter;
+		}
+	}
 });

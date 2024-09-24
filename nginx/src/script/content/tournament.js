@@ -19,6 +19,7 @@ document.getElementById("select-num").addEventListener("change",  (e) => {
 
 		const label = document.createElement("label");
 		label.for = `player-${i + 1}-input`;
+		label.className = "player";
 		label.textContent = `${i + 1}${lang[langIndex].playerName}`;
 
 		const input = document.createElement("input");

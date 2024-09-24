@@ -37,7 +37,7 @@ function makeRoom(room) {
 
 		label = document.createElement("label");
 		label.id = `room-${room.roomname}-password-label`;
-		label.class = "password";
+		label.className = "password";
 		label.setAttribute("for", inputId);
 		label.innerHTML = lang[langIndex].password;
 
@@ -90,16 +90,20 @@ showRoomList();
 // search
 document.getElementById("search-btn").addEventListener("click", () => {
 	const str = document.getElementById("search-input").value;
+	const opt = document.getElementById("search-option").value;
 	if (str.length === 0 || str === "") {
 		return;
 	}
-	const uri = `/game/search-room/?roomname=${encodeURIComponent(str)}`;
+	while (roomListContainer.firstChild) {
+		roomListContainer.removeChild(roomListContainer.firstChild);
+	}
+	const uri = `/game/search-room/?input=${encodeURIComponent(str)}?option=${encodeURIComponent(opt)}`;
 	fetch(uri).then((response) => {
 		if (response.status === 200) {
 			return response.json();
 		}
 	}).then((json) => {
-		roomList = json.roomlist;
+		const roomList = json.roomlist;
 		for (let i = 0; i < roomList.length; i++) {
 			makeRoom(roomList[i]);
 		}
