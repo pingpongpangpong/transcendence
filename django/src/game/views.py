@@ -1,56 +1,52 @@
 import json
-import redis
 import requests
 from django.http import JsonResponse, HttpResponse
-# from .models import Room
-from .room import save_room_to_redis, get_roomlist_from_redis
+from django.views.decorators.csrf import csrf_exempt # 지워야함
+from .room import save_room, get_roomlist, join_room
 
-r = redis
-
+@csrf_exempt # 지워야함
 def createRoom(request):
     if request.method == 'POST':
         try:
+            # 이미 만들었는지 탐색?
+
             data_json = json.loads(request.body)
             roomname = data_json.get('roomname')
             password = data_json.get('password')
-            goal_point = int(data_json.get('goal_point'))
-            player1 = request.user
-            save_room_to_redis(roomname, password, goal_point, player1)
-            return JsonResponse({'result': 'success',
-                                'roomname': data_json['roomname']})
+            goal_point = int(data_json.get('goal_point', 10))
+            player1 = request.user.username
+            save_room(roomname, password, goal_point, player1)
+            return HttpResponse("Create", status=200)
         except KeyError:
             return HttpResponse("key error", status=404)
 
+@csrf_exempt # 지워야함
 def listRoom(request):
     if request.method == 'GET':
         try:
-            room_list = get_roomlist_from_redis()
+            room_list = get_roomlist()
             return JsonResponse({"roomlist": room_list})
         except KeyError:
             return HttpResponse("key error", status=400)
 
-# def joinRoom(request):
-#     if request.method == 'POST':
-#         try:
-#             data_json = json.loads(request.body)
-#             if Room.objects.filter(room_name=data_json['roomName']).exists():
-#                 room = Room.objects.get(room_name=data_json['roomName'])
-#                 if (room.password == data_json['password']):
-#                     room.player2 = data_json['player2']
-#                     room.status = 'running'
-#                     room.save()
-#                     return JsonResponse({'status': 'success',
-#                                          'roomName': room.room_name,
-#                                          'player1': room.player1,
-#                                          "gamePoint": room.goal_point})
-#                 else:
-#                     return JsonResponse({'status': 'fail',
-#                                          'msg': 'Wrong password'})
-#             else:
-#                 return HttpResponse("The Room doens't exist", status=400)
-#         except KeyError:
-#             return HttpResponse("key error", status=400)
-        
+@csrf_exempt # 지워야함
+def joinRoom(request):
+    if request.method == 'POST':
+        try:
+            data_json = json.loads(request.body)
+            roomid = data_json.get("roomid")
+            password = data_json.get("password")
+            player2 = request.user.username
+            if (join_room(roomid, password, player2)):
+                return (HttpResponse("ok", status=200))
+            return HttpResponse("this room is full", status=409)
+        except TypeError:
+            return HttpResponse("Invalid roomid", status=400)
+        except ValueError:
+            return HttpResponse("Invalid roomid or password", status=400)
+        except KeyError:
+            return HttpResponse("key error", status=400)
+
 # def searchRoom(request):
 #     if request.method == 'POST':
 #         try:
