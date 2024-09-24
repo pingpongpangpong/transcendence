@@ -15,10 +15,10 @@ def save_room(roomname, password, goal_point, player1) -> None:
 	"""
 	roomid = str(uuid.uuid4())
 	room_key = f'room:{roomid}'
-	if (password == None):
-		is_public = True
+	if (password == ''):
+		is_public = 1
 	else:
-		is_public = False
+		is_public = 0
 
 	room_data = {
 		'roomname': roomname,
