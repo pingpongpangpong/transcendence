@@ -1,11 +1,9 @@
 import * as DOM from "./document.js";
-export let lang;
+
+export let lang = {};
 export let langIndex = "ko";
 
-fetch("../lang.json").then((response) => response.json()).then((json) => lang = json);
-
-DOM.langSelect.addEventListener("change", (e) => {
-	langIndex = e.target.value;
+export function changeLang() {
 	// header
 	document.querySelector(".title-bar-text").innerText = lang[langIndex].title;
 	DOM.logoutBtn.innerHTML = lang[langIndex].logout;
@@ -42,7 +40,7 @@ DOM.langSelect.addEventListener("change", (e) => {
 	DOM.roomCancel.innerHTML = lang[langIndex].cancel;
 	// footer
 	DOM.gamePoint.innerText = `${lang[langIndex].gamePoint}: `;
-
+	
 	const idText = document.querySelectorAll(".id");
 	for (let i = 0; i < idText.length; i++) {
 		idText[i].innerHTML = lang[langIndex].id;
@@ -79,4 +77,47 @@ DOM.langSelect.addEventListener("change", (e) => {
 			joinBtns[i].innerHTML = lang[langIndex].enter;
 		}
 	}
+}
+
+DOM.langSelect.addEventListener("change", (e) => {
+	langIndex = e.target.value;
+	changeLang();
 });
+
+window.addEventListener("beforeunload", () => {
+	sessionStorage.setItem("lang", langIndex);
+});
+
+window.onload = function () {
+	const langJson = sessionStorage.getItem("langJson");
+	if (langJson === null) {
+		fetch("../lang.json")
+		.then((response) => response.json())
+		.then((json) => {
+			lang = json;
+			sessionStorage.setItem("langJson", JSON.stringify(lang));
+		})
+	} else {
+		lang = JSON.parse(langJson);
+		const prevIndex = sessionStorage.getItem("lang");
+		langIndex = prevIndex ? prevIndex : "ko";
+		DOM.langSelect.value = langIndex;
+		changeLang();
+	}
+
+	const signinStatus = sessionStorage.getItem("auth");
+	if (signinStatus === null) {
+		DOM.signinInput.style.display = "grid";
+		DOM.oauthInput.style.display = "none";
+		return;
+	}
+	const params = new URLSearchParams(window.location.search);
+	const authStatus = params.get("Oauth");
+	if (authStatus === "Success") {
+		DOM.signinInput.style.display = "none";
+		DOM.oauthInput.style.display = "grid";
+	} else {
+		DOM.signinInput.style.display = "grid";
+		DOM.oauthInput.style.display = "none";
+	}
+}

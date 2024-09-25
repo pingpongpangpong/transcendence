@@ -1,5 +1,5 @@
 import * as DOM from "./document.js";
-import { lang, langIndex } from "./lang.js";
+import { changeLang, lang, langIndex } from "./lang.js";
 import { closeBracket } from "./content/feature.js";
 import { exit } from "./object/game.js";
 import { onOffline, removeValue } from "./tab.js";
@@ -31,24 +31,6 @@ function sendCode(code) {
 		}
 	};
 	DOM.requestPost("/user/login/", header, body, resFunc, alert);
-}
-
-function isSuccessOauth() {
-	const signinStatus = sessionStorage.getItem("auth");
-	if (signinStatus === null) {
-		DOM.signinInput.style.display = "grid";
-		DOM.oauthInput.style.display = "none";
-		return;
-	}
-	const params = new URLSearchParams(window.location.search);
-	const authStatus = params.get("Oauth");
-	if (authStatus === "Success") {
-		DOM.signinInput.style.display = "none";
-		DOM.oauthInput.style.display = "grid";
-	} else {
-		DOM.signinInput.style.display = "grid";
-		DOM.oauthInput.style.display = "none";
-	}
 }
 
 export function logout() {
@@ -269,9 +251,3 @@ DOM.oauthSubmit.addEventListener("click", () => {
 	const code = DOM.oauthCode.value;
 	sendCode(code);
 });
-
-history.pushState(null, null, location.href);
-window.onpopstate = function () {
-	history.go(1);
-};
-window.onload = isSuccessOauth();
