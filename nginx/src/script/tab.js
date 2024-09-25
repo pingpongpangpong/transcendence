@@ -1,133 +1,55 @@
+import * as DOM from "./document.js";
 import { closeBracket } from "./content/feature.js";
 import { logout, toContent, toSignup } from "./login.js";
 import { exit } from "./object/game.js";
 import { closeRoomSetting, openRoomSetting, showRoomList } from "./content/online.js";
-
-const sign = document.getElementById("sign");
-const signin = document.getElementById("sign-in-content");
-const offlineContent = document.getElementById("offline");
-const tournamentContent = document.getElementById("tournament");
-const onlineContent = document.getElementById("online");
-
-const pageStatus = {
-	0: "signin",
-	1: "signup",
-	2: "offline",
-	3: "tournament",
-	4: "online",
-	5: "makeRoom",
-	6: "inRoom",
-	7: "ongame",
-};
-
-function onOffline() {
-	offlineContent.style.display = "block";
-	tournamentContent.style.display = "none";
-	onlineContent.style.display = "none";
-	sessionStorage.setItem("status", "offline");
-	sessionStorage.removeItem("game");
-}
+import { lang, langIndex } from "./lang.js";
 
 function onTournament() {
-	offlineContent.style.display = "none";
-	tournamentContent.style.display = "block";
-	onlineContent.style.display = "none";
+	DOM.offlineContent.style.display = "none";
+	DOM.tournamentContent.style.display = "block";
+	DOM.onlineContent.style.display = "none";
 	sessionStorage.setItem("status", "tournament");
 	sessionStorage.removeItem("game");
 }
 
 function onOnline() {
-	offlineContent.style.display = "none";
-	tournamentContent.style.display = "none";
-	onlineContent.style.display = "block";
+	DOM.offlineContent.style.display = "none";
+	DOM.tournamentContent.style.display = "none";
+	DOM.onlineContent.style.display = "block";
 	showRoomList();
 	sessionStorage.setItem("status", "online");
 	sessionStorage.removeItem("game");
 }
 
-function changTab() {
+function moveTo(where) {
 	checkUser();
 	removeValue();
 	exit();
 	closeBracket();
 	closeRoomSetting();
+	where();
 }
 
-document.getElementById("offline-tab").addEventListener("click", () => {
-	changTab();
-	onOffline();
-});
-
-document.getElementById("tournament-tab").addEventListener("click", () => {
-	changTab();
-	onTournament();
-});
-
-document.getElementById("online-tab").addEventListener("click", () => {
-	changTab();
-	onOnline();
-});
-
-window.addEventListener("load", () => {
-	const status = sessionStorage.getItem("status");
-	const game = sessionStorage.getItem("game");
-	sign.style.display = "none";
-	signin.style.display = "none";
-	if (status === null) {
-		console.log(status, game);
-		logout();
-	} else if (status === pageStatus[0]) {
-		logout();
-	} else if (status === pageStatus[1]) {
-		toSignup();
-	} else {
-		fetch("/user/check/").then((response) => {
-			if (response.status !== 200) {
-				alert("로그인 페이지로 돌아갑니다.");
-				logout();
-			} else if (status === pageStatus[2] || game === pageStatus[2]) {
-				toContent();
-				onOffline();
-			} else if (status === pageStatus[3] || game === pageStatus[3]) {
-				toContent();
-				onTournament();
-			} else if (status === pageStatus[4] || game === pageStatus[4]) {
-				toContent();
-				onOnline();
-			} else if (status === pageStatus[5]) {
-				toContent();
-				onOnline();
-				openRoomSetting();
-			} else if (status === pageStatus[6]) {
-				toContent();
-				onOnline();
-			}
-		});
-	}
-});
+export function onOffline() {
+	DOM.offlineContent.style.display = "block";
+	DOM.tournamentContent.style.display = "none";
+	DOM.onlineContent.style.display = "none";
+	sessionStorage.setItem("status", "offline");
+	sessionStorage.removeItem("game");
+}
 
 export function removeValue() {
-	const select = document.getElementById("select-num");
-	select.options[0].selected = true;
-	
-	const tournamentInputList = document.getElementById("input-list");
-	if (tournamentInputList.childNodes.length !== 0) {
-		while (tournamentInputList.firstChild) {
-			tournamentInputList.removeChild(tournamentInputList.firstChild);
-		}
+	DOM.tournamentSelectNum.options[0].selected = true;
+	while (DOM.tournamentInput.firstChild) {
+		DOM.tournamentInput.removeChild(DOM.tournamentInput.firstChild);
 	}
-
-	const tournamentStartButton = document.getElementById("tournament-btn");
-	while (tournamentStartButton.firstChild) {
-		tournamentStartButton.removeChild(tournamentStartButton.firstChild);
+	while (DOM.tournamentBtn.firstChild) {
+		DOM.tournamentBtn.removeChild(DOM.tournamentBtn.firstChild);
 	}
-
-	const roomSetting = document.getElementById("room-setting");
-	if (roomSetting.style.display === "block") {
-		roomSetting.style.display = "none";
+	if (DOM.roomSetting.style.display === "block") {
+		DOM.roomSetting.style.display = "none";
 	}
-
-
 	const inputList = document.getElementsByTagName("input");
 	for (let i = 0; i < inputList.length; i++) {
 		if (inputList[i].className === "game-point") {
@@ -139,14 +61,68 @@ export function removeValue() {
 }
 
 export function checkUser() {
-	const uri = "/user/check/";
-	fetch(uri).then((response) => {
-		if (response.status !== 200) {
-			alert("세션이 만료되어 로그인이 필요합니다.");
+	const resFunc = function (res) {
+		if (res.status !== 200) {
+			return lang[langIndex].invalidTsubmiten;
+		}
+		return null;
+	}
+	const errFunc = function (err) {
+		if (err) {
+			alert(err);
 			removeValue();
 			exit();
 			closeBracket();
 			logout();
 		}
-	});
+	}
+	DOM.requestGet("/user/check/", resFunc, errFunc);
 }
+
+DOM.offlineTab.addEventListener("click", () => {
+	moveTo(onOffline);
+});
+
+DOM.tournamentTab.addEventListener("click", () => {
+	moveTo(onTournament);
+});
+
+DOM.onlineTab.addEventListener("click", () => {
+	moveTo(onOnline);
+});
+
+window.addEventListener("load", () => {
+	const status = sessionStorage.getItem("status");
+	DOM.signContainer.style.display = "none";
+	DOM.signinContent.style.display = "none";
+	if (status === null) {
+		logout();
+	} else if (status === DOM.pageStatus[0]) {
+		logout();
+	} else if (status === DOM.pageStatus[1]) {
+		toSignup();
+	} else {
+		const resFunc = function (res) {
+			if (res.status !== 200) {
+				logout();
+				return lang[langIndex].invalidTsubmiten;
+			}
+			const status = sessionStorage.getItem("status");
+			const game = sessionStorage.getItem("game");
+			if (status === DOM.pageStatus[2] || game === DOM.pageStatus[2]) {
+				toContent(onOffline);
+			} else if (status === DOM.pageStatus[3] || game === DOM.pageStatus[3]) {
+				toContent(onTournament);
+			} else if (status === DOM.pageStatus[4] || game === DOM.pageStatus[4]) {
+				toContent(onOnline);
+			} else if (status === DOM.pageStatus[5]) {
+				toContent(onOnline);
+				openRoomSetting();
+			} else if (status === DOM.pageStatus[6]) {
+				toContent(onOnline);
+			}
+			return null;
+		}
+		DOM.requestGet("/user/check/", resFunc, alert);
+	}
+});

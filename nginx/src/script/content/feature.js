@@ -1,15 +1,15 @@
+import * as DOM from "../document.js";
 import { Game, winner } from "../object/game.js";
 import { lang, langIndex } from "../lang.js";
 import { canvas, ctx, initBracket, paintBracket } from "./bracket.js";
 
-const painGamePoint = document.getElementById("show-game-point");
 let isRunning = true;
 
 export async function offline(gamePoint, name1, name2) {
 	const game = new Game(gamePoint);
 	game.awake(name1, name2);
 	await game.update();
-	document.getElementById("offline").style.display = "block";
+	DOM.offlineContent.style.display = "block";
 }
 
 export async function tournament(gamePoint, nameList) {
@@ -28,7 +28,7 @@ export async function tournament(gamePoint, nameList) {
 			paintBracket(players, round);
 			await new Promise((resolve, reject) => setTimeout(() => {
 				if (isRunning) {
-					document.getElementById("bracket").style.display = "none";
+					DOM.bracket.style.display = "none";
 					resolve();
 				} else {
 					reject(new Error());
@@ -38,8 +38,8 @@ export async function tournament(gamePoint, nameList) {
 				break;
 			}
 			if (players.length === 1) {
-				alert(`${players[0]} 토너먼트 승리!`);
-				document.getElementById("tournament").style.display = "block";
+				alert(`${players[0]} ${lang[langIndex].win}`);
+				DOM.tournamentContent.style.display = "block";
 				return;
 			}
 			let winnerList = [];
@@ -73,7 +73,7 @@ export function getGamePoint(type) {
 		alert(lang[langIndex].alGP);
 		return -1;
 	}
-	painGamePoint.innerHTML = `${lang[langIndex].gamePoint}: ${gamePoint}`;
+	DOM.gamePoint.innerHTML = `${lang[langIndex].gamePoint}: ${gamePoint}`;
 	return gamePoint;
 }
 
