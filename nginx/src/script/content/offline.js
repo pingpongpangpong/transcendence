@@ -1,15 +1,15 @@
+import * as DOM from "../document.js";
 import { checkUser } from "../tab.js";
 import { offline, getGamePoint, checkName } from "./feature.js";
 
-document.getElementById("offline-submit").addEventListener("click", () => {
+DOM.offlineSubmit.addEventListener("click", () => {
 	checkUser();
 	const gamePoint = getGamePoint("offline");
 	if (gamePoint < 0) {
 		return;
 	}
-
-	const name1 = document.getElementById("name-input1").value;
-	const name2 = document.getElementById("name-input2").value;
+	const name1 = DOM.offlineInput1.value;
+	const name2 = DOM.offlineInput2.value;
 	if (!checkName(name1, 1)) {
 		return;
 	}
@@ -21,7 +21,7 @@ document.getElementById("offline-submit").addEventListener("click", () => {
 		return;
 	}
 	
-	document.getElementById("offline").style.display = "none";
+	DOM.offlineContent.style.display = "none";
 	sessionStorage.setItem("game", "offline");
 	offline(gamePoint, name1, name2);
 });

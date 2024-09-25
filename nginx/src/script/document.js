@@ -18,8 +18,11 @@ export const signupInput = document.getElementById("sign-up-input-list");
 export const signupId = document.getElementById("sign-up-id");
 export const signupPassword = document.getElementById("sign-up-password");
 export const signupCheckPassword = document.getElementById("sign-up-check-password");
+export const signupCheckPasswordLabel = document.getElementById("sign-up-check-password-label");
 export const signupEmail = document.getElementById("sign-up-email");
 export const signupEmailSubmit = document.getElementById("sign-up-email-btn");
+export const signupEmailLabel = document.getElementById("sign-up-email-label");
+export const signupEmailInfo = document.getElementById("email-info");
 export const signupCodeLabel = document.getElementById("sign-up-code-label");
 export const signupCode = document.getElementById("sign-up-code");
 export const signupCodeInput = document.getElementById("sign-up-code-input");
@@ -36,20 +39,51 @@ export const oauthSubmit = document.getElementById("42-sign-in-submit");
 export const windowContent = document.getElementById("window-content");
 // log out
 export const logoutBtn = document.getElementById("logout-btn");
-
+// navi tabs
 export const offlineTab = document.getElementById("offline-tab");
 export const tournamentTab = document.getElementById("tournament-tab");
 export const onlineTab = document.getElementById("online-tab");
-
+// offline
 export const offlineContent = document.getElementById("offline");
+export const offlineInfo = document.getElementById("offline-info");
+export const offlineInput1 = document.getElementById("name-input1");
+export const offlineInput2 = document.getElementById("name-input2");
+export const offlineInput1Label = document.getElementById("name-input1-label");
+export const offlineInput2Label = document.getElementById("name-input2-label");
+export const offlineSubmit = document.getElementById("offline-submit");
+// tournament
 export const tournamentContent = document.getElementById("tournament");
-export const onlineContent = document.getElementById("online");
-
-export const selectNum = document.getElementById("select-num");
-export const tournamentInputs = document.getElementById("input-list");
+export const tournamentInfo = document.getElementById("tournament-info");
+export const bracket = document.getElementById("bracket");
+export const tournamentSelectNum = document.getElementById("select-num");
+export const tournamentPeopleNum = document.getElementById("num-people");
+export const index = document.getElementById("index-0");
+export const tournamentInput = document.getElementById("input-list");
 export const tournamentBtn = document.getElementById("tournament-btn");
-
+export const tournamentSubmit = document.getElementById("tournament-submit")
+// online
+export const onlineContent = document.getElementById("online");
+export const searchInput = document.getElementById("search-input");
+export const searchOption = document.getElementById("search-option");
+export const searchOptionRoom = document.getElementById("search-option-room");
+export const searchOptionUser = document.getElementById("search-option-user");
+export const searchBtn = document.getElementById("search-btn");
+export const refreshBtn = document.getElementById("refresh-btn");
+export const roomBtn = document.getElementById("make-room-btn");
 export const roomSetting = document.getElementById("room-setting");
+export const roomInfo = document.getElementById("online-info");
+export const roomName = document.getElementById("online-room-name");
+export const roomNameLabel = document.getElementById("online-room-name-label");
+export const roomPassword = document.getElementById("online-password");
+export const roomCancel = document.getElementById("online-room-cancel");
+export const roomSubmit = document.getElementById("online-room-submit");
+export const roomList = document.getElementById("room-list");
+
+// footer
+export const gamePoint = document.getElementById("show-game-point");
+export const player1Score = document.getElementById("left-player");
+export const player2Score = document.getElementById("right-player");
+export const langSelect = document.getElementById("lang-select");
 
 export const pageStatus = {
 	0: "signin",

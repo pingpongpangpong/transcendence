@@ -40,9 +40,9 @@ export function onOffline() {
 }
 
 export function removeValue() {
-	DOM.selectNum.options[0].selected = true;
-	while (DOM.tournamentInputs.firstChild) {
-		DOM.tournamentInputs.removeChild(DOM.tournamentInputs.firstChild);
+	DOM.tournamentSelectNum.options[0].selected = true;
+	while (DOM.tournamentInput.firstChild) {
+		DOM.tournamentInput.removeChild(DOM.tournamentInput.firstChild);
 	}
 	while (DOM.tournamentBtn.firstChild) {
 		DOM.tournamentBtn.removeChild(DOM.tournamentBtn.firstChild);

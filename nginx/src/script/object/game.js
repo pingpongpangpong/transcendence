@@ -3,13 +3,12 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+
+import * as DOM from "../document.js";
 import { Player } from "./player.js";
 import { Ball } from "./ball.js";
 import { lang, langIndex } from "../lang.js";
 
-const player1Score = document.getElementById("left-player");
-const player2Score = document.getElementById("right-player");
-const painGamePoint = document.getElementById("show-game-point");
 let animatedId;
 export let winner;
 
@@ -90,8 +89,8 @@ export class Game {
 	}
 
 	updateScore() {
-		player1Score.innerHTML = `${this.player1.name}: ${this.player1.score}`;
-		player2Score.innerHTML = `${this.player2.name}: ${this.player2.score}`;
+		DOM.player1Score.innerHTML = `${this.player1.name}: ${this.player1.score}`;
+		DOM.player2Score.innerHTML = `${this.player2.name}: ${this.player2.score}`;
 	}
 
 	end(winner) {
@@ -122,7 +121,7 @@ export function exit() {
 		gameContainer.remove();
 	}
 
-	player1Score.innerHTML = "";
-	player2Score.innerHTML = "";
-	painGamePoint.innerHTML = `${lang[langIndex].gamePoint}: `;
+	DOM.player1Score.innerHTML = "";
+	DOM.player2Score.innerHTML = "";
+	DOM.gamePoint.innerHTML = `${lang[langIndex].gamePoint}: `;
 }

@@ -1,55 +1,47 @@
+import * as DOM from "../document.js";
 import { tournament, getGamePoint, checkName } from "./feature.js";
 import { lang, langIndex } from "../lang.js";
 import { checkUser } from "../tab.js";
 
-document.getElementById("select-num").addEventListener("change",  (e) => {
-	const inputList = document.getElementById("input-list");
+DOM.tournamentSelectNum.addEventListener("change",  (e) => {
+	const inputList = DOM.tournamentInput;
 	while (inputList.firstChild) {
 		inputList.removeChild(inputList.firstChild);
 	}
-
 	if (e.value === 0) {
 		return;
 	}
-
 	for (let i = 0; i < e.target.value; i++) {
 		const container = document.createElement("div");
 		container.id = `player-${i + 1}`;
 		container.className = "field-row-stacked";
-
 		const label = document.createElement("label");
 		label.for = `player-${i + 1}-input`;
 		label.className = "player";
 		label.textContent = `${i + 1}${lang[langIndex].playerName}`;
-
 		const input = document.createElement("input");
 		input.id = `player-${i + 1}-input`;
 		input.type = "text";
 		input.style.width
 		input.required = true;
-
 		container.appendChild(label);
 		container.appendChild(input);
 		inputList.appendChild(container);
 	}
-
-	const buttonSection = document.getElementById("tournament-btn");
-	while (buttonSection.firstChild) {
-		buttonSection.removeChild(buttonSection.firstChild);
+	while (DOM.tournamentBtn.firstChild) {
+		DOM.tournamentBtn.removeChild(DOM.tournamentBtn.firstChild);
 	}
-
 	const startButton = document.createElement("button");
 	startButton.id = "tournament-submit";
+	startButton.className = "submit";
 	startButton.innerText = lang[langIndex].submit;
-	buttonSection.appendChild(startButton);
-
+	DOM.tournamentBtn.appendChild(startButton);
 	startButton.addEventListener("click", () => {
 		checkUser();
 		const gamePoint = getGamePoint("tournament");
 		if (gamePoint < 0) {
 			return;
 		}
-
 		const len = inputList.childNodes.length;
 		const list = inputList.childNodes;
 		let nameList = [];
@@ -69,8 +61,7 @@ document.getElementById("select-num").addEventListener("change",  (e) => {
 				}
 			}
 		}
-
-		document.getElementById("tournament").style.display = "none";
+		DOM.tournamentContent.style.display = "none";
 		sessionStorage.setItem("game", "tournament");
 		tournament(gamePoint, nameList);
 	});

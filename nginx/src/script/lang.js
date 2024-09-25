@@ -1,45 +1,64 @@
+import * as DOM from "./document.js";
 export let lang;
 export let langIndex = "ko";
 
 fetch("../lang.json").then((response) => response.json()).then((json) => lang = json);
 
-document.getElementById("lang-select").addEventListener("change", (e) => {
+DOM.langSelect.addEventListener("change", (e) => {
 	langIndex = e.target.value;
+	// header
 	document.querySelector(".title-bar-text").innerText = lang[langIndex].title;
-	document.querySelector("#logout-btn").innerHTML = lang[langIndex].logout;
-	document.querySelector(".id").innerHTML = lang[langIndex].id;
-	document.querySelector(".code").innerHTML = lang[langIndex].varify;
-	document.querySelector(".code-label").innerText = lang[langIndex].code;
-	document.querySelector("#sign-in-btn").innerHTML = lang[langIndex].signin;
-	document.querySelector("#sign-in-42-btn").innerHTML = lang[langIndex].signin42;
-	document.querySelector("#sign-up-btn").innerHTML = lang[langIndex].signup;
-	document.querySelector("#sign-up-check-password-label").innerHTML = lang[langIndex].checkPassword;
-	document.querySelector("#sign-up-email-label").innerHTML = lang[langIndex].email;
-	document.querySelector("#email-info").innerText = lang[langIndex].emailInfo;
-	document.querySelector("#sign-up-code-label").innerHTML = lang[langIndex].code;
-	document.querySelector("#sign-up-code-btn").innerHTML = lang[langIndex].checkEmail;
-	document.querySelector("#sign-up-cancel").innerHTML = lang[langIndex].goBack;
-	document.querySelector(".submit").innerHTML = lang[langIndex].submit;
+	DOM.logoutBtn.innerHTML = lang[langIndex].logout;
+	// sign buttons
+	DOM.signinBtn.innerHTML = lang[langIndex].signin;
+	DOM.oauthBtn.innerHTML = lang[langIndex].signin42;
+	DOM.signupBtn.innerHTML = lang[langIndex].signup;
+	// sign up
+	DOM.signupCheckPasswordLabel.innerHTML = lang[langIndex].checkPassword;
+	DOM.signupEmailLabel.innerHTML = lang[langIndex].email;
+	DOM.signupEmailInfo.innerText = lang[langIndex].emailInfo;
+	DOM.signupCodeLabel.innerHTML = lang[langIndex].code;
+	DOM.signupCodeSubmit.innerHTML = lang[langIndex].checkEmail;
+	DOM.signupCancel.innerHTML = lang[langIndex].goBack;
+	// offline
 	document.querySelector("#offline-tab a").innerText = lang[langIndex].offline;
 	document.querySelector("#tournament-tab a").innerText = lang[langIndex].tournament;
 	document.querySelector("#online-tab a").innerText = lang[langIndex].online;
-	document.querySelector("#offline-info").innerText = lang[langIndex].lSet;
-	document.querySelector("#name-input1-label").innerText = `1${lang[langIndex].playerName}`;
-	document.querySelector("#name-input2-label").innerText = `2${lang[langIndex].playerName}`;
-	document.querySelector("#tournament-info").innerText = lang[langIndex].tSet;
-	document.querySelector("#num-people").innerText = lang[langIndex].nPeople;
-	document.querySelector("#index-0").innerText = lang[langIndex].select;
-	document.querySelector("#make-room-btn").innerText = lang[langIndex].roomMake;
-	document.querySelector("#online-info").innerText = lang[langIndex].mSet;
-	document.querySelector("#search-option-room").innerHTML = lang[langIndex].roomName;
-	document.querySelector("#search-option-user").innerHTML = lang[langIndex].id;
-	document.querySelector("#search-btn").innerHTML = lang[langIndex].search;
-	document.querySelector("#refresh-btn").innerHTML = lang[langIndex].refresh;
-	document.querySelector("#make-room-btn").innerHTML = lang[langIndex].roomMake;
-	document.querySelector("#online-room-name-label").innerText = lang[langIndex].roomName;
-	document.querySelector("#online-room-cancel").innerText = lang[langIndex].id;
-	document.querySelector("#show-game-point").innerText = `${lang[langIndex].gamePoint}: `;
+	DOM.offlineInfo.innerText = lang[langIndex].lSet;
+	DOM.offlineInput1Label.innerText = `1${lang[langIndex].playerName}`;
+	DOM.offlineInput2Label.innerText = `2${lang[langIndex].playerName}`;
+	// tournament
+	DOM.tournamentInfo.innerText = lang[langIndex].tSet;
+	DOM.tournamentPeopleNum.innerText = lang[langIndex].nPeople;
+	DOM.index.innerText = lang[langIndex].select;
+	// online
+	DOM.searchOptionRoom.innerHTML = lang[langIndex].roomName;
+	DOM.searchOptionUser.innerHTML = lang[langIndex].id;
+	DOM.searchBtn.innerHTML = lang[langIndex].search;
+	DOM.refreshBtn.innerHTML = lang[langIndex].refresh;
+	DOM.roomBtn.innerText = lang[langIndex].roomMake;
+	DOM.roomInfo.innerText = lang[langIndex].mSet;
+	DOM.roomNameLabel.innerText = lang[langIndex].roomName;
+	DOM.roomCancel.innerHTML = lang[langIndex].cancel;
+	// footer
+	DOM.gamePoint.innerText = `${lang[langIndex].gamePoint}: `;
 
+	const idText = document.querySelectorAll(".id");
+	for (let i = 0; i < idText.length; i++) {
+		idText[i].innerHTML = lang[langIndex].id;
+	}
+	const codeText = document.querySelectorAll(".code");
+	for (let i = 0; i < codeText.length; i++) {
+		codeText[i].innerHTML = lang[langIndex].varify;
+	}
+	const codeLabel = document.querySelectorAll(".code-label");
+	for (let i = 0; i < codeLabel.length; i++) {
+		codeLabel[i].innerHTML = lang[langIndex].code;
+	}
+	const submits = document.querySelectorAll(".submit");
+	for (let i = 0; i < submits.length; i++) {
+		submits[i].innerHTML = lang[langIndex].submit;
+	}
 	const gamePointText = document.querySelectorAll(".game-point-text");
 	for (let i = 0; i < gamePointText.length; i++) {
 		gamePointText[i].innerHTML = lang[langIndex].gamePoint;
