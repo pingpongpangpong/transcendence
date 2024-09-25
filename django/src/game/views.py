@@ -50,10 +50,13 @@ def joinRoom(request):
 def searchRoom(request):
     if request.method == 'GET':
         try:
-            roomname = request.GET.get('roomname')  # roomname 파라미터 가져오기
-            roomlist = search_room(roomname)
+            input = request.GET.get('input')
+            option = request.GET.get('option')
+            if not input or not option:
+                return JsonResponse({"error": "Missing 'input' or 'option' parameter"}, status=400)
+            roomlist = search_room(input, option)
             return JsonResponse({"roomlist": roomlist})
-        except KeyError:
+        except ValueError:
             return HttpResponse("key error", status=400)
 
 # def finishRoom(request):

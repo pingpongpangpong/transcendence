@@ -9,7 +9,7 @@ REDIS_PORT = os.getenv("REDIS_PORT")
 
 r = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
-def save_room(roomname, password, goal_point, player1) -> None:
+def save_room(roomname: str, password: str, goal_point: int, player1: str) -> None:
 	"""
 	방 정보를 redis에 저장함
 	"""
@@ -52,7 +52,7 @@ def get_roomlist() -> list:
 			room_list.append(filtered_room)
 	return room_list
 
-def join_room(roomid, password, player2) -> bool:
+def join_room(roomid: uuid, password: int, player2: str) -> bool:
 	"""
 	고유 식별자를 사용하여 방에 참가하는 함수.
 	"""
@@ -76,12 +76,22 @@ def join_room(roomid, password, player2) -> bool:
 	else:
 		return False  # 이미 다른 플레이어가 있어서 참가할 수 없음
 
-def search_room(roomname:str):
+def search_room(input: str, option: str) -> list:
 	keys = r.keys('room:*')
 	matching_rooms = []
 
+	search_field = None
+	if option == 'user':
+		search_field = 'player1'
+	elif option == 'room':
+		search_field = 'roomname'
+	else:
+		raise ValueError("error Invalid 'option' value. Use 'user' or 'room'.")
+
 	for key in keys:
 		room_data = json.loads(r.get(key))
-		if roomname in room_data['roomname']:
+		
+		field_value = room_data.get(search_field)
+		if field_value and input in str(field_value):
 			matching_rooms.append(room_data)
 	return matching_rooms
