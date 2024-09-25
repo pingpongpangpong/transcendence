@@ -11,7 +11,16 @@ r = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
 def save_room(roomname: str, password: str, goal_point: int, player1: str) -> None:
 	"""
-	방 정보를 redis에 저장함
+	방 정보를 Redis에 저장하는 함수
+
+	Args:
+		roomname: 방이름
+		password: 비밀번호
+		goal_point: 게임 승리 기준 점수
+		player1: 방장
+
+	Return:
+		None
 	"""
 	roomid = str(uuid.uuid4())
 	room_key = f'room:{roomid}'
@@ -27,15 +36,22 @@ def save_room(roomname: str, password: str, goal_point: int, player1: str) -> No
 		'is_public': is_public,
 		'player1': player1,
 		'player2': None,
-		'status': True, # 들어올 수 있냐
+		'status': True,
 		'roomid': roomid
 	}
     
-	# room:<roomname> 형식으로 저장
 	r.set(room_key, json.dumps(room_data))
 
 def get_roomlist() -> list:
-	# Redis에서 모든 방 목록 가져오기 (room:*로 저장된 항목들)
+	"""
+	참여 가능한 모든 방 목록을 가져오는 함수
+
+	Args:
+		None
+
+	Return:
+		list: 참여 가능한 모든 방
+	"""
 	keys = r.keys('room:*')
 	room_list = []
 
@@ -54,9 +70,19 @@ def get_roomlist() -> list:
 
 def join_room(roomid: uuid, password: int, player2: str) -> bool:
 	"""
-	고유 식별자를 사용하여 방에 참가하는 함수.
+	방 참가하는 함수
+
+	Args:
+		roomid (uuid): 방 고유 번호
+		password (int): 비밀번호
+		player2 (str): 고유값이 roomid에 참가하려는 참가자
+
+	Raise:
+		ValueError: roomid 또는 password가 잘못된 경우
+
+	Return:
+		bool: 참여 성공 True, 참여 실패 False
 	"""
-	# 방 정보 가져오기 (고유 식별자 사용)
 	room_key = f'room:{roomid}'
 	room_json = r.get(room_key)
 	room_data = json.loads(room_json)
@@ -67,16 +93,28 @@ def join_room(roomid: uuid, password: int, player2: str) -> bool:
 	if room_data.get("password") != password:
 		raise ValueError(f"Invalid password")
 
-	# player2가 None이면 방에 참가할 수 있음
 	if room_data.get('player2') is None:
 		room_data['player2'] = player2
-		room_data['status'] = False  # 방에 참가하면 상태를 "full"로 업데이트
-		r.set(room_key, json.dumps(room_data))  # Redis에 업데이트된 방 정보 저장
-		return True  # 성공적으로 참가
+		room_data['status'] = False 
+		r.set(room_key, json.dumps(room_data)) 
+		return True 
 	else:
-		return False  # 이미 다른 플레이어가 있어서 참가할 수 없음
+		return False 
 
 def search_room(input: str, option: str) -> list:
+	"""
+	해당 option의 input값인 방 검색하는 함수
+
+	Args:
+		input (str): 검색어
+		option (str): 검색옵션 (방제, 방장ID)
+
+	Raise:
+		ValueError: option이 규칙에 어긋난 경우
+
+	Return:
+		list: 검색하여 나온 방 리스트 
+	"""
 	keys = r.keys('room:*')
 	matching_rooms = []
 

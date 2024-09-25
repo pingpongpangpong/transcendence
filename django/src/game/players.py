@@ -7,7 +7,6 @@ from channels.db import database_sync_to_async
 @database_sync_to_async
 def getAll():
     return Room.objects.all()
-    
 
 class GamePlayer(AsyncWebsocketConsumer):
     async def connect(self):
