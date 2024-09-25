@@ -1,118 +1,113 @@
+import * as DOM from "./document.js";
 import { lang, langIndex } from "./lang.js";
 import { closeBracket } from "./content/feature.js";
 import { exit } from "./object/game.js";
-import { removeValue } from "./tab.js";
-
-// sign-in page
-const signin = document.getElementById("sign-in-content");
-const signinId = document.getElementById("sign-in-id");
-const signinPassword = document.getElementById("sign-in-password");
-const signinBtn = document.getElementById("sign-in-submit");
-const signupBtn = document.getElementById("sign-up-btn");
-// 2-factors
-const signin2factor = document.getElementById("sign-in-2factor");
-const signinCodeLabel = document.getElementById("sign-in-code-label");
-const signinCode = document.getElementById("sign-in-code");
-
-// signup page
-const signup = document.getElementById("sign-up-content");
-const signupId = document.getElementById("sign-up-id");
-const signupPassword = document.getElementById("sign-up-password");
-const signupCheckPassword = document.getElementById("sign-up-check-password");
-// email
-const signupEmail = document.getElementById("sign-up-email");
-const signupEmailSubmit = document.getElementById("sign-up-email-btn");
-const signupCodeLabel = document.getElementById("sign-up-code-label");
-const signupCode = document.getElementById("sign-up-code");
-const signupCodeInput = document.getElementById("sign-up-code-input");
-const signupCodeSubmit = document.getElementById("sign-up-code-btn");
-// other
-const signupSubmit = document.getElementById("sign-up-submit");
-const signupCancel = document.getElementById("sign-up-cancel");
-
-// containers
-const signContainer = document.getElementById("sign");
-const windowContainer = document.getElementById("window-content");
-const logoutBtn = document.getElementById("logout-btn");
-const offlineContainer = document.getElementById("offline");
-const signinContainer = document.getElementById("sign-in-input");
-const signin42Container = document.getElementById("42-sign-in-input");
+import { onOffline, removeValue } from "./tab.js";
 
 const usernamePattern = /^\S+$/;
 const passwordPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[\W_]).{8,20}$/;
-
-function getCookie(name) {
-    let value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
-    return value? value[2] : null;
-}
-
-function removeSignin() {
-	signinId.value = "";
-	signinPassword.value = "";
-	signin.style.display = "none";
-}
 
 function sendCode(code) {
 	if (code === "" || code.length === 0) {
 		alert(lang[langIndex].nullCode);
 		return;
 	}
+	const header = {
+		"Content-Type": "application/json",
+		"X-CSRFToken": DOM.getCookie("csrftoken")
+	};
 	const body = {
 		"code": code
 	};
-	fetch("/user/login/", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"X-CSRFToken": getCookie('csrftoken')
-		},
-		body: JSON.stringify(body),
-	}).then((response) => {
-		if (response.status === 200) {
+	const resFunc = function(res) {
+		if (res.status === 200) {
 			sessionStorage.clear();
-			signinContainer.style.display = "grid";
-			signin42Container.style.display = "none";
+			DOM.signinInput.style.display = "grid";
+			DOM.oauthInput.style.display = "none";
 			window.history.replaceState({}, document.title, "/");
-			toContent();
+			toContent(onOffline);
 		} else {
-			alert(lang[langIndex].failsignin);
+			throw lang[langIndex].failsignin;
 		}
-	});
+	};
+	DOM.requestPost("/user/login/", header, body, resFunc, alert);
 }
 
 function isSuccessOauth() {
 	const signinStatus = sessionStorage.getItem("auth");
 	if (signinStatus === null) {
-		signinContainer.style.display = "grid";
-		signin42Container.style.display = "none";
+		DOM.signinInput.style.display = "grid";
+		DOM.oauthInput.style.display = "none";
 		return;
 	}
 	const params = new URLSearchParams(window.location.search);
 	const authStatus = params.get("Oauth");
 	if (authStatus === "Success") {
-		signinContainer.style.display = "none";
-		signin42Container.style.display = "grid";
+		DOM.signinInput.style.display = "none";
+		DOM.oauthInput.style.display = "grid";
 	} else {
-		signinContainer.style.display = "grid";
-		signin42Container.style.display = "none";
+		DOM.signinInput.style.display = "grid";
+		DOM.oauthInput.style.display = "none";
 	}
 }
 
-history.pushState(null, null, location.href);
-window.onpopstate = function () {
-	history.go(1);
-};
+export function logout() {
+	DOM.signContainer.style.display = "block";
+	DOM.windowContent.style.display = "none";
+	DOM.logoutBtn.style.display = "none";
+	DOM.offlineContent.style.display = "block";
+	DOM.signinContent.style.display = "flex";
+	DOM.signinCodeLabel.style.display = "none";
+	DOM.signinCode.style.display = "none";
+	DOM.signinSubmitBtn.style.display = "none";
+	DOM.clearInput(DOM.windowContent);
+	sessionStorage.setItem("status", "signin");
+	sessionStorage.removeItem("game");
+}
 
+export function toSignup() {
+	DOM.signContainer.style.display = "block";
+	DOM.windowContent.style.display = "none";
+	DOM.signinContent.style.display = "none";
+	DOM.signupContent.style.display = "flex";
+	DOM.clearInput(DOM.signinInput);
+	sessionStorage.setItem("status", "signup");
+	sessionStorage.removeItem("game");
+}
+
+export function cancelSignup() {
+	DOM.signupCode.style.display = "none";
+	DOM.signupCodeSubmit.style.display = "none";
+	DOM.signupSubmit.style.display = "none";
+	DOM.signContainer.style.display = "block";
+	DOM.signinContent.style.display = "flex";
+	DOM.signupContent.style.display = "none";
+	DOM.clearInput(DOM.signupInput);
+	sessionStorage.setItem("status", "signin");
+	sessionStorage.removeItem("game");
+}
+
+export function toContent(where) {
+	DOM.signContainer.style.display = "none";
+	DOM.windowContent.style.display = "block";
+	DOM.logoutBtn.style.display = "block";
+	DOM.clearInput(DOM.signContainer);
+	sessionStorage.setItem("status", "offline");
+	sessionStorage.removeItem("game");
+	where();
+}
 
 // Sign in
-document.getElementById("sign-in-btn").addEventListener("click", () => {
-	signinContainer.style.display = "grid";
-	signin42Container.style.display = "none";
+DOM.signinBtn.addEventListener("click", () => {
+	DOM.signinInput.style.display = "grid";
+	DOM.oauthInput.style.display = "none";
+	DOM.clearInput(DOM.oauthInput);
 });
 
-signin2factor.addEventListener("click", () => {
-	const idInput = signinId.value;
-	const passwordInput = signinPassword.value;
+// check id and passsword when sign in
+DOM.signin2factor.addEventListener("click", () => {
+	const idInput = DOM.signinId.value;
+	const passwordInput = DOM.signinPassword.value;
 	if (idInput.length === 0 || idInput === "") {
 		alert(lang[langIndex].nullId);
 	} else if (passwordInput.length === 0 || passwordInput === "") {
@@ -122,30 +117,25 @@ signin2factor.addEventListener("click", () => {
 			"username": idInput,
 			"password": passwordInput
 		};
-		const uri = "/user/pre-login/";
-		fetch(uri, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(body),
-		}).then((request) => {
-			if (request.status === 200) {
+		const resFunc = function (res) {
+			if (res.status === 200) {
 				alert(lang[langIndex].sendCode);
-				signinCodeLabel.style.display = "block";
-				signinCode.style.display = "block";
-				signinBtn.style.display = "block";
+				DOM.signinCodeLabel.style.display = "block";
+				DOM.signinCode.style.display = "block";
+				DOM.signinSubmitBtn.style.display = "block";
 			} else {
-				alert(lang[langIndex].failCode);
+				throw lang[langIndex].failCode;
 			}
-		});
+		}
+		DOM.requestPost("/user/pre-login/", DOM.header, body, resFunc, alert);
 	}
 });
+
 // Sign in button
-signinBtn.addEventListener("click", () => {
-	const idInput = signinId.value;
-	const passwordInput = signinPassword.value;
-	const code = signinCode.value;
+DOM.signinSubmitBtn.addEventListener("click", () => {
+	const idInput = DOM.signinId.value;
+	const passwordInput = DOM.signinPassword.value;
+	const code = DOM.signinCode.value;
 	if (idInput.length === 0 || idInput === "") {
 		alert(lang[langIndex].nullId);
 	} else if (passwordInput.length === 0 || passwordInput === "") {
@@ -156,79 +146,68 @@ signinBtn.addEventListener("click", () => {
 });
 
 // Sign up
-signupBtn.addEventListener("click", () => {
-	removeSignin();
-	signup.style.display = "flex";
+DOM.signupBtn.addEventListener("click", () => {
+	DOM.clearInput(DOM.signinInput);
+	DOM.signinContent.style.display = "none";
+	DOM.signupContent.style.display = "flex";
 	sessionStorage.setItem("status", "signup");
 });
+
 // Verify email
-signupEmailSubmit.addEventListener("click", () => {
-	const email = signupEmail.value;
+DOM.signupEmailSubmit.addEventListener("click", () => {
+	const email = DOM.signupEmail.value;
 	if (email.length === 0 || email === "") {
 		alert(lang[langIndex].nullEmail);
 	} else {
 		const body = {
 			"email": email
 		};
-		const uri = "/user/email/";
-		fetch(uri, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(body),
-		}).then((response) => {
-			if (response.status === 200) {
+		const resFunc = function (res) {
+			if (res.status === 200) {
 				alert(lang[langIndex].sendCode);
-				signupCode.style.display = "flex";
-				signupCodeLabel.style.display = "block";
-				signupCodeSubmit.style.display = "block";
+				DOM.signupCode.style.display = "flex";
+				DOM.signupCodeLabel.style.display = "block";
+				DOM.signupCodeSubmit.style.display = "block";
 			} else {
-				alert(lang[langIndex].failCode);
+				throw lang[langIndex].failCode;
 			}
-		});
+		}
+		DOM.requestPost("/user/email/", DOM.header, body, resFunc, alert);
 	}
 });
+
 // Verify email code
-signupCodeSubmit.addEventListener("click", () => {
-	const code = signupCodeInput.value;
+DOM.signupCodeSubmit.addEventListener("click", () => {
+	const code = DOM.signupCodeInput.value;
 	if (code.length === 0 || code === "") {
 		alert(lang[langIndex].nullCode);
 	} else {
-		const uri = "/user/email-check/";
 		const body = {
-			"email": signupEmail.value,
+			"email": DOM.signupEmail.value,
 			"code": code
 		};
-		try {
-			fetch(uri, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(body),
-			}).then((response) => {
-				if (response.status === 200) {
-					alert(lang[langIndex].successVerify);
-				} else {
-					alert(lang[langIndex].failVerify);
-				}
-			});
-		} catch (error) {
-			console.log(error);
-		}
-		signupSubmit.style.display = "block";
+		const resFunc = function (res) {
+			if (res.status === 200) {
+				alert(lang[langIndex].successVerify);
+				DOM.signupSubmit.style.display = "block";
+			} else {
+				throw lang[langIndex].failVerify;
+			}
+		};
+		DOM.requestPost("/user/email-check/", DOM.header, body, resFunc, alert);
 	}
 });
+
 // undo
-signupCancel.addEventListener("click", () => {
+DOM.signupCancel.addEventListener("click", () => {
 	cancelSignup();
 });
-// send to server
-signupSubmit.addEventListener("click", () => {
-	const idInput = signupId.value;
-	const passwordInput = signupPassword.value;
-	const checkPassword = signupCheckPassword.value;
+
+// send id, password and email when sign up
+DOM.signupSubmit.addEventListener("click", () => {
+	const idInput = DOM.signupId.value;
+	const passwordInput = DOM.signupPassword.value;
+	const checkPassword = DOM.signupCheckPassword.value;
 	const emailInput = document.getElementById("sign-up-email").value;
 	if (idInput.length === 0 || idInput === "") {
 		alert(lang[langIndex].nullId);
@@ -246,94 +225,53 @@ signupSubmit.addEventListener("click", () => {
 			"password": passwordInput,
 			"email": emailInput
 		};
-		const uri = "/user/signup/";
-		fetch(uri, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(body),
-		}).then((response) => {
-			if (response.status === 201) {
+		const resFunc = function (res) {
+			if (res.status === 201) {
 				cancelSignup();
-			} else if (response.username) {
+			} else {
+				throw res;
+			}
+		}
+		const errFunc = function (error) {
+			if (error.username) {
 				alert(lang[langIndex].wrongId);
-			} else if (response.password) {
+			} else if (error.password) {
 				alert(lang[langIndex].wrongPassword);
-			} else if (response.email) {
+			} else if (error.email) {
 				alert(lang[langIndex].wrongEmail);
 			}
-		});
+		}
+		DOM.requestPost("/user/signup/", DOM.header, body, resFunc, errFunc);
 	}
 });
 
 // Log out
-logoutBtn.addEventListener("click", () => {
-	fetch("/user/logout/").then((response) => {
-		if (response.status === 205) {
+DOM.logoutBtn.addEventListener("click", () => {
+	const resFunc = function (res) {
+		if (res.status === 205) {
 			removeValue();
 			exit();
 			closeBracket();
 			logout();
-		} else {
-			alert(lang[langIndex].invalidToken);
+			return null;
 		}
-	});
+		return lang[langIndex].invalidToken
+	}
+	DOM.requestGet("/user/logout/", resFunc, alert);
 });
 
-export function logout() {
-	offlineContainer.style.display = "block";
-	signContainer.style.display = "block";
-	windowContainer.style.display = "none";
-	logoutBtn.style.display = "none";
-	signin.style.display = "flex";
-	signinCodeLabel.style.display = "none";
-	signinCode.style.display = "none";
-	signinBtn.style.display = "none";
-	sessionStorage.setItem("status", "signin");
-	sessionStorage.removeItem("game");
-}
-
-export function toSignup() {
-	signContainer.style.display = "block";
-	windowContainer.style.display = "none";
-	signin.style.display = "none";
-	signup.style.display = "flex";
-	sessionStorage.setItem("status", "signup");
-	sessionStorage.removeItem("game");
-}
-
-export function cancelSignup() {
-	signupId.value = "";
-	signupPassword.value = "";
-	signupCheckPassword.value = "";
-	signupEmail.value = "";
-	signupCodeInput.value = "";
-	signupCode.style.display = "none";
-	signupCodeSubmit.style.display = "none";
-	signupSubmit.style.display = "none";
-	signContainer.style.display = "block";
-	signin.style.display = "flex";
-
-	signup.style.display = "none";
-	sessionStorage.setItem("status", "signin");
-}
-
-export function toContent() {
-	signContainer.style.display = "none";
-	windowContainer.style.display = "block";
-	logoutBtn.style.display = "block";
-	sessionStorage.setItem("status", "offline");
-}
-
 // 42 oauth
-document.getElementById("sign-in-42-btn").addEventListener("click", () => {
+DOM.oauthBtn.addEventListener("click", () => {
 	sessionStorage.setItem("auth", "request");
 });
 
-document.getElementById("42-sign-in-submit").addEventListener("click", () => {
-	const code = document.getElementById("42-sign-in-code").value;
+DOM.oauthSubmit.addEventListener("click", () => {
+	const code = DOM.oauthCode.value;
 	sendCode(code);
 });
 
+history.pushState(null, null, location.href);
+window.onpopstate = function () {
+	history.go(1);
+};
 window.onload = isSuccessOauth();
