@@ -105,6 +105,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if self._role != None and self._connection:
             raise Exception("already in the room")
         
+        self._room_name = data["roomid"]
         if (await join_room(self._room_name, data["password"], self._username)):
             await self.channel_layer.group_discard(self._room_group_name,
                                                    self.channel_name)
