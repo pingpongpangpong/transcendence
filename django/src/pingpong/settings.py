@@ -207,3 +207,20 @@ CHANNEL_LAYERS = {
 }
 
 ALLOWED_HOSTS = ['backend', 'localhost', '127.0.0.1']
+
+## GAEN
+PLAYER1 = "player1"
+PLAYER2 = "player2"
+FRAME_PER_SEC = 1 / 60
+BALL_RADIUS = 0.1
+BALL_START_SLEEP = 1
+SPEED_START = 0.3
+HEIGHT_LIMIT = 3.3
+PADDLE = {
+    "width": 0.1,
+    "height": 0.8,
+}
+POSITION = {
+    "left": -4.8,
+    "right": 4.8
+}
