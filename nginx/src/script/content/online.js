@@ -98,6 +98,7 @@ showRoomList();
 
 // search
 DOM.searchBtn.addEventListener("click", () => {
+	const str = DOM.searchInput.value;
 	if (str.length === 0 || str === "") {
 		return;
 	}
@@ -155,7 +156,6 @@ DOM.roomSubmit.addEventListener("click", () => {
 	DOM.onlineContent.style.display = "none";
 	sessionStorage.setItem("game", "online");
 
-	const uri = "/game/create-room/";
 	const body = {
 		"roomname": roomName,
 		"gamepoint": gamePoint,
