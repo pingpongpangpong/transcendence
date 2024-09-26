@@ -9,7 +9,7 @@ REDIS_PORT = os.getenv("REDIS_PORT")
 
 r = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
-def save_room(roomname: str, password: str, goal_point: int, player1: str) -> None:
+def save_room(roomname: str, password: str, goal_point: int, player1: str) -> uuid:
 	"""
 	방 정보를 Redis에 저장하는 함수
 
@@ -44,6 +44,7 @@ def save_room(roomname: str, password: str, goal_point: int, player1: str) -> No
 	}
     
 	r.set(room_key, json.dumps(room_data))
+	return roomid
 
 def get_roomlist() -> list:
 	"""
