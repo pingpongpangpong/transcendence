@@ -47,7 +47,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         await self.leaveRoom()
-        self._connection = False
         await self.channel_layer.group_discard(self._room_group_name,
                                                self.channel_name)
         await super().disconnect(close_code)
@@ -67,7 +66,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             elif type == "input":
                 await self.inputGame(data)
             elif type == "leave":
-                await self.leaveRoom()
+                await self.close()
             else:
                 raise ValueError("unknown type")
         except Exception as e:
@@ -96,7 +95,9 @@ class GameConsumer(AsyncWebsocketConsumer):
         self._room_group_name = self._room_name
         await self.channel_layer.group_add(self._room_group_name,
                                                self.channel_name)
-        await self.sendOne("created", {"player1": self._username})
+        await self.sendOne("joined", {
+            "player1": self._username,
+            "player2": None})
         self._role = settings.PLAYER1
         self._connection = True
     
@@ -133,8 +134,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             raise Exception("this user is not in the room")
         
         player1, player2, status = await ready_room(self._role, data["value"])
-        if player1 and player2 and not status:
-            self._game_session = asyncio.create_task(self.startGame())
         await self.channel_layer.group_send(self._room_group_name,
                                             {
                                                 "type": "sendAll",
@@ -144,13 +143,15 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                     "player2": player2
                                                     }
                                             })
+        if player1 and player2 and not status:
+            self._game_session = asyncio.create_task(self.startGame())
         
 
     async def startGame(self):
         if self._gamemanager:
             raise Exception("already is started")
         
-        room = await get_room(self._room_name)
+        room = await start_game(self._room_name)
         await self.channel_layer.group_send(self._room_group_name,
                                             {
                                                 "type": "sendAll",
@@ -178,6 +179,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         
         self._gamemanager.playerInput(self._role, data["input"], data["value"])
 
+
     async def leaveRoom(self):
         if self._connection:
             await leave_room(self._room_name, self._username)
@@ -190,9 +192,10 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.channel_layer.group_send(self._room_group_name,
                                             {
                                                 "type": "sendAll",
-                                                "status": "winner",
+                                                "status": "over",
                                                 "data": {"winner": winner}
                                             })
+            if self._gamemanager != None:
                 self._game_session.cancel()
                 try:
                     await self._game_session
@@ -208,3 +211,4 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                         "player2": room["player2"]
                                                         }
                                                 })
+        self._connection = False
