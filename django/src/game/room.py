@@ -68,7 +68,7 @@ def get_roomlist() -> list:
 			room_list.append(filtered_room)
 	return room_list
 
-def join_room(roomid: uuid, password: int, player2: str) -> bool:
+def join_room(roomid: uuid, password: int, player2: str) -> tuple:
 	"""
 	방 참가하는 함수
 
@@ -81,7 +81,7 @@ def join_room(roomid: uuid, password: int, player2: str) -> bool:
 		ValueError: roomid 또는 password가 잘못된 경우
 
 	Return:
-		bool: 참여 성공 True, 참여 실패 False
+		tuple: 참여 성공시 (player1, player2, True), 참여 실패시 (None, None, False)
 	"""
 	room_key = f'room:{roomid}'
 	room_json = r.get(room_key)
@@ -97,9 +97,9 @@ def join_room(roomid: uuid, password: int, player2: str) -> bool:
 		room_data['player2'] = player2
 		room_data['status'] = False 
 		r.set(room_key, json.dumps(room_data)) 
-		return True 
+		return room_data.get('player1'), room_data.get('player2'), True
 	else:
-		return False 
+		return None, None, False # None None bool
 
 def search_room(input: str, option: str) -> list:
 	"""
@@ -146,6 +146,9 @@ def leaveRoom(roomid: uuid, username: str) -> tuple:
 	Args:
 		roomid (uuid): 방 고유번호
 		username (str): 나간 유저 아이디
+	
+	Return:
+		tuple: player1, player2
 	"""
 	key = r.keys(f'room:{roomid}')
 	room_data = json.loads(r.get(key))
