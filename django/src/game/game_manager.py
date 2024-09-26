@@ -16,4 +16,4 @@ class GameManager:
         while winner is None:
             winner = self._game.update()
             yield "running", self._game.getJson()
-        yield "winner", {"winner": winner}
+        yield "over", {"winner": winner}

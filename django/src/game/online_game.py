@@ -41,6 +41,5 @@ class Game:
         return {
             "player1": self._player1.getJson(),
             "player2": self._player2.getJson(),
-            "ball": self._ball.getJson(),
-            "goalpoint": self._gamepoint
+            "ball": self._ball.getJson()
         }
