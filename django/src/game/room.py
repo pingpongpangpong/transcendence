@@ -37,6 +37,9 @@ def save_room(roomname: str, password: str, goal_point: int, player1: str) -> No
 		'player1': player1,
 		'player2': None,
 		'status': True,
+		'ready1': False,
+		'ready2': False,
+		'play': False,
 		'roomid': roomid
 	}
     
@@ -139,19 +142,23 @@ def delete_room(roomid: uuid) -> bool:
 		return True
 	return False
 
-def leaveRoom(roomid: uuid, username: str) -> tuple:
+def leave_room(roomid: uuid, username: str) -> tuple:
 	"""
 	참여자 또는 방장이 방을 나갔을 때
 
 	Args:
 		roomid (uuid): 방 고유번호
 		username (str): 나간 유저 아이디
-	
+
+	Raise:
+		ValueError: 입력값이 틀렸을때
+
 	Return:
 		tuple: player1, player2
 	"""
-	key = r.keys(f'room:{roomid}')
-	room_data = json.loads(r.get(key))
+	if (r.exists(f'room:{roomid}') != False):
+		raise ValueError("Invalid roomid")
+	room_data = json.loads(r.get(f'room:{roomid}'))
 	host = room_data.get('player1')
 	participants = room_data.get('player1')
 
@@ -163,7 +170,8 @@ def leaveRoom(roomid: uuid, username: str) -> tuple:
 
 	room_data['player2'] = None
 	room_data['status'] = True
-
+	room_data['ready1'] = False
+	room_data['ready2'] = False
 
 	if (username == host and room_data.get(participants) == None):
 		delete_room(roomid)
@@ -172,3 +180,60 @@ def leaveRoom(roomid: uuid, username: str) -> tuple:
 		r.set(f'room:{roomid}', room_data)
 
 	return room_data.get('player1'), room_data.get('player2')
+
+
+def start_game(roomid: uuid, play: bool) -> dict:
+	"""
+	게임 시작 버튼을 눌렀을때 상태값을 변경하는 함수
+
+	Args:
+		roomid (uuid): 방 고유 번호
+		play: 시작시 True
+
+	Raise:
+		ValueError: 입력값이 틀렸을 때
+
+	Return:
+		dict: {player1, player2, goal_point}
+	"""
+	if (r.exists(f'room:{roomid}') != False):
+		raise ValueError("Invalid roomid")
+	room_data = json.loads(r.get(f'room:{roomid}'))
+	room_data['play'] = play
+	r.set(f'room:{roomid}', room_data)
+
+	result = {
+		'player1': room_data.get('player1'),
+		'player2': room_data.get('player2'),
+		'goal_point': room_data.get('goal_point')
+		}
+	return result
+
+def ready_game(roomid: uuid, role: str, ready: bool) -> tuple:
+	"""
+	플레이어가 방에서 준비를 눌렀을때 상태값을 변경하는 함태
+
+	Args:
+		roomid (uuid): 방 고유 번호
+		role (str): 누른 사람이 player1, player2인지
+		ready (bool): 준비했는지 취소했는지
+
+		Raise:
+		ValueError: 입력값이 틀렸을 때
+
+		Return:
+		tuple: player1과 player2의 'ready'상태 값 반환
+	"""
+	if (r.exists(f'room:{roomid}') != False):
+		raise ValueError("Invalid roomid")
+	if (role != 'player1' and role != 'player2'):
+		raise ValueError("Invalid role")
+
+	room_data = json.loads(r.get(f'room:{roomid}'))
+	if (role == 'player1'):
+		room_data['ready1'] = ready
+	if (role == 'player2'):
+		room_data['ready2'] = ready
+
+	r.set(f'room:{roomid}', room_data)
+	return room_data.get('ready1'), room_data.get('ready2')
