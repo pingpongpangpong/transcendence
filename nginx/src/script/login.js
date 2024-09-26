@@ -237,7 +237,7 @@ DOM.logoutBtn.addEventListener("click", () => {
 			logout();
 			return null;
 		}
-		return lang[langIndex].invalidToken
+		throw lang[langIndex].invalidToken
 	}
 	DOM.requestGet("/user/logout/", resFunc, alert);
 });
