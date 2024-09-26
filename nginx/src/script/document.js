@@ -78,6 +78,14 @@ export const roomPassword = document.getElementById("online-password");
 export const roomCancel = document.getElementById("online-room-cancel");
 export const roomSubmit = document.getElementById("online-room-submit");
 export const roomList = document.getElementById("room-list");
+// room
+export const room = document.getElementById("waiting-room");
+export const hostName = document.getElementById("host-name");
+export const hostStatus = document.getElementById("host-status");
+export const guestName = document.getElementById("guest-name");
+export const guestStatus = document.getElementById("guest-status");
+export const readyBtn = document.getElementById("ready");
+export const quitRoomBtn = document.getElementById("quit");
 
 // footer
 export const gamePoint = document.getElementById("show-game-point");
@@ -119,7 +127,11 @@ export function requestPost(uri, header, body, resFunc, errFunc) {
 export function clearInput(container) {
 	const inputList = container.querySelectorAll("input");
 	for (let i = 0; i < inputList.length; i++) {
-		inputList[i].value = "";
+		if (inputList[i].type === "number") {
+			inputList[i].value = 10;
+		} else {
+			inputList[i].value = "";
+		}
 	}
 }
 

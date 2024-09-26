@@ -42,6 +42,17 @@ h4, h6 {
 	flex-direction: column;
 	align-items: center;
 }
+#waiting-room {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-evenly;
+	height: 100%;
+	width: 100%;
+}
+#quit {
+	height: 100%;
+}
 #lang-option {
 	width: 0px;
 }
@@ -103,6 +114,34 @@ h4, h6 {
 }
 .setting {
 	width: 450px;
+}
+.row-1 {
+	height: 70%;
+	width: 100%;
+}
+.flex-container {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+.item {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.item-1 {
+	flex-grow: 1;
+}
+.item-2 {
+	height: 15%;
+}
+.row-2 {
+	height: 10%;
+	width: 70%;
+}
+.room-btns {
+	height: 100%;
 }
 .field-row-stacked {
 	width: 200px;

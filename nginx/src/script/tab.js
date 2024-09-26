@@ -28,6 +28,7 @@ function moveTo(where) {
 	exit();
 	closeBracket();
 	closeRoomSetting();
+	DOM.room.style.display = "none";
 	where();
 }
 
@@ -63,9 +64,9 @@ export function removeValue() {
 export function checkUser() {
 	const resFunc = function (res) {
 		if (res.status !== 200) {
-			return lang[langIndex].invalidTsubmiten;
+			throw lang[langIndex].invalidTsubmiten;
 		}
-		return null;
+		return;
 	}
 	const errFunc = function (err) {
 		if (err) {
@@ -105,7 +106,7 @@ window.addEventListener("load", () => {
 		const resFunc = function (res) {
 			if (res.status !== 200) {
 				logout();
-				return lang[langIndex].invalidTsubmiten;
+				throw lang[langIndex].invalidTsubmiten;
 			}
 			const status = sessionStorage.getItem("status");
 			const game = sessionStorage.getItem("game");

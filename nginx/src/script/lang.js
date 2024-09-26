@@ -38,6 +38,10 @@ export function changeLang() {
 	DOM.roomInfo.innerText = lang[langIndex].mSet;
 	DOM.roomNameLabel.innerText = lang[langIndex].roomName;
 	DOM.roomCancel.innerHTML = lang[langIndex].cancel;
+	//room
+	const isReady = sessionStorage.getItem("isReady");
+	DOM.readyBtn.innerHTML = (isReady ? lang[langIndex].cancel : lang[langIndex].ready);
+	DOM.quitRoomBtn.innerHTML = lang[langIndex].quit;
 	// footer
 	DOM.gamePoint.innerText = `${lang[langIndex].gamePoint}: `;
 	
