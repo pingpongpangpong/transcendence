@@ -56,6 +56,8 @@
 		"alPassword": "비밀번호는 4글자 이상이어야 합니다.",
 		"failMakeRoom": "방 만들기에 실패했습니다.",
 		"roomIsFull": "방에 이미 누군가가 있습니다.",
+		"ready": "준비",
+		"quit": "나가기",
 		"win": " 승리!"
 	},
 	"en": {
@@ -115,6 +117,8 @@
 		"alPassword": "The password must be at least 4 characters long.",
 		"failMakeRoom": "Failed to create room.",
 		"roomIsFull": "The room is already full.",
+		"ready": "Ready",
+		"quit": "Quit",
 		"win": " is winner!"
 	},
 	"jp": {
@@ -174,6 +178,8 @@
 		"alPassword": "パスワードは4文字以上でなければなりません。",
 		"failMakeRoom": "ルームの作成に失敗しました。",
 		"roomIsFull": "ルームはすでに満室です。",
+		"ready": "スタート",
+		"quit": "出る",
 		"win": "の勝利!"
 	}
 }

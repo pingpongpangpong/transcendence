@@ -1,7 +1,7 @@
 import * as DOM from "../document.js";
 import { lang, langIndex } from "../lang.js";
 import { checkUser } from "../tab.js";
-import { online, join } from "./feature.js";
+import { online, join, quitRoom } from "./feature.js";
 import { getGamePoint } from "./feature.js";
 
 function makeRoom(room) {
@@ -65,11 +65,11 @@ function makeRoom(room) {
 		const resFunc = function (res) {
 			if (res.status === 200) {
 				join();
-				return null;
+				return;
 			} else if (res.status === 409) {
-				return lang[langIndex].roomIsFull;
+				throw lang[langIndex].roomIsFull;
 			}
-			return lang[langIndex].wrongPassword
+			throw lang[langIndex].wrongPassword
 		}
 		DOM.requestPost("/game/join-room/", DOM.header, body, resFunc, alert);
 	});
@@ -94,7 +94,28 @@ function paintRoom(uri, params) {
 	})
 }
 
-showRoomList();
+export function openRoomSetting() {
+	DOM.onlineContent.style.display = "none";
+	DOM.roomSetting.style.display = "block";
+	sessionStorage.setItem("status", "makeRoom");
+}
+
+export function closeRoomSetting() {
+	DOM.onlineContent.style.display = "block";
+	DOM.roomSetting.style.display = "none";
+	DOM.clearInput(DOM.roomSetting);
+	sessionStorage.setItem("status", "online");
+}
+
+export function showRoomList() {
+	if (DOM.onlineContent.style.display === "none") {
+		return;
+	}
+	while (DOM.roomList.firstChild) {
+		DOM.roomList.removeChild(DOM.roomList.firstChild);
+	}
+	paintRoom("/game/list-room/", null);
+}
 
 // search
 DOM.searchBtn.addEventListener("click", () => {
@@ -113,19 +134,13 @@ DOM.searchBtn.addEventListener("click", () => {
 });
 
 // refresh
-DOM.refreshBtn.addEventListener("click", () => {
-	showRoomList();
-});
+DOM.refreshBtn.addEventListener("click", () => {showRoomList();});
 
 // open room setting
-DOM.roomBtn.addEventListener("click", () => {
-	openRoomSetting();
-});
+DOM.roomBtn.addEventListener("click", () => {openRoomSetting();});
 
 // close room setting
-DOM.roomCancel.addEventListener("click", () => {
-	closeRoomSetting();
-});
+DOM.roomCancel.addEventListener("click", () => {closeRoomSetting();});
 
 // make room
 DOM.roomSubmit.addEventListener("click", () => {
@@ -166,29 +181,22 @@ DOM.roomSubmit.addEventListener("click", () => {
 			online(gamePoint, password);
 			return null;
 		}
-		return lang[langIndex].failMakeRoom;
+		throw lang[langIndex].failMakeRoom;
 	}
 	DOM.requestPost("/game/create-room/", DOM.header, body, resFunc, alert);
 });
 
-export function openRoomSetting() {
-	DOM.onlineContent.style.display = "none";
-	DOM.roomSetting.style.display = "block";
-	sessionStorage.setItem("status", "makeRoom");
-}
-
-export function closeRoomSetting() {
-	DOM.onlineContent.style.display = "block";
-	DOM.roomSetting.style.display = "none";
-	sessionStorage.setItem("status", "online");
-}
-
-export function showRoomList() {
-	if (DOM.onlineContent.style.display === "none") {
-		return;
+// ready
+DOM.readyBtn.addEventListener("click", () => {
+	const isRead = sessionStorage.getItem("isReady");
+	if (isRead) {
+		sessionStorage.removeItem("isReady");
+		DOM.readyBtn.innerHTML = lang[langIndex].ready;
+	} else {
+		sessionStorage.setItem("isReady", "true");
+		DOM.readyBtn.innerHTML = lang[langIndex].cancel;
 	}
-	while (DOM.roomList.firstChild) {
-		DOM.roomList.removeChild(DOM.roomList.firstChild);
-	}
-	paintRoom("/game/list-room/", null);
-}
+});
+
+// quit room
+DOM.quitRoomBtn.addEventListener("click", () => {quitRoom();});
