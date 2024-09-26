@@ -1,6 +1,6 @@
 import json, os, uuid, asyncio, time
 from game_manager import GameManager
-from room import save_room, get_room, join_room, leave_room
+from room import save_room, ready_room, join_room, leave_room, start_game
 from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.contrib.auth.models import User
@@ -24,6 +24,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self._role = None
         self._connection = False
+        self._in_game = False
         self._gamemanager: GameManager = None
         sessionid = self.scope["cookies"].get("sessionid", None)
 
@@ -38,7 +39,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_add(self._room_group_name,
                                                self.channel_name)
             await self.accept()
-            await self.sendOne("established")
 
         except Exception as e:
             await self.sendOne("exception", {"detail": str(e)})
@@ -83,7 +83,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         
 
     async def createRoom(self, data):
-        if self._role != None and self._connection:
+        if self._role != None or self._connection:
             raise Exception("already in the room")
         self._room_name = await save_room(data["roomname"],
                      data["password"],
@@ -95,45 +95,93 @@ class GameConsumer(AsyncWebsocketConsumer):
         self._room_group_name = self._room_name
         await self.channel_layer.group_add(self._room_group_name,
                                                self.channel_name)
-        await self.sendOne("joined", {
-            "player1": self._username,
-            "player2": None})
-        self._role = settings.PLAYER1
+        await self.channel_layer.group_send(self._room_group_name,
+                                                {
+                                                    "type": "sendJoin",
+                                                    "status": "joined",
+                                                    "data": {
+                                                        "player1": self._username,
+                                                        "player2": None
+                                                        }
+                                                })
         self._connection = True
-    
 
+    
     async def joinRoom(self, data):
-        if self._role != None and self._connection:
+        if self._role != None or self._connection:
             raise Exception("already in the room")
         
         self._room_name = data["roomid"]
-        if (await join_room(self._room_name, data["password"], self._username)):
+        player1, player2, status = await join_room(self._room_name,
+                                                   data["password"],
+                                                   self._username)
+        if (status):
             await self.channel_layer.group_discard(self._room_group_name,
                                                    self.channel_name)
             self._room_group_name = self._room_name
             await self.channel_layer.group_add(self._room_group_name,
                                                 self.channel_name)
-            room = await get_room(self._room_name)
             await self.channel_layer.group_send(self._room_group_name,
                                                 {
-                                                    "type": "sendAll",
+                                                    "type": "sendJoin",
                                                     "status": "joined",
                                                     "data": {
-                                                        "player1": room["player1"],
-                                                        "player2": room["player2"]
+                                                        "player1": player1,
+                                                        "player2": player2
                                                         }
                                                 })
-            self._role = settings.PLAYER2
             self._connection = True
         else:
             await self.sendOne("cant_join")
             await self.close()
+
+
+    async def leaveRoom(self):
+        if self._connection:
+            self._connection = False
+            player1, player2 = await leave_room(self._room_name, self._username)
+            if self._in_game:
+                self._role = None
+                self._in_game = False
+                await self.channel_layer.group_send(self._room_group_name,
+                                            {
+                                                "type": "sendOver",
+                                                "status": "over",
+                                                "data": {"winner": player1}
+                                            })
+                if self._gamemanager != None:
+                    self._game_session.cancel()
+                    try:
+                        await self._game_session
+                    except asyncio.CancelledError:
+                        pass
+            else:
+                await self.channel_layer.group_send(self._room_group_name,
+                                                {
+                                                    "type": "sendJoin",
+                                                    "status": "joined",
+                                                    "data": {
+                                                        "player1": player1,
+                                                        "player2": player2
+                                                        }
+                                                })
+
+
+    async def sendJoin(self, msg):
+        if self._username == msg["data"]["player1"]:
+            self._role = settings.PLAYER1
+        elif self._username == msg["data"]["player2"]:
+            self._role = settings.PLAYER2
+        await self.send(text_data=json.dumps({"type": msg["status"],
+                                              "data": msg["data"]}))
         
     async def readyGame(self, data):
-        if self._role == None and self._connection == False:
+        if self._role == None or self._connection == False:
             raise Exception("this user is not in the room")
+        if  self._in_game:
+            raise Exception("already is started")
         
-        player1, player2, status = await ready_room(self._role, data["value"])
+        player1, player2 = await ready_room(self._room_name, self._role, data["value"])
         await self.channel_layer.group_send(self._room_group_name,
                                             {
                                                 "type": "sendAll",
@@ -143,72 +191,73 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                     "player2": player2
                                                     }
                                             })
-        if player1 and player2 and not status:
+        if player1 and player2:
             self._game_session = asyncio.create_task(self.startGame())
         
 
     async def startGame(self):
-        if self._gamemanager:
+        if self._in_game:
             raise Exception("already is started")
         
         room = await start_game(self._room_name)
         await self.channel_layer.group_send(self._room_group_name,
                                             {
-                                                "type": "sendAll",
+                                                "type": "sendStart",
                                                 "status": "start",
                                                 "data": room
                                             })
         self._gamemanager = await GameManager(room)
 
-        for status, data in self._gamemanager.getFrame():
+        for data in self._gamemanager.getFrame():
             await self.channel_layer.group_send(self._room_group_name,
                                             {
                                                 "type": "sendAll",
-                                                "status": status,
+                                                "status": "running",
                                                 "data": data
                                             })
-            await time.sleep(settings.FRAME_PER_SEC)
+            await asyncio.sleep(settings.FRAME_PER_SEC)
 
+        winner = self._gamemanager.getWinner()
+        await self.channel_layer.group_send(self._room_group_name,
+                                        {
+                                            "type": "sendOver",
+                                            "status": "over",
+                                            "data": {"winner": winner}
+                                        })
         del self._gamemanager
         self._gamemanager = None
 
+    async def sendStart(self, msg):
+        self._in_game = True
+        await self.send(text_data=json.dumps({"type": msg["status"],
+                                              "data": msg["data"]}))
+
 
     async def inputGame(self, data):
-        if self._gamemanager == None or self._connection == False:
+        if self._in_game == False:
             raise Exception("game is not started")
         
-        self._gamemanager.playerInput(self._role, data["input"], data["value"])
-
-
-    async def leaveRoom(self):
-        if self._connection:
-            await leave_room(self._room_name, self._username)
-            room = await get_room(self._room_name)
-            if room["in_game"]:
-                if self._role == settings.PLAYER1:
-                    winner = room["player2"]
-                elif self._role == settings.PLAYER2:
-                    winner = room["player1"]
-                await self.channel_layer.group_send(self._room_group_name,
+        if self._gamemanager:
+            self._gamemanager.playerInput(self._role, data["input"], data["value"])
+        else:
+            await self.channel_layer.group_send(self._room_group_name,
                                             {
-                                                "type": "sendAll",
-                                                "status": "over",
-                                                "data": {"winner": winner}
+                                                "type": "keyInput",
+                                                "who": self._role,
+                                                "input": data["input"],
+                                                "value": data["value"]
                                             })
-            if self._gamemanager != None:
-                self._game_session.cancel()
-                try:
-                    await self._game_session
-                except asyncio.CancelledError:
-                    pass
-            else:
-                await self.channel_layer.group_send(self._room_group_name,
-                                                {
-                                                    "type": "sendAll",
-                                                    "status": "joined",
-                                                    "data": {
-                                                        "player1": room["player1"],
-                                                        "player2": room["player2"]
-                                                        }
-                                                })
-        self._connection = False
+            
+    async def keyInput(self, data):
+        if self._gamemanager:
+            self._gamemanager.playerInput(data["who"], data["input"], data["value"])
+
+
+
+    async def sendOver(self, msg):
+        if self._connection:
+            
+            self._role = None
+            await self.send(text_data=json.dumps({"type": msg["status"],
+                                              "data": msg["data"]}))
+            await self.close()
