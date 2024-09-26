@@ -2,7 +2,7 @@ import json
 import requests
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt # 지워야함
-from .room import save_room, get_roomlist, join_room, search_room
+from .room import save_room, get_roomlist, join_room, search_room, delete_room
 
 @csrf_exempt # 지워야함
 def createRoom(request):
@@ -59,6 +59,24 @@ def searchRoom(request):
         except ValueError:
             return HttpResponse("key error", status=400)
 
+# def deleteRoom(request):
+#     if request.method == 'POST':
+#         n = delete_room(json.loads(request.body).get("roomid"))
+#         if (n == 0):
+#             return HttpResponse("Invalid roomid", status=400)
+#         return HttpResponse("ok", status=200)
+
+
+# def exitPlayer(request):
+#     if request.method == 'POST':
+#         try:
+#             data_json = json.loads(request.body)
+#             roomList = Room.objects.filter(player1=data_json['player'])
+#             for room in roomList:
+#                 room.delete()
+#         except KeyError:
+#             return HttpResponse("key error", status=400)
+
 # def finishRoom(request):
 #     if request.method == 'POST':
 #         try:
@@ -71,15 +89,6 @@ def searchRoom(request):
 #         except KeyError:
 #             return HttpResponse("key error", status=400)
 
-# def exitPlayer(request):
-#     if request.method == 'POST':
-#         try:
-#             data_json = json.loads(request.body)
-#             roomList = Room.objects.filter(player1=data_json['player'])
-#             for room in roomList:
-#                 room.delete()
-#         except KeyError:
-#             return HttpResponse("key error", status=400)
 
 
 def login42(request):

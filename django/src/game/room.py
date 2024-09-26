@@ -133,3 +133,39 @@ def search_room(input: str, option: str) -> list:
 		if field_value and input in str(field_value):
 			matching_rooms.append(room_data)
 	return matching_rooms
+
+def delete_room(roomid: uuid) -> bool:
+	if r.delete(f'room:{roomid}'):
+		return True
+	return False
+
+def leaveRoom(roomid: uuid, username: str) -> tuple:
+	"""
+	참여자 또는 방장이 방을 나갔을 때
+
+	Args:
+		roomid (uuid): 방 고유번호
+		username (str): 나간 유저 아이디
+	"""
+	key = r.keys(f'room:{roomid}')
+	room_data = json.loads(r.get(key))
+	host = room_data.get('player1')
+	participants = room_data.get('player1')
+
+	if (username != host and username != participants):
+		raise ValueError("Invalid username")
+
+	if (username == host and room_data.get(participants)):
+		room_data['player1'] = participants
+
+	room_data['player2'] = None
+	room_data['status'] = True
+
+
+	if (username == host and room_data.get(participants) == None):
+		delete_room(roomid)
+		room_data['player1'] = None
+	else:
+		r.set(f'room:{roomid}', room_data)
+
+	return room_data.get('player1'), room_data.get('player2')
