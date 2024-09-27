@@ -20,7 +20,6 @@ def createRoom(request):
         except KeyError:
             return HttpResponse("key error", status=404)
 
-@csrf_exempt # 지워야함
 def listRoom(request):
     if request.method == 'GET':
         try:

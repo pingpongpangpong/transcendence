@@ -1,6 +1,6 @@
 import json, os, uuid, asyncio, time
 from game_manager import GameManager
-from room import save_room, ready_room, join_room, leave_room, start_game
+from room import save_room, ready_game, join_room, leave_room, start_game
 from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.contrib.auth.models import User
@@ -85,6 +85,8 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def createRoom(self, data):
         if self._role != None or self._connection:
             raise Exception("already in the room")
+        if len(data["roomname"] > 20 or len(data["password"]) or data["goalpoin"] < 20):
+            self.close()
         self._room_name = await save_room(data["roomname"],
                      data["password"],
                      data["goalpoint"],
@@ -181,7 +183,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if  self._in_game:
             raise Exception("already is started")
         
-        player1, player2 = await ready_room(self._room_name, self._role, data["value"])
+        player1, player2 = await ready_game(self._room_name, self._role, data["value"])
         await self.channel_layer.group_send(self._room_group_name,
                                             {
                                                 "type": "sendAll",
