@@ -34,7 +34,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             
             self._username = await getUsername(sessionid)
             self._room_name = self.scope["url_route"]["kwargs"]["room_name"]
-            self._room_group_name = await str(uuid.uuid4())
+            self._room_group_name = self._room_name
             
             await self.channel_layer.group_add(self._room_group_name,
                                                self.channel_name)

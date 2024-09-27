@@ -49,7 +49,7 @@ server {
 	}
 
 	location /ws {
-		proxy_pass https://django;
+		proxy_pass https://backend;
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade \$http_upgrade;
 		proxy_set_header Connection \"Upgrade\";
