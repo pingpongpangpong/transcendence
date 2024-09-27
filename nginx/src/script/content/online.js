@@ -61,24 +61,8 @@ function makeRoom(room) {
 		try {
 			NET.joinRoom(roomName, room.roomid, password);
 		} catch (error) {
-			alert(error);
-			NET.websocket = null;
-			backToOnline();
+			errorConnect();
 		}
-		//const body = {
-		//	"roomid": room.roomid,
-		//	"password": (input ? input.value : ""),
-		//}
-		//const resFunc = function (res) {
-		//	if (res.status === 200) {
-		//		join();
-		//		return;
-		//	} else if (res.status === 409) {
-		//		throw lang[langIndex].roomIsFull;
-		//	}
-		//	throw lang[langIndex].wrongPassword
-		//}
-		//NET.requestPost("/game/join-room/", DOM.header, body, resFunc, alert);
 	});
 }
 
@@ -103,10 +87,13 @@ function paintRoom(uri, params) {
 
 function errorConnect() {
 	alert(lang[langIndex].failConnect);
-	NET.websocket = null;
 	DOM.onlineContent.style.display = "block";
 	DOM.room.style.display = "none";
+	DOM.roomSetting.style.display = "none";
+	DOM.clearInput(DOM.roomSetting);
 	sessionStorage.removeItem("isReady");
+	sessionStorage.removeItem("game");
+	sessionStorage.setItem("status", "online");
 }
 
 export function openRoomSetting() {
@@ -190,19 +177,6 @@ DOM.roomSubmit.addEventListener("click", () => {
 	} catch (error) {
 		errorConnect();
 	}
-	//const body = {
-	//	"roomname": roomName,
-	//	"gamepoint": gamePoint,
-	//	"password": password
-	//};
-	//const resFunc = function (res) {
-	//	if (res.status === 200) {
-	//		online(gamePoint, password);
-	//		return null;
-	//	}
-	//	throw lang[langIndex].failMakeRoom;
-	//}
-	//NET.requestPost("/game/create-room/", DOM.header, body, resFunc, alert);
 });
 
 // ready

@@ -110,7 +110,7 @@ DOM.signin2factor.addEventListener("click", () => {
 				throw lang[langIndex].failCode;
 			}
 		}
-		NET.requestPost("/user/pre-login/", DOM.header, body, resFunc, alert);
+		NET.requestPost("/user/pre-login/", NET.header, body, resFunc, alert);
 	}
 });
 
@@ -155,7 +155,7 @@ DOM.signupEmailSubmit.addEventListener("click", () => {
 				throw lang[langIndex].failCode;
 			}
 		}
-		NET.requestPost("/user/email/", DOM.header, body, resFunc, alert);
+		NET.requestPost("/user/email/", NET.header, body, resFunc, alert);
 	}
 });
 
@@ -177,7 +177,7 @@ DOM.signupCodeSubmit.addEventListener("click", () => {
 				throw lang[langIndex].failVerify;
 			}
 		};
-		NET.requestPost("/user/email-check/", DOM.header, body, resFunc, alert);
+		NET.requestPost("/user/email-check/", NET.header, body, resFunc, alert);
 	}
 });
 
@@ -224,7 +224,7 @@ DOM.signupSubmit.addEventListener("click", () => {
 				alert(lang[langIndex].wrongEmail);
 			}
 		}
-		NET.requestPost("/user/signup/", DOM.header, body, resFunc, errFunc);
+		NET.requestPost("/user/signup/", NET.header, body, resFunc, errFunc);
 	}
 });
 

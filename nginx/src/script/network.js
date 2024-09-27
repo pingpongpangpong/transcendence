@@ -1,5 +1,5 @@
 import * as DOM from "./document.js";
-import { lang } from "./lang";
+import { lang, langIndex } from "./lang.js";
 import { Game } from "./object/game.js";
 
 export const header = {
@@ -131,11 +131,9 @@ export function exitGame() {
 window.addEventListener("beforeunload", () => {
 	quitRoom();
 	websocket.close();
-	websocket = null;
 });
 
 window.addEventListener("unload", () => {
 	quitRoom();
 	websocket.close();
-	websocket = null;
 })
