@@ -27,9 +27,7 @@ export let websocket = null;
 
 function connect(roomName) {
 	websocket = new WebSocket(`wss://${window.location.host}/ws/${roomName}/`);
-	if (websocket === null) {
-		throw alert(lang[langIndex].failConnect);
-	}
+
 	websocket.onclose = () => {
 		websocket = null;
 	}

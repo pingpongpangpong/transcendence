@@ -85,11 +85,9 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def createRoom(self, data):
         if self._role != None or self._connection:
             raise Exception("already in the room")
-        if len(data["roomname"] > 20 or len(data["password"]) or data["goalpoin"] < 20):
-            self.close()
-        self._room_name = await save_room(data["roomname"],
+        self._room_name = save_room(data["roomname"],
                      data["password"],
-                     data["goalpoint"],
+                     int(data["goalpoint"]),
                      self._username)
         
         await self.channel_layer.group_discard(self._room_group_name,
@@ -114,7 +112,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             raise Exception("already in the room")
         
         self._room_name = data["roomid"]
-        player1, player2, status = await join_room(self._room_name,
+        player1, player2, status = join_room(self._room_name,
                                                    data["password"],
                                                    self._username)
         if (status):
@@ -141,7 +139,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def leaveRoom(self):
         if self._connection:
             self._connection = False
-            player1, player2 = await leave_room(self._room_name, self._username)
+            player1, player2 = leave_room(self._room_name, self._username)
             if self._in_game:
                 self._role = None
                 self._in_game = False
@@ -183,7 +181,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if  self._in_game:
             raise Exception("already is started")
         
-        player1, player2 = await ready_game(self._room_name, self._role, data["value"])
+        player1, player2 = ready_game(self._room_name, self._role, data["value"])
         await self.channel_layer.group_send(self._room_group_name,
                                             {
                                                 "type": "sendAll",
@@ -208,7 +206,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                 "status": "start",
                                                 "data": room
                                             })
-        self._gamemanager = await GameManager(room)
+        self._gamemanager = GameManager(room)
 
         for data in self._gamemanager.getFrame():
             await self.channel_layer.group_send(self._room_group_name,
