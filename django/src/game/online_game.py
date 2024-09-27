@@ -1,6 +1,6 @@
 import time
-from ball import Ball
-from player import Player
+from .ball import Ball
+from .player import Player
 from django.conf import settings
 
 class Game:

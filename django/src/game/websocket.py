@@ -1,6 +1,6 @@
 import json, os, uuid, asyncio, time
-from game_manager import GameManager
-from room import save_room, ready_game, join_room, leave_room, start_game
+from .game_manager import GameManager
+from .room import save_room, ready_game, join_room, leave_room, start_game
 from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.contrib.auth.models import User

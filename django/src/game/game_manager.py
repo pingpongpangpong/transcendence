@@ -1,4 +1,4 @@
-from online_game import Game
+from .online_game import Game
 from django.conf import settings
 
 class GameManager:

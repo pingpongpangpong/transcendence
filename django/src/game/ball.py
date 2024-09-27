@@ -1,7 +1,7 @@
 import random
 import math
 from django.conf import settings
-from player import Player
+from .player import Player
 
 class Ball:
     def __init__(self):
