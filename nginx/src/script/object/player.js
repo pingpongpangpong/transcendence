@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { websocket } from "../network.js";
 
 export class Player {
 	constructor(position, color, name, up, down) {
@@ -35,6 +36,22 @@ export class Player {
 			} else if (e.key === this.keyMap.down) {
 				this.keyInput.down = false;
 			}
+		});
+	}
+	online() {
+		window.addEventListener("keydown", (e) => {
+			let input = "";
+			if (e.key === "ArrowUp") {
+				input = "up";
+			} else if (e.key === "ArrowDown") {
+				input = "down";
+			}
+			const body = {
+				"type": "input",
+				"input": input,
+				"value": false
+			};
+			websocket.send(JSON.stringify(body));
 		});
 	}
 	move(deltatime) {

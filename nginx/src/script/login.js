@@ -1,4 +1,5 @@
 import * as DOM from "./document.js";
+import * as NET from "./network.js";
 import { changeLang, lang, langIndex } from "./lang.js";
 import { closeBracket } from "./content/feature.js";
 import { exit } from "./object/game.js";
@@ -14,7 +15,7 @@ function sendCode(code) {
 	}
 	const header = {
 		"Content-Type": "application/json",
-		"X-CSRFToken": DOM.getCookie("csrftoken")
+		"X-CSRFToken": NET.getCookie("csrftoken")
 	};
 	const body = {
 		"code": code
@@ -30,7 +31,7 @@ function sendCode(code) {
 			throw lang[langIndex].failsignin;
 		}
 	};
-	DOM.requestPost("/user/login/", header, body, resFunc, alert);
+	NET.requestPost("/user/login/", header, body, resFunc, alert);
 }
 
 export function logout() {
@@ -109,7 +110,7 @@ DOM.signin2factor.addEventListener("click", () => {
 				throw lang[langIndex].failCode;
 			}
 		}
-		DOM.requestPost("/user/pre-login/", DOM.header, body, resFunc, alert);
+		NET.requestPost("/user/pre-login/", NET.header, body, resFunc, alert);
 	}
 });
 
@@ -154,7 +155,7 @@ DOM.signupEmailSubmit.addEventListener("click", () => {
 				throw lang[langIndex].failCode;
 			}
 		}
-		DOM.requestPost("/user/email/", DOM.header, body, resFunc, alert);
+		NET.requestPost("/user/email/", NET.header, body, resFunc, alert);
 	}
 });
 
@@ -176,7 +177,7 @@ DOM.signupCodeSubmit.addEventListener("click", () => {
 				throw lang[langIndex].failVerify;
 			}
 		};
-		DOM.requestPost("/user/email-check/", DOM.header, body, resFunc, alert);
+		NET.requestPost("/user/email-check/", NET.header, body, resFunc, alert);
 	}
 });
 
@@ -223,7 +224,7 @@ DOM.signupSubmit.addEventListener("click", () => {
 				alert(lang[langIndex].wrongEmail);
 			}
 		}
-		DOM.requestPost("/user/signup/", DOM.header, body, resFunc, errFunc);
+		NET.requestPost("/user/signup/", NET.header, body, resFunc, errFunc);
 	}
 });
 
@@ -239,7 +240,7 @@ DOM.logoutBtn.addEventListener("click", () => {
 		}
 		throw lang[langIndex].invalidToken
 	}
-	DOM.requestGet("/user/logout/", resFunc, alert);
+	NET.requestGet("/user/logout/", resFunc, alert);
 });
 
 // 42 oauth

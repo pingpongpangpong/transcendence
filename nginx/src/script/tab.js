@@ -1,4 +1,5 @@
 import * as DOM from "./document.js";
+import * as NET from "./network.js";
 import { closeBracket } from "./content/feature.js";
 import { logout, toContent, toSignup } from "./login.js";
 import { exit } from "./object/game.js";
@@ -29,6 +30,13 @@ function moveTo(where) {
 	closeBracket();
 	closeRoomSetting();
 	DOM.room.style.display = "none";
+	const isGame = sessionStorage.getItem("game");
+	const isRoom = sessionStorage.getItem("status");
+	if (isGame) {
+		NET.exitGame();
+	} else if (isRoom === "inRoom") {
+		NET.quitRoom();
+	}
 	where();
 }
 
@@ -77,7 +85,7 @@ export function checkUser() {
 			logout();
 		}
 	}
-	DOM.requestGet("/user/check/", resFunc, errFunc);
+	NET.requestGet("/user/check/", resFunc, errFunc);
 }
 
 DOM.offlineTab.addEventListener("click", () => {
@@ -124,6 +132,6 @@ window.addEventListener("load", () => {
 			}
 			return null;
 		}
-		DOM.requestGet("/user/check/", resFunc, alert);
+		NET.requestGet("/user/check/", resFunc, alert);
 	}
 });

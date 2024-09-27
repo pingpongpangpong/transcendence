@@ -57,30 +57,6 @@ export async function tournament(gamePoint, nameList) {
 	}
 }
 
-export function onRoom() {
-	DOM.onlineContent.style.display = "none";
-	DOM.room.style.display = "flex";
-	DOM.readyBtn.innerHTML = lang[langIndex].ready;
-	sessionStorage.removeItem("isReady");
-}
-
-export function quitRoom() {
-	DOM.onlineContent.style.display = "block";
-	DOM.room.style.display = "none";
-	sessionStorage.removeItem("isReady");
-}
-
-export function online(gamePoint, room) {
-	sessionStorage.setItem("status", "inRoom");
-	DOM.clearInput(DOM.roomSetting);
-	onRoom();
-}
-
-export function join() {
-	sessionStorage.setItem("status", "inRoom");
-	onRoom();
-}
-
 export function getGamePoint(type) {
 	const gamePoint = document.getElementById(`${type}-game-point`).value;
 	if (gamePoint < 2 || gamePoint > 20) {

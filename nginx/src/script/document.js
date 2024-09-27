@@ -103,26 +103,6 @@ export const pageStatus = {
 	6: "inRoom",
 	7: "ongame",
 };
-export const header = {
-	"Content-Type": "application/json",
-};
-
-export function getCookie(name) {
-	let value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
-	return value? value[2] : null;
-}
-
-export function requestGet(uri, resFunc, errFunc) {
-	fetch(uri).then((res) => resFunc(res)).catch((err) => errFunc(err));
-}
-
-export function requestPost(uri, header, body, resFunc, errFunc) {
-	fetch(uri, {
-		method: "POST",
-		headers: header,
-		body: JSON.stringify(body)
-	}).then((res) => resFunc(res)).catch((err) => errFunc(err));
-}
 
 export function clearInput(container) {
 	const inputList = container.querySelectorAll("input");
