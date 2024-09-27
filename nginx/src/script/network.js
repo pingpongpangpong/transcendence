@@ -27,9 +27,6 @@ export let websocket = null;
 
 function connect(roomName) {
 	websocket = new WebSocket(`wss://${window.location.host}/ws/${roomName}/`);
-	if (websocket === null) {
-		throw alert(lang[langIndex].failConnect);
-	}
 	websocket.onclose = () => {
 		websocket = null;
 	}
@@ -120,7 +117,6 @@ export function quitRoom() {
 
 export function exitGame() {
 	websocket.close();
-	websocket = null;
 	DOM.onlineContent.style.display = "block";
 	DOM.room.style.display = "none";
 	sessionStorage.removeItem("game");
