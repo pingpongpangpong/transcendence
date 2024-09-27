@@ -1,5 +1,6 @@
 import * as DOM from "./document.js";
 import { lang } from "./lang";
+import { Game } from "./object/game.js";
 
 export const header = {
 	"Content-Type": "application/json",
@@ -58,17 +59,14 @@ function connect(roomName) {
 				}
 				break;
 			case "start":
+				const game = new Game(body.gamepoint);
+				game.onlineAwake(body.player1, body.player2);
 				break;
 			case "running":
+				game.onlineUpdate(game);
 				break;
 			case "over":
-				websocket.close();
-				websocket = null;
-				DOM.onlineContent.style.display = "block";
-				DOM.room.style.display = "none";
-				sessionStorage.removeItem("game");
-				sessionStorage.removeItem("isReady");
-				sessionStorage.setItem("status", "inRoom");
+				exitGame();
 				break;
 		}
 	}
@@ -118,6 +116,16 @@ export function quitRoom() {
 	sessionStorage.removeItem("game");
 	sessionStorage.removeItem("isReady");
 	sessionStorage.setItem("status", "online");
+}
+
+export function exitGame() {
+	websocket.close();
+	websocket = null;
+	DOM.onlineContent.style.display = "block";
+	DOM.room.style.display = "none";
+	sessionStorage.removeItem("game");
+	sessionStorage.removeItem("isReady");
+	sessionStorage.setItem("status", "inRoom");
 }
 
 window.addEventListener("beforeunload", () => {

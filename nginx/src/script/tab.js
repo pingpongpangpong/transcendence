@@ -1,4 +1,5 @@
 import * as DOM from "./document.js";
+import * as NET from "./network.js";
 import { closeBracket } from "./content/feature.js";
 import { logout, toContent, toSignup } from "./login.js";
 import { exit } from "./object/game.js";
@@ -29,6 +30,13 @@ function moveTo(where) {
 	closeBracket();
 	closeRoomSetting();
 	DOM.room.style.display = "none";
+	const isGame = sessionStorage.getItem("game");
+	const isRoom = sessionStorage.getItem("status");
+	if (isGame) {
+		NET.exitGame();
+	} else if (isRoom === "inRoom") {
+		NET.quitRoom();
+	}
 	where();
 }
 

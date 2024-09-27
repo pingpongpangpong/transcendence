@@ -61,6 +61,18 @@ export class Game {
 		this.player2.input();
 	}
 
+	onlineAwake(name1, name2) {
+		this.player1 = new Player(-4.8, 0xFF2135, name1, "w", "s");
+		this.player2 = new Player(4.8, 0x1AAACF, name2, "ArrowUp", "ArrowDown");
+		this.ball = new Ball();
+
+		this.scene.add(this.player1.mesh);
+		this.scene.add(this.player2.mesh);
+		this.scene.add(this.ball.mesh);
+
+		this.player1.online();
+	}
+
 	update() {
 		return new Promise((resolve) => {
 			this.updateScore();
@@ -82,6 +94,25 @@ export class Game {
 					animatedId = requestAnimationFrame(animate);
 					this.renderer.render(this.scene, this.camera);
 				}
+				this.composer.render();
+			}
+			animate(0);
+		});
+	}
+
+	onlineUpdate(data) {
+		return new Promise(() => {
+			const animate = () => {
+				this.player1.mesh.position.x = data.player1.position.x;
+				this.player1.mesh.position.y = data.player1.position.y;
+				this.player2.mesh.position.x = data.player2.position.x;
+				this.player2.mesh.position.y = data.player2.position.y;
+				this.player1.score = data.play2.score;
+				this.player2.score = data.play2.score;
+				this.ball.mesh.position.x = data.ball.position.x;
+				this.ball.mesh.position.y = data.ball.position.y;
+				animatedId = requestAnimationFrame(animate);
+				this.renderer.render(this.scene, this.camera);
 				this.composer.render();
 			}
 			animate(0);
