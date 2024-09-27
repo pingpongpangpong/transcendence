@@ -1,7 +1,7 @@
 import * as DOM from "../document.js";
+import * as NET from "../network.js";
 import { lang, langIndex } from "../lang.js";
 import { checkUser } from "../tab.js";
-import { online, join, quitRoom } from "./feature.js";
 import { getGamePoint } from "./feature.js";
 
 function makeRoom(room) {
@@ -58,20 +58,27 @@ function makeRoom(room) {
 	DOM.roomList.appendChild(container);
 
 	btn.addEventListener("click", () => {
-		const body = {
-			"roomid": room.roomid,
-			"password": (input ? input.value : ""),
+		try {
+			NET.joinRoom(roomName, room.roomid, password);
+		} catch (error) {
+			alert(error);
+			NET.websocket = null;
+			backToOnline();
 		}
-		const resFunc = function (res) {
-			if (res.status === 200) {
-				join();
-				return;
-			} else if (res.status === 409) {
-				throw lang[langIndex].roomIsFull;
-			}
-			throw lang[langIndex].wrongPassword
-		}
-		DOM.requestPost("/game/join-room/", DOM.header, body, resFunc, alert);
+		//const body = {
+		//	"roomid": room.roomid,
+		//	"password": (input ? input.value : ""),
+		//}
+		//const resFunc = function (res) {
+		//	if (res.status === 200) {
+		//		join();
+		//		return;
+		//	} else if (res.status === 409) {
+		//		throw lang[langIndex].roomIsFull;
+		//	}
+		//	throw lang[langIndex].wrongPassword
+		//}
+		//NET.requestPost("/game/join-room/", DOM.header, body, resFunc, alert);
 	});
 }
 
@@ -92,6 +99,14 @@ function paintRoom(uri, params) {
 			makeRoom(roomList[i]);
 		}
 	})
+}
+
+function errorConnect() {
+	alert(lang[langIndex].failConnect);
+	NET.websocket = null;
+	DOM.onlineContent.style.display = "block";
+	DOM.room.style.display = "none";
+	sessionStorage.removeItem("isReady");
 }
 
 export function openRoomSetting() {
@@ -167,36 +182,42 @@ DOM.roomSubmit.addEventListener("click", () => {
 		}
 	}
 	
-	DOM.roomSetting.style.display = "none";
-	DOM.onlineContent.style.display = "none";
-	sessionStorage.setItem("game", "online");
-
-	const body = {
-		"roomname": roomName,
-		"gamepoint": gamePoint,
-		"password": password
-	};
-	const resFunc = function (res) {
-		if (res.status === 200) {
-			online(gamePoint, password);
-			return null;
-		}
-		throw lang[langIndex].failMakeRoom;
+	try {
+		NET.createRoom(roomName, gamePoint, password);
+		DOM.roomSetting.style.display = "none";
+		DOM.onlineContent.style.display = "none";
+		sessionStorage.setItem("game", "online");
+	} catch (error) {
+		errorConnect();
 	}
-	DOM.requestPost("/game/create-room/", DOM.header, body, resFunc, alert);
+	//const body = {
+	//	"roomname": roomName,
+	//	"gamepoint": gamePoint,
+	//	"password": password
+	//};
+	//const resFunc = function (res) {
+	//	if (res.status === 200) {
+	//		online(gamePoint, password);
+	//		return null;
+	//	}
+	//	throw lang[langIndex].failMakeRoom;
+	//}
+	//NET.requestPost("/game/create-room/", DOM.header, body, resFunc, alert);
 });
 
 // ready
 DOM.readyBtn.addEventListener("click", () => {
-	const isRead = sessionStorage.getItem("isReady");
-	if (isRead) {
-		sessionStorage.removeItem("isReady");
-		DOM.readyBtn.innerHTML = lang[langIndex].ready;
-	} else {
-		sessionStorage.setItem("isReady", "true");
-		DOM.readyBtn.innerHTML = lang[langIndex].cancel;
+	const readyStatus = sessionStorage.getItem("isReady");
+	const isReady = (readyStatus ? false : true);
+	try {
+		NET.iAmReady(isReady);
+	} catch (error) {
+		errorConnect();
 	}
 });
 
 // quit room
-DOM.quitRoomBtn.addEventListener("click", () => {quitRoom();});
+DOM.quitRoomBtn.addEventListener("click", () => {
+	quitRoom();
+	errorConnect();
+});

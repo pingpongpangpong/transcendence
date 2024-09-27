@@ -77,7 +77,7 @@ export function checkUser() {
 			logout();
 		}
 	}
-	DOM.requestGet("/user/check/", resFunc, errFunc);
+	NET.requestGet("/user/check/", resFunc, errFunc);
 }
 
 DOM.offlineTab.addEventListener("click", () => {
@@ -124,6 +124,6 @@ window.addEventListener("load", () => {
 			}
 			return null;
 		}
-		DOM.requestGet("/user/check/", resFunc, alert);
+		NET.requestGet("/user/check/", resFunc, alert);
 	}
 });
