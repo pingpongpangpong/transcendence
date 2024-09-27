@@ -91,6 +91,7 @@ function errorConnect() {
 	DOM.room.style.display = "none";
 	DOM.roomSetting.style.display = "none";
 	DOM.clearInput(DOM.roomSetting);
+	DOM.gamePoint.innerText = `${lang[langIndex].gamePoint}: `;
 	sessionStorage.removeItem("isReady");
 	sessionStorage.removeItem("game");
 	sessionStorage.setItem("status", "online");
