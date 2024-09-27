@@ -25,22 +25,36 @@ export function requestPost(uri, header, body, resFunc, errFunc) {
 
 export let websocket = null;
 
-function connect(roomName) {
-	websocket = new WebSocket(`wss://${window.location.host}/ws/${roomName}/`);
+function connect(roomName, body) {
+	const encodingRoomName = encodeURIComponent(roomName);
+	const url = `wss://${window.location.host}/ws/${encodingRoomName}/`
+	websocket = new WebSocket(url);
+	websocket.onopen = () => {
+		websocket.send(JSON.stringify(body));
+	}
+	websocket.onerror = (error) => {
+		console.log(error);
+		console.log("WebSocket state:", websocket.readyState);
+	}
 	websocket.onclose = () => {
+		console.log("closed");
 		websocket = null;
 	}
 	websocket.onmessage = (event) => {
+		console.log(event);
 		const json = JSON.parse(event.data);
-		const body = json.data;
-		switch (body.type) {
+		console.log(json);
+		const data = json.data;
+		console.log(data);
+		switch (data.type) {
 			case "joined":
+				console.log("joined");
 				sessionStorage.setItem("status", "inRoom");
 				DOM.clearInput(DOM.roomSetting);
 				DOM.onlineContent.style.display = "none";
 				DOM.room.style.display = "flex";
-				DOM.hostName.innerHTML = body.player1;
-				DOM.guestName.innerHTML = (body.player2 ? body.player2 : "");
+				DOM.hostName.innerHTML = data.player1;
+				DOM.guestName.innerHTML = (data.player2 ? data.player2 : "");
 				DOM.readyBtn.innerHTML = lang[langIndex].ready;
 				sessionStorage.removeItem("isReady");
 				break;
@@ -56,11 +70,11 @@ function connect(roomName) {
 				}
 				break;
 			case "start":
-				const game = new Game(body.gamepoint);
-				game.onlineAwake(body.player1, body.player2);
+				const game = new Game(data.gamepoint);
+				game.onlineAwake(data.player1, data.player2);
 				break;
 			case "running":
-				game.onlineUpdate(game);
+				game.onlineUpdate(data);
 				break;
 			case "over":
 				exitGame();
@@ -70,7 +84,6 @@ function connect(roomName) {
 }
 
 export function createRoom(roomName, gamePoint, password) {
-	connect(roomName);
 	const body = {
 		"type": "create",
 		"data": {
@@ -79,11 +92,10 @@ export function createRoom(roomName, gamePoint, password) {
 			"goalpoint": gamePoint
 		}
 	};
-	websocket.send(JSON.stringify(body));
+	connect(roomName, body);
 }
 
 export function joinRoom(roomName, roomId, password) {
-	connect(roomName);
 	const body = {
 		"type": "join",
 		"data": {
@@ -91,7 +103,7 @@ export function joinRoom(roomName, roomId, password) {
 			"password": password
 		}
 	};
-	websocket.send(JSON.stringify(body));
+	connect(roomName, body);
 }
 
 export function iAmReady(isReady) {

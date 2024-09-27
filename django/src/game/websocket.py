@@ -85,11 +85,11 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def createRoom(self, data):
         if self._role != None or self._connection:
             raise Exception("already in the room")
-        if len(data["roomname"] > 20 or len(data["password"]) or data["goalpoin"] < 20):
-            self.close()
-        self._room_name = await save_room(data["roomname"],
+        #if len(data["roomname"] > 20 or len(data["password"]) or data["goalpoin"] < 20):
+        #    self.close()
+        self._room_name = save_room(data["roomname"],
                      data["password"],
-                     data["goalpoint"],
+                     int(data["goalpoint"]),
                      self._username)
         
         await self.channel_layer.group_discard(self._room_group_name,
