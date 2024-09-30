@@ -38,7 +38,6 @@ def joinRoom(request):
             player2 = request.user.username
             if (join_room(roomid, password, player2)):
                 return (HttpResponse("ok", status=200))
-            return HttpResponse("this room is full", status=409)
         except TypeError:
             return HttpResponse("Invalid roomid", status=400)
         except ValueError:
