@@ -1,6 +1,7 @@
 import * as DOM from "./document.js";
 import { lang, langIndex } from "./lang.js";
 import { Game } from "./object/game.js";
+import { Online } from "./object/onlineGame.js";
 
 export const header = {
 	"Content-Type": "application/json",
@@ -24,7 +25,7 @@ export function requestPost(uri, header, body, resFunc, errFunc) {
 }
 
 export let websocket = null;
-
+let game = null;
 
 function connect(data) {
 	websocket = new WebSocket(`wss://${window.location.host}/ws/room/`);
@@ -70,13 +71,30 @@ function connect(data) {
 				} else {
 					DOM.guestStatus.innerHTML = "";
 				}
+				if (hostIsReady && guestIsReady) {
+					DOM.room.style.display = "none";
+				}
 				break;
 			case "start":
-				const game = new Game(data.gamepoint);
-				game.onlineAwake(data.player1, data.player2);
+				game = new Online(data.gamepoint);
+				game.awake();
+				window.addEventListener("keydown", (e) => {
+					let input = "";
+					if (e.key === "ArrowUp") {
+						input = "up";
+					} else if (e.key === "ArrowDown") {
+						input = "down";
+					}
+					const body = {
+						"type": "input",
+						"input": input,
+						"value": false
+					};
+					websocket.send(JSON.stringify(body));
+				});
 				break;
 			case "running":
-				game.onlineUpdate(data);
+				game.update(data);
 				break;
 			case "over":
 				exitGame();

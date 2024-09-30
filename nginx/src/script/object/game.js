@@ -107,8 +107,8 @@ export class Game {
 				this.player1.mesh.position.y = data.player1.position.y;
 				this.player2.mesh.position.x = data.player2.position.x;
 				this.player2.mesh.position.y = data.player2.position.y;
-				this.player1.score = data.play2.score;
-				this.player2.score = data.play2.score;
+				this.player1.score = data.player1.score;
+				this.player2.score = data.player2.score;
 				this.ball.mesh.position.x = data.ball.position.x;
 				this.ball.mesh.position.y = data.ball.position.y;
 				animatedId = requestAnimationFrame(animate);
