@@ -9,6 +9,18 @@ REDIS_PORT = os.getenv("REDIS_PORT")
 
 r = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
+def get_redis_data(room_key: str) -> dict:
+	room_byte = r.get(room_key)
+	if room_byte is None:
+		raise ValueError('room not found')
+	room_json = room_byte.decode('utf-8')
+	room_data = json.loads(room_json)
+
+	if not room_json:
+		raise ValueError(f"room not found.")
+
+	return room_data
+
 def save_room(roomname: str, password: str, goal_point: int, player1: str) -> uuid:
 	"""
 	방 정보를 Redis에 저장하는 함수
@@ -60,8 +72,7 @@ def get_roomlist() -> list:
 	room_list = []
 
 	for key in keys:
-		room_json = r.get(key)
-		room_data = json.loads(room_json)
+		room_data = get_redis_data(key)
 		if room_data.get('status') == True:
 			filtered_room = {
 				'roomname': room_data.get('roomname'),
@@ -88,11 +99,7 @@ def join_room(roomid: uuid, password: int, player2: str) -> tuple:
 		tuple: 참여 성공시 (player1, player2, True), 참여 실패시 (None, None, False)
 	"""
 	room_key = f'room:{roomid}'
-	room_json = r.get(room_key)
-	room_data = json.loads(room_json)
-
-	if not room_json:
-		raise ValueError(f"Room with ID '{roomid}' not found.")
+	room_data = get_redis_data(room_key)
 
 	if room_data.get("password") != password:
 		raise ValueError(f"Invalid password")
@@ -131,7 +138,7 @@ def search_room(input: str, option: str) -> list:
 		raise ValueError("error Invalid 'option' value. Use 'user' or 'room'.")
 
 	for key in keys:
-		room_data = json.loads(r.get(key))
+		room_data = get_redis_data(key)
 		
 		field_value = room_data.get(search_field)
 		if field_value and input in str(field_value):
@@ -159,26 +166,33 @@ def leave_room(roomid: uuid, username: str) -> tuple:
 	"""
 	if (r.exists(f'room:{roomid}') != False):
 		raise ValueError("Invalid roomid")
-	room_data = json.loads(r.get(f'room:{roomid}'))
+	room_data = get_redis_data(f'room:{roomid}')
 	host = room_data.get('player1')
 	participants = room_data.get('player2')
+
 
 	if (username != host and username != participants):
 		raise ValueError("Invalid username")
 
-	if (username == participants):
-		room_data['player1'] = participants
+	if (username == host):
+		if participants is None:
+			delete_room(roomid)
+			return None, None
+		else:
+			room_data['player1'] = participants
+			room_data['player2'] = None
+			room_data['status'] = True
+			room_data['ready1'] = False
+			room_data['ready2'] = False
 
-	room_data['player2'] = None
-	room_data['status'] = True
-	room_data['ready1'] = False
-	room_data['ready2'] = False
+	elif (username == participants):
+		room_data['player2'] = None
+		room_data['status'] = True
+		room_data['ready1'] = False
+		room_data['ready2'] = False
 
-	if (username == host and participants == None):
-		delete_room(roomid)
-		room_data['player1'] = None
-	else:
-		r.set(f'room:{roomid}', room_data)
+
+	r.set(f'room:{roomid}', json.dumps(room_data))
 
 	return room_data.get('player1'), room_data.get('player2')
 
@@ -199,9 +213,9 @@ def start_game(roomid: uuid, play: bool) -> dict:
 	"""
 	if (r.exists(f'room:{roomid}') != False):
 		raise ValueError("Invalid roomid")
-	room_data = json.loads(r.get(f'room:{roomid}'))
+	room_data = get_redis_data(f'room:{roomid}')
 	room_data['play'] = play
-	r.set(f'room:{roomid}', room_data)
+	r.set(f'room:{roomid}', json.dumps(room_data))
 
 	result = {
 		'player1': room_data.get('player1'),
@@ -225,16 +239,16 @@ def ready_game(roomid: uuid, role: str, ready: bool) -> tuple:
 		Return:
 		tuple: player1과 player2의 'ready'상태 값 반환
 	"""
-	if (r.exists(f'room:{roomid}') != False):
+	if (r.exists(f'room:{roomid}') == False):
 		raise ValueError("Invalid roomid")
 	if (role != 'player1' and role != 'player2'):
 		raise ValueError("Invalid role")
 
-	room_data = json.loads(r.get(f'room:{roomid}'))
+	room_data = get_redis_data(f'room:{roomid}')
 	if (role == 'player1'):
 		room_data['ready1'] = ready
 	if (role == 'player2'):
 		room_data['ready2'] = ready
 
-	r.set(f'room:{roomid}', room_data)
+	r.set(f'room:{roomid}', json.dumps(room_data))
 	return room_data.get('ready1'), room_data.get('ready2')

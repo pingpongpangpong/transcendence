@@ -58,12 +58,13 @@ def searchRoom(request):
         except ValueError:
             return HttpResponse("key error", status=400)
 
-# def deleteRoom(request):
-#     if request.method == 'POST':
-#         n = delete_room(json.loads(request.body).get("roomid"))
-#         if (n == 0):
-#             return HttpResponse("Invalid roomid", status=400)
-#         return HttpResponse("ok", status=200)
+@csrf_exempt # 지워야함
+def deleteRoom(request):
+    if request.method == 'POST':
+        n = delete_room(json.loads(request.body).get("roomid"))
+        if (n == 0):
+            return HttpResponse("Invalid roomid", status=400)
+        return HttpResponse("ok", status=200)
 
 
 # def exitPlayer(request):
