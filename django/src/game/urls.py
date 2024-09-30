@@ -6,6 +6,6 @@ urlpatterns = [
     path("list-room/", views.listRoom, name='list-room'),
     path("join-room/", views.joinRoom, name='join-room'),
     path("search-room/", views.searchRoom, name='search-room'),
-    path("delete-room/", views.deleteRoom, name='delete-room'),
+    # path("delete-room/", views.deleteRoom, name='delete-room'),
     # path("exit-player/", views.exitPlayer, name='exit-player'),
 ]
