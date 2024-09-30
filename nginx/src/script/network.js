@@ -25,23 +25,20 @@ export function requestPost(uri, header, body, resFunc, errFunc) {
 
 export let websocket = null;
 
-<<<<<<< HEAD
-function connect(roomName) {
-	websocket = new WebSocket(`wss://${window.location.host}/ws/${roomName}/`);
 
-=======
-function connect(roomName, body) {
+function connect(roomName, data) {
 	const encodingRoomName = encodeURIComponent(roomName);
 	const url = `wss://${window.location.host}/ws/${encodingRoomName}/`
 	websocket = new WebSocket(url);
 	websocket.onopen = () => {
-		websocket.send(JSON.stringify(body));
+		websocket.send(JSON.stringify(data));
 	}
+	
 	websocket.onerror = (error) => {
 		console.log(error);
 		console.log("WebSocket state:", websocket.readyState);
 	}
->>>>>>> 135429b820dba1ed8e329db52c8241b7a58e27cc
+
 	websocket.onclose = () => {
 		console.log("closed");
 		websocket = null;

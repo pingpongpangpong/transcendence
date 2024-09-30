@@ -94,7 +94,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         password = data.get("password")
         goalpoint = int(data.get("goalpoint"))
 
-        if len(roomname) > 20 or (len(password) != 4 or len(password) == 0) or  goalpoint > 20:
+        if len(roomname) > 20 or (len(password) != 4 and len(password) != 0) or goalpoint > 20:
             raise Exception("cannot make a room, roomname <= 20, password == 4 or password == 0, goal <= 20")
 
         self._room_name = save_room(roomname, password, goalpoint, self._username)
