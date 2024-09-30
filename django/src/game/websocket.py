@@ -46,7 +46,11 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 
     async def disconnect(self, close_code):
-        await self.leaveRoom()
+        try:
+            await self.leaveRoom()
+        except Exception as e:
+            await self.sendOne("exception", {"detail": str(e)})
+
         await self.channel_layer.group_discard(self._room_group_name,
                                                self.channel_name)
         await super().disconnect(close_code)
@@ -85,10 +89,15 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def createRoom(self, data):
         if self._role != None or self._connection:
             raise Exception("already in the room")
-        self._room_name = save_room(data["roomname"],
-                     data["password"],
-                     int(data["goalpoint"]),
-                     self._username)
+        
+        roomname = data.get("roomname").replace(" \t\n\v\f\r", "")
+        password = data.get("password")
+        goalpoint = int(data.get("goalpoint"))
+
+        if len(roomname) > 20 or (len(password) != 4 or len(password) == 0) or  goalpoint > 20:
+            raise Exception("cannot make a room, roomname <= 20, password == 4 or password == 0, goal <= 20")
+
+        self._room_name = save_room(roomname, password, goalpoint, self._username)
         
         await self.channel_layer.group_discard(self._room_group_name,
                                                self.channel_name)
@@ -111,9 +120,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         if self._role != None or self._connection:
             raise Exception("already in the room")
         
-        self._room_name = data["roomid"]
+        self._room_name = data.get("roomid").replace(" \t\n\v\f\r", "")
+        password = data.get("password")
         player1, player2, status = join_room(self._room_name,
-                                                   data["password"],
+                                                   password,
                                                    self._username)
         if (status):
             await self.channel_layer.group_discard(self._room_group_name,
@@ -132,7 +142,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                 })
             self._connection = True
         else:
-            await self.sendOne("cant_join")
+            await self.sendOne("exception", "cannot join the room")
             await self.close()
 
 

@@ -161,12 +161,12 @@ def leave_room(roomid: uuid, username: str) -> tuple:
 		raise ValueError("Invalid roomid")
 	room_data = json.loads(r.get(f'room:{roomid}'))
 	host = room_data.get('player1')
-	participants = room_data.get('player1')
+	participants = room_data.get('player2')
 
 	if (username != host and username != participants):
 		raise ValueError("Invalid username")
 
-	if (username == host and room_data.get(participants)):
+	if (username == participants):
 		room_data['player1'] = participants
 
 	room_data['player2'] = None
@@ -174,7 +174,7 @@ def leave_room(roomid: uuid, username: str) -> tuple:
 	room_data['ready1'] = False
 	room_data['ready2'] = False
 
-	if (username == host and room_data.get(participants) == None):
+	if (username == host and participants == None):
 		delete_room(roomid)
 		room_data['player1'] = None
 	else:
