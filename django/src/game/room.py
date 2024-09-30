@@ -211,7 +211,7 @@ def start_game(roomid: uuid, play: bool) -> dict:
 	Return:
 		dict: {player1, player2, goal_point}
 	"""
-	if (r.exists(f'room:{roomid}') != False):
+	if (r.exists(f'room:{roomid}') == False):
 		raise ValueError("Invalid roomid")
 	room_data = get_redis_data(f'room:{roomid}')
 	room_data['play'] = play
