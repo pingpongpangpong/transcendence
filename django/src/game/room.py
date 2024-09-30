@@ -83,13 +83,13 @@ def get_roomlist() -> list:
 			room_list.append(filtered_room)
 	return room_list
 
-def join_room(roomid: uuid, password: int, player2: str) -> tuple:
+def join_room(roomid: uuid, password: str, player2: str) -> tuple:
 	"""
 	방 참가하는 함수
 
 	Args:
 		roomid (uuid): 방 고유 번호
-		password (int): 비밀번호
+		password (str): 비밀번호
 		player2 (str): 고유값이 roomid에 참가하려는 참가자
 
 	Raise:
@@ -102,15 +102,16 @@ def join_room(roomid: uuid, password: int, player2: str) -> tuple:
 	room_data = get_redis_data(room_key)
 
 	if room_data.get("password") != password:
-		raise ValueError(f"Invalid password")
+		# 비밀번호 에러 디버깅용 코드
+		raise ValueError(f"Invalid password input {password}, real : {room_data.get('password')}")
 
-	if room_data.get('player2') is None:
-		room_data['player2'] = player2
-		room_data['status'] = False 
-		r.set(room_key, json.dumps(room_data)) 
-		return room_data.get('player1'), room_data.get('player2'), True
-	else:
-		return None, None, False # None None bool
+	if room_data.get('player2') is not None:
+		raise ValueError("this room is full")
+
+	room_data['player2'] = player2
+	room_data['status'] = False 
+	r.set(room_key, json.dumps(room_data)) 
+	return room_data.get('player1'), room_data.get('player2'), True
 
 def search_room(input: str, option: str) -> list:
 	"""
