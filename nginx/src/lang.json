@@ -57,6 +57,8 @@
 		"failMakeRoom": "방 만들기에 실패했습니다.",
 		"roomIsFull": "방에 이미 누군가가 있습니다.",
 		"ready": "준비",
+		"hostIsReady": "호스트가 준비되었습니다.",
+		"guestIsReady": "게스트가 준비되었습니다.",
 		"quit": "나가기",
 		"failConnect": "네트워크 연결에 실패했습니다.",
 		"win": " 승리!"
@@ -119,6 +121,8 @@
 		"failMakeRoom": "Failed to create room.",
 		"roomIsFull": "The room is already full.",
 		"ready": "Ready",
+		"hostIsReady": "The host is ready.",
+		"guestIsReady": "The guest is ready.",
 		"quit": "Quit",
 		"failConnect": "Network connection failed.",
 		"win": " is winner!"
@@ -181,6 +185,8 @@
 		"failMakeRoom": "ルームの作成に失敗しました。",
 		"roomIsFull": "ルームはすでに満室です。",
 		"ready": "スタート",
+		"hostIsReady": "ホストの準備ができました。",
+		"guestIsReady": "ゲストの準備ができました。",
 		"quit": "出る",
 		"failConnect": "ネットワーク接続に失敗しました。",
 		"win": "の勝利!"

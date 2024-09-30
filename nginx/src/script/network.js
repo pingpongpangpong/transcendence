@@ -26,10 +26,8 @@ export function requestPost(uri, header, body, resFunc, errFunc) {
 export let websocket = null;
 
 
-function connect(roomName, data) {
-	const encodingRoomName = encodeURIComponent(roomName);
-	const url = `wss://${window.location.host}/ws/room/`
-	websocket = new WebSocket(url);
+function connect(data) {
+	websocket = new WebSocket(`wss://${window.location.host}/ws/room/`);
 	websocket.onopen = () => {
 		websocket.send(JSON.stringify(data));
 	}
@@ -44,14 +42,12 @@ function connect(roomName, data) {
 		websocket = null;
 	}
 	websocket.onmessage = (event) => {
-		console.log(event);
 		const json = JSON.parse(event.data);
-		console.log(json);
 		const data = json.data;
-		console.log(data);
-		switch (data.type) {
+		const type = json.type;
+		console.log(json);
+		switch (type) {
 			case "joined":
-				console.log("joined");
 				sessionStorage.setItem("status", "inRoom");
 				DOM.clearInput(DOM.roomSetting);
 				DOM.onlineContent.style.display = "none";
@@ -62,14 +58,17 @@ function connect(roomName, data) {
 				sessionStorage.removeItem("isReady");
 				break;
 			case "readied":
-				const readyStatus = sessionStorage.getItem("isReady");
-				const isReady = (readyStatus ? false : true);
-				if (isReady) {
-					sessionStorage.removeItem("isReady");
-					DOM.readyBtn.innerHTML = lang[langIndex].ready;
+				const hostIsReady = data.player1;
+				const guestIsReady = data.player2;
+				if (hostIsReady) {
+					DOM.hostStatus.innerHTML = lang[langIndex].ready;
 				} else {
-					sessionStorage.setItem("isReady", "true");
-					DOM.readyBtn.innerHTML = lang[langIndex].cancel;
+					DOM.hostStatus.innerHTML = "";
+				}
+				if (guestIsReady) {
+					DOM.guestStatus.innerHTML = lang[langIndex].ready;
+				} else {
+					DOM.guestStatus.innerHTML = "";
 				}
 				break;
 			case "start":
@@ -95,7 +94,7 @@ export function createRoom(roomName, gamePoint, password) {
 			"goalpoint": gamePoint
 		}
 	};
-	connect(roomName, body);
+	connect(body);
 }
 
 export function joinRoom(roomName, roomId, password) {
@@ -106,7 +105,7 @@ export function joinRoom(roomName, roomId, password) {
 			"password": password
 		}
 	};
-	connect(roomName, body);
+	connect(body);
 }
 
 export function iAmReady(isReady) {
@@ -128,6 +127,9 @@ export function quitRoom() {
 	sessionStorage.removeItem("game");
 	sessionStorage.removeItem("isReady");
 	sessionStorage.setItem("status", "online");
+	DOM.room.style.display = "none";
+	DOM.onlineContent.style.display = "block";
+	websocket.close();
 }
 
 export function exitGame() {
@@ -141,10 +143,8 @@ export function exitGame() {
 
 window.addEventListener("beforeunload", () => {
 	quitRoom();
-	websocket.close();
 });
 
 window.addEventListener("unload", () => {
 	quitRoom();
-	websocket.close();
 })

@@ -6,16 +6,12 @@ import { getGamePoint } from "./feature.js";
 
 function makeRoom(room) {
 	const container = document.createElement("div");
-	container.id = `room-${room.roomname}`;
 	container.className = "window room";
-
 	const info = document.createElement("div");
-	info.id = `room-${room.roomname}-info`;
 	info.className = "window room-info";
 
 	const name = document.createElement("h4");
 	name.textContent = `${room.roomname}`;
-	
 	const player = document.createElement("h6");
 	player.textContent = `${room.player1}`;
 	
@@ -23,7 +19,6 @@ function makeRoom(room) {
 	info.appendChild(player);
 	
 	const password = document.createElement("div");
-	password.id = `room-${room.roomname}-password`;
 	password.className = "room-password";
 
 	let label = null;
@@ -33,7 +28,6 @@ function makeRoom(room) {
 		const inputId = `room-${room.roomname}-password-input`;
 
 		label = document.createElement("label");
-		label.id = `room-${room.roomname}-password-label`;
 		label.className = "password";
 		label.setAttribute("for", inputId);
 		label.innerHTML = lang[langIndex].password;
@@ -48,7 +42,6 @@ function makeRoom(room) {
 	}
 	
 	const btn = document.createElement("button");
-	btn.id = `room-${room.roomname}-btn`;
 	btn.className = "room-btn";
 	btn.textContent = lang[langIndex].enter;
 
@@ -57,9 +50,10 @@ function makeRoom(room) {
 	container.appendChild(btn);
 	DOM.roomList.appendChild(container);
 
+	const passwordStr = (input ? input.value : "");
 	btn.addEventListener("click", () => {
 		try {
-			NET.joinRoom(roomName, room.roomid, password);
+			NET.joinRoom(room.roomName, room.roomid, passwordStr);
 		} catch (error) {
 			errorConnect();
 		}
@@ -184,6 +178,13 @@ DOM.roomSubmit.addEventListener("click", () => {
 DOM.readyBtn.addEventListener("click", () => {
 	const readyStatus = sessionStorage.getItem("isReady");
 	const isReady = (readyStatus ? false : true);
+	if (isReady) {
+		sessionStorage.setItem("isReady", "true");
+		DOM.readyBtn.innerHTML = lang[langIndex].cancel;
+	} else {
+		sessionStorage.removeItem("isReady");
+		DOM.readyBtn.innerHTML = lang[langIndex].ready;
+	}
 	try {
 		NET.iAmReady(isReady);
 	} catch (error) {
@@ -193,6 +194,5 @@ DOM.readyBtn.addEventListener("click", () => {
 
 // quit room
 DOM.quitRoomBtn.addEventListener("click", () => {
-	quitRoom();
-	errorConnect();
+	NET.quitRoom();
 });
