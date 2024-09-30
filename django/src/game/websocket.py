@@ -210,7 +210,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def startGame(self):
         if self._in_game:
             raise Exception("already is started")
-        self._in_game = True
+            
         room = start_game(self._room_name)
         await self.channel_layer.group_send(self._room_group_name,
                                             {
