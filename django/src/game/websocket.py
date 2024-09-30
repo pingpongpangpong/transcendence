@@ -33,7 +33,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 raise Exception("fobidden")
             
             self._username = await getUsername(sessionid)
-            self._room_name = self.scope["url_route"]["kwargs"]["room_name"]
+            self._room_name = "public"
             self._room_group_name = self._room_name
             
             await self.channel_layer.group_add(self._room_group_name,
@@ -90,7 +90,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if self._role != None or self._connection:
             raise Exception("already in the room")
         
-        roomname = data.get("roomname").replace(" \t\n\v\f\r", "")
+        roomname = data.get("roomname")
         password = data.get("password")
         goalpoint = int(data.get("goalpoint"))
 
@@ -104,6 +104,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         self._room_group_name = self._room_name
         await self.channel_layer.group_add(self._room_group_name,
                                                self.channel_name)
+        
         await self.channel_layer.group_send(self._room_group_name,
                                                 {
                                                     "type": "sendJoin",
@@ -114,13 +115,14 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                         }
                                                 })
         self._connection = True
+        
 
     
     async def joinRoom(self, data):
         if self._role != None or self._connection:
             raise Exception("already in the room")
         
-        self._room_name = data.get("roomid").replace(" \t\n\v\f\r", "")
+        self._room_name = data.get("roomid")
         password = data.get("password")
         player1, player2, status = join_room(self._room_name,
                                                    password,

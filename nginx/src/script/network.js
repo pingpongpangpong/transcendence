@@ -28,12 +28,12 @@ export let websocket = null;
 
 function connect(roomName, data) {
 	const encodingRoomName = encodeURIComponent(roomName);
-	const url = `wss://${window.location.host}/ws/${encodingRoomName}/`
+	const url = `wss://${window.location.host}/ws/room/`
 	websocket = new WebSocket(url);
 	websocket.onopen = () => {
 		websocket.send(JSON.stringify(data));
 	}
-	
+
 	websocket.onerror = (error) => {
 		console.log(error);
 		console.log("WebSocket state:", websocket.readyState);
