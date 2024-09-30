@@ -11,6 +11,7 @@ class Game:
         self._gamepoint = gamepoint
         self._balltime = 0
         self._lasttime = time.time()
+        self._winner = None
 
     def __del__(self):
         del self._ball, self._player1, self._player2
@@ -24,8 +25,8 @@ class Game:
 
     def update(self):
         currenttime = time.time()
-        deltatime = min((currenttime - lasttime), 0.1)
-        lasttime = currenttime
+        deltatime = min((currenttime - self._lasttime), 0.1)
+        self._lasttime = currenttime
         self._player1.move(deltatime)
         self._player2.move(deltatime)
         self._balltime += deltatime
@@ -37,6 +38,7 @@ class Game:
             return winner
         return None
         
+
     def getJson(self):
         return {
             "player1": self._player1.getJson(),

@@ -57,10 +57,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 
     async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        type = text_data_json["type"]
-        data = text_data_json["data"]
         try:
+            text_data_json = json.loads(text_data)
+            type = text_data_json.get("type", None)
+            if type is None:
+                raise Exception("Wrong type")
+            data = text_data_json.get("data", None)
+
             if type == "create":
                 await self.createRoom(data)
             elif type == "join":
@@ -87,6 +90,9 @@ class GameConsumer(AsyncWebsocketConsumer):
         
 
     async def createRoom(self, data):
+        if data is None:
+            raise Exception("data is Null")
+        
         if self._role != None or self._connection:
             raise Exception("already in the room")
         
@@ -119,6 +125,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     
     async def joinRoom(self, data):
+        if data is None:
+            raise Exception("data is Null")
+        
         if self._role != None or self._connection:
             raise Exception("already in the room")
         
@@ -188,6 +197,9 @@ class GameConsumer(AsyncWebsocketConsumer):
                                               "data": msg["data"]}))
         
     async def readyGame(self, data):
+        if data is None:
+            raise Exception("data is Null")
+        
         if self._role == None or self._connection == False:
             raise Exception("this user is not in the room")
         if  self._in_game:
@@ -211,7 +223,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if self._in_game:
             raise Exception("already is started")
 
-        room = start_game(self._room_name)
+        room = start_game(self._room_name, )
         await self.channel_layer.group_send(self._room_group_name,
                                             {
                                                 "type": "sendStart",
@@ -220,7 +232,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                                             })
         self._gamemanager = GameManager(room)
 
-        for data in self._gamemanager.getFrame():
+        while self._gamemanager.getWinner() is None:
+            data = self._gamemanager.getFrame()
             await self.channel_layer.group_send(self._room_group_name,
                                             {
                                                 "type": "sendAll",
@@ -246,6 +259,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 
     async def inputGame(self, data):
+        if data is None:
+            raise Exception("data is Null")
+        
         if self._in_game == False:
             raise Exception("game is not started")
         
