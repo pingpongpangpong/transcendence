@@ -197,7 +197,7 @@ def leave_room(roomid: uuid, username: str) -> tuple:
 	return room_data.get('player1'), room_data.get('player2')
 
 
-def start_game(roomid: uuid, play: bool) -> dict:
+def start_game(roomid: uuid) -> dict:
 	"""
 	게임 시작 버튼을 눌렀을때 상태값을 변경하는 함수
 
@@ -214,13 +214,13 @@ def start_game(roomid: uuid, play: bool) -> dict:
 	if (r.exists(f'room:{roomid}') == False):
 		raise ValueError("Invalid roomid")
 	room_data = get_redis_data(f'room:{roomid}')
-	room_data['play'] = play
+	room_data['play'] = True
 	r.set(f'room:{roomid}', json.dumps(room_data))
 
 	result = {
 		'player1': room_data.get('player1'),
 		'player2': room_data.get('player2'),
-		'goal_point': room_data.get('goal_point')
+		'goalpoint': room_data.get('goal_point')
 		}
 	return result
 
