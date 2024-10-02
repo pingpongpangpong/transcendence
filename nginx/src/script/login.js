@@ -1,10 +1,11 @@
 import * as DOM from "./document.js";
 import * as NET from "./network.js";
-import { changeLang, lang, langIndex } from "./lang.js";
+import { lang, langIndex } from "./lang.js";
 import { closeBracket } from "./content/feature.js";
 import { exit } from "./object/game.js";
 import { onOffline, removeValue } from "./tab.js";
 
+const koreanRegex = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
 const usernamePattern = /^\S+$/;
 const passwordPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[\W_]).{8,20}$/;
 
@@ -65,6 +66,7 @@ export function cancelSignup() {
 	DOM.signContainer.style.display = "block";
 	DOM.signinContent.style.display = "flex";
 	DOM.signupContent.style.display = "none";
+	DOM.signupCodeLabel.style.display = "none";
 	DOM.clearInput(DOM.signupInput);
 	sessionStorage.setItem("status", "signin");
 	sessionStorage.removeItem("game");
@@ -93,6 +95,8 @@ DOM.signin2factor.addEventListener("click", () => {
 	const passwordInput = DOM.signinPassword.value;
 	if (idInput.length === 0 || idInput === "") {
 		alert(lang[langIndex].nullId);
+	} else if (koreanRegex.test(idInput)) {
+		alert(lang[langIndex].wrongId);
 	} else if (passwordInput.length === 0 || passwordInput === "") {
 		alert(lang[langIndex].nullPassword);
 	} else {
@@ -121,6 +125,8 @@ DOM.signinSubmitBtn.addEventListener("click", () => {
 	const code = DOM.signinCode.value;
 	if (idInput.length === 0 || idInput === "") {
 		alert(lang[langIndex].nullId);
+	} else if (koreanRegex.test(idInput)) {
+		alert(lang[langIndex].wrongId);
 	} else if (passwordInput.length === 0 || passwordInput === "") {
 		alert(lang[langIndex].nullPassword);
 	} else {
@@ -194,13 +200,15 @@ DOM.signupSubmit.addEventListener("click", () => {
 	const emailInput = document.getElementById("sign-up-email").value;
 	if (idInput.length === 0 || idInput === "") {
 		alert(lang[langIndex].nullId);
+	} else if (koreanRegex.test(idInput)) {
+		alert(lang[langIndex].wrongId);
 	} else if (!usernamePattern.test(idInput)) {
 		alert(lang[langIndex].wrongId);
 	} else if (passwordInput.length === 0 || passwordInput === "") {
 		alert(lang[langIndex].nullPassword);
 	} else if (!passwordPattern.test(passwordInput)) {
 		alert(lang[langIndex].wrongPassword);
-	} else if (checkPassword != passwordInput) {
+	} else if (checkPassword !== passwordInput) {
 		alert(lang[langIndex].notSame);
 	} else {
 		const body = {
