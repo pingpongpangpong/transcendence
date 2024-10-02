@@ -13,7 +13,8 @@ let animatedId;
 export let winner;
 
 export class Game {
-	constructor(gamePoint) {
+	constructor(gamePoint, whatGame) {
+		sessionStorage.setItem("game", whatGame);
 		this.scene = new THREE.Scene();
 		
 		this.camera = new THREE.PerspectiveCamera(75, 950 / 600, 0.1, 1000);
@@ -125,6 +126,8 @@ export class Game {
 	}
 
 	end(winner) {
+		this.player1.removeEvent();
+		this.player2.removeEvent();
 		while(this.scene.children.length > 0) { 
 			this.scene.remove(this.scene.children[0]); 
 		}
@@ -140,11 +143,13 @@ export class Game {
 		this.player1 = null;
 		this.player2 = null;
 		this.ball = null;
+		sessionStorage.removeItem("game");
 		alert(`${winner}${lang[langIndex].win}`);
 	}
 }
 
 export function exit() {
+	sessionStorage.removeItem("game");
 	cancelAnimationFrame(animatedId);
 
 	const gameContainer = document.querySelector("#game");

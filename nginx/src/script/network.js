@@ -1,7 +1,6 @@
 import * as DOM from "./document.js";
 import { lang, langIndex } from "./lang.js";
-import { Game } from "./object/game.js";
-import { Online } from "./object/onlineGame.js";
+import { Online, onlineGameExit } from "./object/onlineGame.js";
 
 export const header = {
 	"Content-Type": "application/json",
@@ -26,6 +25,40 @@ export function requestPost(uri, header, body, resFunc, errFunc) {
 
 export let websocket = null;
 let game = null;
+let player1Name = "";
+let player2Name = "";
+let gamePoint = 0;
+
+function isKey(event) {
+	if (event.key === "ArrowUp") {
+		return "up";
+	} else if (event.key === "ArrowDown") {
+		return "down";
+	}
+	return "";
+}
+
+function keyDown(event) {
+	const body = {
+		"type": "input",
+		"data": {
+			"input": isKey(event),
+			"value": true
+		}
+	};
+	websocket.send(JSON.stringify(body));
+}
+
+function keyUp(event) {
+	const body = {
+		"type": "input",
+		"data": {
+			"input": isKey(event),
+			"value": false
+		}
+	};
+	websocket.send(JSON.stringify(body));
+}
 
 function connect(data) {
 	websocket = new WebSocket(`wss://${window.location.host}/ws/room/`);
@@ -39,14 +72,14 @@ function connect(data) {
 	}
 
 	websocket.onclose = () => {
-		console.log("closed");
 		websocket = null;
+		window.removeEventListener("keydown", keyDown);
+		window.removeEventListener("keyUp", keyUp);
 	}
 	websocket.onmessage = (event) => {
 		const json = JSON.parse(event.data);
 		const data = json.data;
 		const type = json.type;
-		//console.log(json);
 		switch (type) {
 			case "joined":
 				sessionStorage.setItem("status", "inRoom");
@@ -76,44 +109,22 @@ function connect(data) {
 				}
 				break;
 			case "start":
+				sessionStorage.setItem("game", "online");
+				player1Name = data.player1;
+				player2Name = data.player2;
+				gamePoint = data.goalpoint;
+				DOM.player1Score.innerHTML = `${player1Name}: `;
+				DOM.player2Score.innerHTML = `${player2Name}: `;
+				DOM.gamePoint.innerHTML = `${lang[langIndex].gamePoint}: ${gamePoint}`;
 				game = new Online(data.gamepoint);
 				game.awake();
-				window.addEventListener("keydown", (e) => {
-					let input = "";
-					if (e.key === "ArrowUp") {
-						input = "up";
-					} else if (e.key === "ArrowDown") {
-						input = "down";
-					}
-					const body = {
-						"type": "input",
-						"data": {
-							"input": input,
-							"value": true
-						}
-					};
-					websocket.send(JSON.stringify(body));
-				});
-				window.addEventListener("keyup", (e) => {
-					let input = "";
-					if (e.key === "ArrowUp") {
-						input = "up";
-					} else if (e.key === "ArrowDown") {
-						input = "down";
-					}
-					const body = {
-						"type": "input",
-						"data": {
-							"input": input,
-							"value": false
-						}
-					};
-					websocket.send(JSON.stringify(body));
-				});
+				window.addEventListener("keydown", keyDown);
+				window.addEventListener("keyup", keyUp);
 				game.update();
 				break;
 			case "running":
-				//game.update(data);
+				DOM.player1Score.innerHTML = `${player1Name}: ${data.player1.score}`;
+				DOM.player2Score.innerHTML = `${player2Name}: ${data.player2.score}`;
 				game.leftPlayer.position.x = data.player1.position.x;
 				game.leftPlayer.position.y = data.player1.position.y;
 				game.rightPlayer.position.x = data.player2.position.x;
@@ -122,7 +133,7 @@ function connect(data) {
 				game.ball.position.y = data.ball.position.y;
 				break;
 			case "over":
-				exitGame();
+				exitGame(data);
 				break;
 			default:
 				console.log(json);
@@ -142,7 +153,7 @@ export function createRoom(roomName, gamePoint, password) {
 	connect(body);
 }
 
-export function joinRoom(roomName, roomId, password) {
+export function joinRoom(roomId, password) {
 	const body = {
 		"type": "join",
 		"data": {
@@ -172,18 +183,24 @@ export function quitRoom() {
 	sessionStorage.removeItem("game");
 	sessionStorage.removeItem("isReady");
 	sessionStorage.setItem("status", "online");
+	DOM.hostStatus.innerHTML = "";
+	DOM.guestStatus.innerHTML = "";
 	DOM.room.style.display = "none";
 	DOM.onlineContent.style.display = "block";
 	websocket.close();
 }
 
-export function exitGame() {
+export function exitGame(data) {
+	alert(`${data.winner}${lang[langIndex].win}`);
 	websocket.close();
-	DOM.onlineContent.style.display = "block";
-	DOM.room.style.display = "none";
+	onlineGameExit();
 	sessionStorage.removeItem("game");
 	sessionStorage.removeItem("isReady");
 	sessionStorage.setItem("status", "inRoom");
+	DOM.hostStatus.innerHTML = "";
+	DOM.guestStatus.innerHTML = "";
+	DOM.onlineContent.style.display = "block";
+	DOM.room.style.display = "none";
 }
 
 window.addEventListener("beforeunload", () => {

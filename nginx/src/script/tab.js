@@ -5,6 +5,7 @@ import { logout, toContent, toSignup } from "./login.js";
 import { exit } from "./object/game.js";
 import { closeRoomSetting, openRoomSetting, showRoomList } from "./content/online.js";
 import { lang, langIndex } from "./lang.js";
+import { onlineGameExit } from "./object/onlineGame.js";
 
 function onTournament() {
 	DOM.offlineContent.style.display = "none";
@@ -36,6 +37,10 @@ function moveTo(where) {
 		NET.exitGame();
 	} else if (isRoom === "inRoom") {
 		NET.quitRoom();
+	}
+	if (NET.websocket) {
+		NET.websocket.send(JSON.stringify({ "type": "leave", "data": null }));
+		onlineGameExit();
 	}
 	where();
 }

@@ -22,37 +22,23 @@ export class Player {
 		this.accelerationRate = 2;
 	}
 
-	input() {
-		window.addEventListener("keydown", (e) => {
-			if (e.key === this.keyMap.up) {
-				this.keyInput.up = true;
-			} else if (e.key === this.keyMap.down) {
-				this.keyInput.down = true;
-			}
-		});
-		window.addEventListener("keyup", (e) => {
-			if (e.key === this.keyMap.up) {
-				this.keyInput.up = false;
-			} else if (e.key === this.keyMap.down) {
-				this.keyInput.down = false;
-			}
-		});
+	keyDown = (event) => {
+		if (event.key === this.keyMap.up) {
+			this.keyInput.up = true;
+		} else if (event.key === this.keyMap.down) {
+			this.keyInput.down = true;
+		}
 	}
-	online() {
-		window.addEventListener("keydown", (e) => {
-			let input = "";
-			if (e.key === "ArrowUp") {
-				input = "up";
-			} else if (e.key === "ArrowDown") {
-				input = "down";
-			}
-			const body = {
-				"type": "input",
-				"input": input,
-				"value": false
-			};
-			websocket.send(JSON.stringify(body));
-		});
+	keyUp = (event) => {
+		if (event.key === this.keyMap.up) {
+			this.keyInput.up = false;
+		} else if (event.key === this.keyMap.down) {
+			this.keyInput.down = false;
+		}
+	}
+	input() {
+		window.addEventListener("keydown", this.keyDown);
+		window.addEventListener("keyup", this.keyUp);
 	}
 	move(deltatime) {
 		const limit = 3.3;
@@ -87,5 +73,9 @@ export class Player {
 			minY: this.mesh.position.y - halfHeight,
 			maxY: this.mesh.position.y + halfHeight
 		};
+	}
+	removeEvent() {
+		window.removeEventListener("keydown", this.keyDown);
+		window.removeEventListener("keyup", this.keyUp);
 	}
 }

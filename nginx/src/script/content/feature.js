@@ -6,7 +6,7 @@ import { canvas, ctx, initBracket, paintBracket } from "./bracket.js";
 let isRunning = true;
 
 export async function offline(gamePoint, name1, name2) {
-	const game = new Game(gamePoint);
+	const game = new Game(gamePoint, "offline");
 	game.awake(name1, name2);
 	await game.update();
 	DOM.offlineContent.style.display = "block";
@@ -44,7 +44,7 @@ export async function tournament(gamePoint, nameList) {
 			}
 			let winnerList = [];
 			for (let i = 0; i < players.length; i += 2) {
-				const game = new Game(gamePoint);
+				const game = new Game(gamePoint, "tournament");
 				game.awake(players[i], players[i + 1]);
 				await game.update();
 				winnerList.push(winner);

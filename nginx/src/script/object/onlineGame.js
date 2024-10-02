@@ -4,6 +4,11 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 
+import * as DOM from  "../document.js";
+import { lang, langIndex } from "../lang.js";
+
+let animatedId;
+
 export class Online {
 	constructor(gamePoint) {
 		this.scene = new THREE.Scene();
@@ -32,6 +37,12 @@ export class Online {
 		bloomPass.strength = 2;
 		bloomPass.radius = 0;
 		this.composer.addPass(bloomPass);
+
+		// 카메라 회전
+		const orbit = new OrbitControls(this.camera, this.renderer.domElement);
+		orbit.maxPolarAngle = Math.PI * 0.5;
+		orbit.minDistance = 3;
+		orbit.maxDistance = 8;
 	}
 
 	awake() {
@@ -50,28 +61,25 @@ export class Online {
 		this.scene.add(this.ball);
 	}
 
-	/*
-	update(data) {
-		const animate = () => {
-			requestAnimationFrame(animate);
-			this.leftPlayer.position.x = data.player1.position.x;
-			this.leftPlayer.position.y = data.player1.position.y;
-			this.rightPlayer.position.x = data.player2.position.x;
-			this.rightPlayer.position.y = data.player2.position.y;
-			this.ball.position.x = data.ball.position.x;
-			this.ball.position.y = data.ball.position.y;
-			this.renderer.render(this.scene, this.camera);
-			this.composer.render();
-		};
-		animate();
-	}*/
-
 	update() {
 		const animate = () => {
-			requestAnimationFrame(animate);
+			animatedId = requestAnimationFrame(animate);
 			this.renderer.render(this.scene, this.camera);
 			this.composer.render();
 		};
 		animate();
 	}
+}
+
+export function onlineGameExit() {
+	cancelAnimationFrame(animatedId);
+	
+	const gameContainer = document.getElementById("game");
+	if (gameContainer) {
+		gameContainer.remove();
+	}
+
+	DOM.player1Score.innerHTML = "";
+	DOM.player2Score.innerHTML = "";
+	DOM.gamePoint.innerHTML = `${lang[langIndex].gamePoint}`;
 }

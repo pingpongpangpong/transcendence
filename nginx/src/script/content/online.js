@@ -53,7 +53,7 @@ function makeRoom(room) {
 	btn.addEventListener("click", () => {
 		try {
 			const passwordStr = (input ? input.value : "");
-			NET.joinRoom(room.roomName, room.roomid, passwordStr);
+			NET.joinRoom(room.roomid, passwordStr);
 		} catch (error) {
 			errorConnect();
 		}

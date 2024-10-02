@@ -62,7 +62,6 @@ DOM.tournamentSelectNum.addEventListener("change",  (e) => {
 			}
 		}
 		DOM.tournamentContent.style.display = "none";
-		sessionStorage.setItem("game", "tournament");
 		tournament(gamePoint, nameList);
 	});
 });

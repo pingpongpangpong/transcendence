@@ -22,6 +22,5 @@ DOM.offlineSubmit.addEventListener("click", () => {
 	}
 	
 	DOM.offlineContent.style.display = "none";
-	sessionStorage.setItem("game", "offline");
 	offline(gamePoint, name1, name2);
 });
