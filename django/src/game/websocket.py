@@ -1,4 +1,4 @@
-import json, os, uuid, asyncio, time
+import json, asyncio, ctypes
 from .game_manager import GameManager
 from .room import save_room, ready_game, join_room, leave_room, start_game
 from django.conf import settings
@@ -91,7 +91,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def createRoom(self, data):
         if data is None:
-            raise Exception("data is Null")
+            raise Exception("create data is Null")
         
         if self._role != None or self._connection:
             raise Exception("already in the room")
@@ -126,7 +126,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     
     async def joinRoom(self, data):
         if data is None:
-            raise Exception("data is Null")
+            raise Exception("join data is Null")
         
         if self._role != None or self._connection:
             raise Exception("already in the room")
@@ -198,7 +198,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         
     async def readyGame(self, data):
         if data is None:
-            raise Exception("data is Null")
+            raise Exception("ready data is Null")
         
         if self._role == None or self._connection == False:
             raise Exception("this user is not in the room")
@@ -260,7 +260,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def inputGame(self, data):
         if data is None:
-            raise Exception("data is Null")
+            raise Exception("input data is Null")
         
         if self._in_game == False:
             raise Exception("game is not started")
@@ -275,11 +275,11 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                 "input": data["input"],
                                                 "value": data["value"]
                                             })
+
             
     async def keyInput(self, data):
         if self._gamemanager:
             self._gamemanager.playerInput(data["who"], data["input"], data["value"])
-
 
 
     async def sendOver(self, msg):

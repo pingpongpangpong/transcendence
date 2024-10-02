@@ -37,8 +37,8 @@ class Ball:
         
         limit = settings.HEIGHT_LIMIT
         speed = 30
-        self._position["x"] += self._position["x"] * (speed * deltatime)
-        self._position["y"] += self._position["y"] * (speed * deltatime)
+        self._position["x"] += self._velocity["x"] * (speed * deltatime)
+        self._position["y"] += self._velocity["y"] * (speed * deltatime)
         
         if abs(self._position["x"]) > 7:
             self._direction = True
@@ -64,8 +64,8 @@ class Ball:
             self._position["x"] + self._radius > box["minX"] and \
             self._position["y"] + self._radius > box["minY"] and \
             self._position["y"] - self._radius < box["maxY"]:
-            self._velocity["x"] *= -1
             
+            self._velocity["x"] *= -1
             if self._velocity["x"] > 0:
                 self._position["x"] = box["maxX"] + self._radius
             else:

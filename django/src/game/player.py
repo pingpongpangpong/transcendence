@@ -41,8 +41,8 @@ class Player:
             self._velocity = 0
 
     def getBound(self):
-        halfWidth = self._paddle["width"] / 2
-        halfHeight = self._paddle["hight"] / 2
+        halfWidth = 0.05
+        halfHeight = 0.4
         return {
             "minX": self.position["x"] - halfWidth,
             "maxX": self.position["x"] + halfWidth,

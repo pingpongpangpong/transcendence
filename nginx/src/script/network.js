@@ -46,7 +46,7 @@ function connect(data) {
 		const json = JSON.parse(event.data);
 		const data = json.data;
 		const type = json.type;
-		console.log(json);
+		//console.log(json);
 		switch (type) {
 			case "joined":
 				sessionStorage.setItem("status", "inRoom");
@@ -110,13 +110,22 @@ function connect(data) {
 					};
 					websocket.send(JSON.stringify(body));
 				});
+				game.update();
 				break;
 			case "running":
-				game.update(data);
+				//game.update(data);
+				game.leftPlayer.position.x = data.player1.position.x;
+				game.leftPlayer.position.y = data.player1.position.y;
+				game.rightPlayer.position.x = data.player2.position.x;
+				game.rightPlayer.position.y = data.player2.position.y;
+				game.ball.position.x = data.ball.position.x;
+				game.ball.position.y = data.ball.position.y;
 				break;
 			case "over":
 				exitGame();
 				break;
+			default:
+				console.log(json);
 		}
 	}
 }

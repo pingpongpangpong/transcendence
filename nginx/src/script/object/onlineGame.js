@@ -50,6 +50,7 @@ export class Online {
 		this.scene.add(this.ball);
 	}
 
+	/*
 	update(data) {
 		const animate = () => {
 			requestAnimationFrame(animate);
@@ -59,6 +60,15 @@ export class Online {
 			this.rightPlayer.position.y = data.player2.position.y;
 			this.ball.position.x = data.ball.position.x;
 			this.ball.position.y = data.ball.position.y;
+			this.renderer.render(this.scene, this.camera);
+			this.composer.render();
+		};
+		animate();
+	}*/
+
+	update() {
+		const animate = () => {
+			requestAnimationFrame(animate);
 			this.renderer.render(this.scene, this.camera);
 			this.composer.render();
 		};
