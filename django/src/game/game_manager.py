@@ -14,6 +14,6 @@ class GameManager:
     def getFrame(self):
         self._winner = self._game.update()
         return self._game.getJson()
-            
+
     def getWinner(self):
         return self._winner

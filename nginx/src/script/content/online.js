@@ -50,9 +50,9 @@ function makeRoom(room) {
 	container.appendChild(btn);
 	DOM.roomList.appendChild(container);
 
-	const passwordStr = (input ? input.value : "");
 	btn.addEventListener("click", () => {
 		try {
+			const passwordStr = (input ? input.value : "");
 			NET.joinRoom(room.roomName, room.roomid, passwordStr);
 		} catch (error) {
 			errorConnect();
