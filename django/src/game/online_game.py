@@ -2,6 +2,7 @@ import time
 from .ball import Ball
 from .player import Player
 from django.conf import settings
+import logging
 
 class Game:
     def __init__(self, username1, username2, gamepoint):
@@ -11,15 +12,14 @@ class Game:
         self._gamepoint = gamepoint
         self._balltime = 0
         self._lasttime = time.time()
-        self._winner = None
 
     def __del__(self):
         del self._ball, self._player1, self._player2
 
     def playerInput(self, who, input, value):
-        if who is settings.PLAYER1:
+        if who == settings.PLAYER1:
             self._player1.input(input, value)
-        elif who is settings.PLAYER2:
+        elif who == settings.PLAYER2:
             self._player2.input(input, value)
         
 

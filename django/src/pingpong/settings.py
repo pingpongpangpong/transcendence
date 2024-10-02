@@ -201,6 +201,8 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [(REDIS_HOST, int(REDIS_PORT))],
+            "capacity": 1000,
+            "expiry": 5
         },
     }
 }
