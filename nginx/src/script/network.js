@@ -87,8 +87,26 @@ function connect(data) {
 					}
 					const body = {
 						"type": "input",
-						"input": input,
-						"value": false
+						"data": {
+							"input": input,
+							"value": true
+						}
+					};
+					websocket.send(JSON.stringify(body));
+				});
+				window.addEventListener("keyup", (e) => {
+					let input = "";
+					if (e.key === "ArrowUp") {
+						input = "up";
+					} else if (e.key === "ArrowDown") {
+						input = "down";
+					}
+					const body = {
+						"type": "input",
+						"data": {
+							"input": input,
+							"value": false
+						}
 					};
 					websocket.send(JSON.stringify(body));
 				});
