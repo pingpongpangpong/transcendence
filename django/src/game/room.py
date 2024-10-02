@@ -102,8 +102,7 @@ def join_room(roomid: uuid, password: str, player2: str) -> tuple:
 	room_data = get_redis_data(room_key)
 
 	if room_data.get("password") != password:
-		# 비밀번호 에러 디버깅용 코드
-		raise ValueError(f"Invalid password input {password}, real : {room_data.get('password')}")
+		raise ValueError(f"Invalid password input")
 
 	if room_data.get('player2') is not None:
 		raise ValueError("this room is full")
@@ -191,7 +190,6 @@ def leave_room(roomid: uuid, username: str) -> tuple:
 		room_data['status'] = True
 		room_data['ready1'] = False
 		room_data['ready2'] = False
-
 
 	r.set(f'room:{roomid}', json.dumps(room_data))
 
