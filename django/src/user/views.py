@@ -73,6 +73,7 @@ def user_login_session(request, user):
 
 class UserCheckEmailView(APIView):
     permission_classes = [AllowAny]
+    authentication_classes = ([])
     def post(self, request):
         email = request.data.get('email')
         verification_code = int(request.data.get('code'))
@@ -80,6 +81,7 @@ class UserCheckEmailView(APIView):
 
 class UserSendEmailView(APIView):
     permission_classes = [AllowAny]
+    authentication_classes = ([])
     serializer_class = UserSendEmail
     def post(self, request):
         email = request.data.get('email')
@@ -123,6 +125,7 @@ class UserLogoutView(APIView):
 
 class UserPreLoginView(APIView):
     permission_classes = [AllowAny]
+    authentication_classes = ([])
 
     def post(self, request):
         user = authenticate(username=request.data.get('username'), password=request.data.get('password'))
@@ -158,6 +161,7 @@ class UserLoginView(APIView):
     
 class UserOauthView(APIView):
     permission_classes = [AllowAny]
+    authentication_classes = ([])
 
     def get_access_token(self, code):
         data = {
