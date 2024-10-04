@@ -1,3 +1,7 @@
+*, select, button, label, input {
+	font-size: 14px;
+}
+
 body {
 	margin: 0px;
 	background-color:#008080;

@@ -75,22 +75,23 @@ export function removeValue() {
 }
 
 export function checkUser() {
-	const resFunc = function (res) {
-		if (res.status !== 200) {
-			throw lang[langIndex].invalidTsubmiten;
-		}
-		return;
-	}
-	const errFunc = function (err) {
-		if (err) {
-			alert(err);
+	fetch("/user/check/").then((res) => {
+		if (res.status === 200) {
+			return;
+		} else if (res.status === 403) {
+			fetch("/user/refresh/").then((res) => {
+				if (res.status !== 200) {
+					alert(lang[langIndex].invalidTsubmiten);
+				}
+			});
+		} else {
+			alert(lang[langIndex].invalidTsubmiten);
 			removeValue();
 			exit();
 			closeBracket();
 			logout();
 		}
-	}
-	NET.requestGet("/user/check/", resFunc, errFunc);
+	});
 }
 
 DOM.offlineTab.addEventListener("click", () => {
