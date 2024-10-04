@@ -38,7 +38,7 @@ function isKey(event) {
 	return "";
 }
 
-function keyDown(event) {
+const keyDown = (event) => {
 	const body = {
 		"type": "input",
 		"data": {
@@ -49,7 +49,7 @@ function keyDown(event) {
 	websocket.send(JSON.stringify(body));
 }
 
-function keyUp(event) {
+const keyUp = (event) => {
 	const body = {
 		"type": "input",
 		"data": {
