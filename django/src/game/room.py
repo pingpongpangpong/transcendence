@@ -1,11 +1,11 @@
 import redis
 import json
-import os
+from django.conf import settings
 import uuid
 
 # Redis 연결 설정
-REDIS_HOST = os.getenv("REDIS_HOST")
-REDIS_PORT = os.getenv("REDIS_PORT")
+REDIS_HOST = settings.REDIS_HOST
+REDIS_PORT = settings.REDIS_PORT
 
 r = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
@@ -21,7 +21,7 @@ def get_redis_data(room_key: str) -> dict:
 
 	return room_data
 
-def save_room(roomname: str, password: str, goal_point: int, player1: str) -> uuid:
+def save_room(roomname: str, password: str, goal_point: int, player1: str, player1_id) -> uuid:
 	"""
 	방 정보를 Redis에 저장하는 함수
 
@@ -47,7 +47,9 @@ def save_room(roomname: str, password: str, goal_point: int, player1: str) -> uu
 		'goal_point': goal_point,
 		'is_public': is_public,
 		'player1': player1,
+		'plater1_id': player1_id,
 		'player2': None,
+		'plater2_id': None,
 		'status': True,
 		'ready1': False,
 		'ready2': False,
@@ -83,7 +85,7 @@ def get_roomlist() -> list:
 			room_list.append(filtered_room)
 	return room_list
 
-def join_room(roomid: uuid, password: str, player2: str) -> tuple:
+def join_room(roomid: uuid, password: str, player2: str, player2_id) -> tuple:
 	"""
 	방 참가하는 함수
 
@@ -108,9 +110,10 @@ def join_room(roomid: uuid, password: str, player2: str) -> tuple:
 		raise ValueError("this room is full")
 
 	room_data['player2'] = player2
+	room_data['player2_id'] = player2_id
 	room_data['status'] = False 
 	r.set(room_key, json.dumps(room_data)) 
-	return room_data.get('player1'), room_data.get('player2'), True
+	return room_data.get('player1'), room_data.get('player1_id'), room_data.get('player2'), room_data.get('player2_id'), True
 
 def search_room(input: str, option: str) -> list:
 	"""
@@ -150,7 +153,7 @@ def delete_room(roomid: uuid) -> bool:
 		return True
 	return False
 
-def leave_room(roomid: uuid, username: str) -> tuple:
+def leave_room(roomid: uuid, role: str) -> tuple:
 	"""
 	참여자 또는 방장이 방을 나갔을 때
 
@@ -167,33 +170,36 @@ def leave_room(roomid: uuid, username: str) -> tuple:
 	if (r.exists(f'room:{roomid}') == False):
 		raise ValueError("Invalid roomid")
 	room_data = get_redis_data(f'room:{roomid}')
-	host = room_data.get('player1')
 	participants = room_data.get('player2')
+	participants_id = room_data.get('player2_id')
 
 
-	if (username != host and username != participants):
-		raise ValueError("Invalid username")
+	if (role != settings.PLAYER1 and role != settings.PLAYER2):
+		raise ValueError("Invalid user")
 
-	if (username == host):
+	if (role == settings.PLAYER1):
 		if participants is None:
 			delete_room(roomid)
 			return None, None
 		else:
 			room_data['player1'] = participants
+			room_data['player1_id'] = participants_id
 			room_data['player2'] = None
+			room_data['player2_id'] = None
 			room_data['status'] = True
 			room_data['ready1'] = False
 			room_data['ready2'] = False
 
-	elif (username == participants):
+	elif (role == settings.PLAYER2):
 		room_data['player2'] = None
+		room_data['player2_id'] = None
 		room_data['status'] = True
 		room_data['ready1'] = False
 		room_data['ready2'] = False
 
 	r.set(f'room:{roomid}', json.dumps(room_data))
 
-	return room_data.get('player1'), room_data.get('player2')
+	return room_data.get('player1'), room_data.get('player1_id'), room_data.get('player2'), room_data.get('player2_id')
 
 
 def start_game(roomid: uuid) -> dict:

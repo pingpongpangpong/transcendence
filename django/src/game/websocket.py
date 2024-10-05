@@ -1,5 +1,6 @@
-import json, asyncio, ctypes
+import json, asyncio
 from .game_manager import GameManager
+from user.models import OauthToken
 from .room import save_room, ready_game, join_room, leave_room, start_game
 from django.conf import settings
 from django.contrib.sessions.models import Session
@@ -13,7 +14,10 @@ def getUsername(sessionid):
         session = Session.objects.get(pk=sessionid)
         user_id = session.get_decoded().get("_auth_user_id")
         user = User.objects.get(id=user_id)
-        return user.username
+        if (user.first_name == "oauth"):
+            oauth = OauthToken.objects.get(user=user)
+            return f"[42] {oauth.username}", user_id
+        return f"{user.username}", user_id
     except Session.DoesNotExist:
         raise Exception("unknown session")
     except User.DoesNotExist:
@@ -32,7 +36,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             if sessionid is None:
                 raise Exception("fobidden")
             
-            self._username = await getUsername(sessionid)
+            self._username, self._user_id = await getUsername(sessionid)
             self._room_name = "public"
             self._room_group_name = self._room_name
             
@@ -103,7 +107,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if len(roomname) > 20 or (len(password) != 4 and len(password) != 0) or goalpoint > 20:
             raise Exception("cannot make a room, roomname <= 20, password == 4 or password == 0, goal <= 20")
 
-        self._room_name = save_room(roomname, password, goalpoint, self._username)
+        self._room_name = save_room(roomname, password, goalpoint, self._username, self._user_id)
         
         await self.channel_layer.group_discard(self._room_group_name,
                                                self.channel_name)
@@ -118,7 +122,11 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                     "data": {
                                                         "player1": self._username,
                                                         "player2": None
-                                                        }
+                                                        },
+                                                    "id": {
+                                                        "player1": self._user_id,
+                                                        "player2": None
+                                                    }
                                                 })
         self._connection = True
         
@@ -133,9 +141,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         
         self._room_name = data.get("roomid")
         password = data.get("password")
-        player1, player2, status = join_room(self._room_name,
+        player1, player1_id, player2, player2_id, status = join_room(self._room_name,
                                                    password,
-                                                   self._username)
+                                                   self._username,
+                                                   self._user_id)
         if (status):
             await self.channel_layer.group_discard(self._room_group_name,
                                                    self.channel_name)
@@ -149,7 +158,11 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                     "data": {
                                                         "player1": player1,
                                                         "player2": player2
-                                                        }
+                                                        },
+                                                    "id": {
+                                                        "player1": player1_id,
+                                                        "player2": player2_id
+                                                    }
                                                 })
             self._connection = True
         else:
@@ -160,7 +173,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def leaveRoom(self):
         if self._connection:
             self._connection = False
-            player1, player2 = leave_room(self._room_name, self._username)
+            player1, player1_id, player2, player2_id = leave_room(self._room_name, self._role)
             if self._in_game:
                 self._role = None
                 self._in_game = False
@@ -184,14 +197,18 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                     "data": {
                                                         "player1": player1,
                                                         "player2": player2
-                                                        }
+                                                        },
+                                                    "id": {
+                                                        "player1": player1_id,
+                                                        "player2": player2_id
+                                                    }
                                                 })
 
 
     async def sendJoin(self, msg):
-        if self._username == msg["data"]["player1"]:
+        if self._user_id == msg["id"]["player1"]:
             self._role = settings.PLAYER1
-        elif self._username == msg["data"]["player2"]:
+        elif self._user_id == msg["id"]["player2"]:
             self._role = settings.PLAYER2
         await self.send(text_data=json.dumps({"type": msg["status"],
                                               "data": msg["data"]}))
