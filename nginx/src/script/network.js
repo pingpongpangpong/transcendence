@@ -74,7 +74,7 @@ function connect(data) {
 	websocket.onclose = () => {
 		websocket = null;
 		window.removeEventListener("keydown", keyDown);
-		window.removeEventListener("keyUp", keyUp);
+		window.removeEventListener("keyup", keyUp);
 	}
 	websocket.onmessage = (event) => {
 		const json = JSON.parse(event.data);
