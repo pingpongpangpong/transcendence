@@ -31,12 +31,12 @@ class UserAuthentication(JWTAuthentication):
             raw_token = self.get_raw_token(header)
         
         if raw_token is None:
-            raise exceptions.PermissionDenied("JWT token Failed")
+            raise exceptions.PermissionDenied("JWT token Failed.")
 
         try:
             validated_token = self.get_validated_token(raw_token)
         except Exception as e:
-            raise exceptions.PermissionDenied("JWT token Failed")
+            raise exceptions.PermissionDenied("JWT token Failed.")
         self.enforce_csrf(request)
         return self.get_user(validated_token), validated_token
     
