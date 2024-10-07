@@ -1,7 +1,7 @@
 import json, asyncio
 from .game_manager import GameManager
 from user.models import OauthToken
-from .room_manager import save_room, ready_game, join_room, leave_room, start_game
+from .room_manager import save_room, ready_game, join_room, leave_room, start_game, delete_room
 from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.contrib.auth.models import User
@@ -37,11 +37,13 @@ class GameConsumer(AsyncWebsocketConsumer):
                 raise Exception("fobidden")
             
             self._username, self._user_id = await getUsername(sessionid)
-            self._room_name = "public"
-            self._room_group_name = self._room_name
             await self.channel_layer.group_add(f'usergroup_{self._user_id}',
                                                self.channel_name)
-            await self.accept()
+            if len(self.channel_layer.groups[f'usergroup_{self._user_id}']) == 1:
+                await self.accept()
+            else:
+                await self.channel_layer.group_discard(f'usergroup_{self._user_id}',
+                                               self.channel_name)
 
         except Exception as e:
             await self.sendOne("exception", {"detail": str(e)})
@@ -168,11 +170,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def leaveRoom(self):
         if self._connection:
-            self._connection = False
             player1, player1_id, player2, player2_id = leave_room(self._room_name, self._role)
             if self._in_game:
-                self._role = None
-                self._in_game = False
+                delete_room(self._room_name)
                 await self.channel_layer.group_send(self._room_group_name,
                                             {
                                                 "type": "sendOver",
@@ -183,12 +183,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                     "player2": player2_id
                                                 }
                                             })
-                if self._gamemanager:
-                    self._game_session.cancel()
-                    try:
-                        await self._game_session
-                    except asyncio.CancelledError:
-                        pass
             else:
                 await self.channel_layer.group_send(self._room_group_name,
                                                 {
@@ -203,6 +197,12 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                         "player2": player2_id
                                                         }
                                                 })
+        if self._gamemanager:
+            self._game_session.cancel()
+            try:
+                await self._game_session
+            except asyncio.CancelledError:
+                pass
 
 
     async def sendJoin(self, msg):
@@ -263,6 +263,9 @@ class GameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep(settings.FRAME_PER_SEC)
 
         winner = self._gamemanager.getWinner()
+        del self._gamemanager
+        self._gamemanager = None
+        delete_room(self._room_name)
         await self.channel_layer.group_send(self._room_group_name,
                                         {
                                             "type": "sendOver",
@@ -273,8 +276,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                 "player2": player2_id
                                                 }
                                         })
-        del self._gamemanager
-        self._gamemanager = None
+        
 
     async def sendStart(self, msg):
         self._in_game = True
@@ -308,10 +310,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def sendOver(self, msg):
         if self._connection:
-            if self._user_id == msg["id"]["player1"]:
-                self._role = settings.PLAYER1
-            elif self._user_id == msg["id"]["player2"]:
-                self._role = settings.PLAYER2
+            self._connection = False
+            self._in_game = False
+            self._role = None
             await self.send(text_data=json.dumps({"type": msg["status"],
                                               "data": msg["data"]}))
             await self.close()
