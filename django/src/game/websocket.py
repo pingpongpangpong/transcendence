@@ -39,8 +39,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self._username, self._user_id = await getUsername(sessionid)
             self._room_name = "public"
             self._room_group_name = self._room_name
-            
-            await self.channel_layer.group_add(self._room_group_name,
+            await self.channel_layer.group_add(f'usergroup_{self._user_id}',
                                                self.channel_name)
             await self.accept()
 
@@ -55,6 +54,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             await self.sendOne("exception", {"detail": str(e)})
 
+        await self.channel_layer.group_discard(f'usergroup_{self._user_id}',
+                                               self.channel_name)
         await self.channel_layer.group_discard(self._room_group_name,
                                                self.channel_name)
         await super().disconnect(close_code)
@@ -108,9 +109,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             raise Exception("cannot make a room, roomname <= 20, password == 4 or password == 0, goal <= 20")
 
         self._room_name = save_room(roomname, password, goalpoint, self._username, self._user_id)
-        
-        await self.channel_layer.group_discard(self._room_group_name,
-                                               self.channel_name)
         self._room_group_name = self._room_name
         await self.channel_layer.group_add(self._room_group_name,
                                                self.channel_name)
@@ -146,8 +144,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                    self._username,
                                                    self._user_id)
         if (status):
-            await self.channel_layer.group_discard(self._room_group_name,
-                                                   self.channel_name)
             self._room_group_name = self._room_name
             await self.channel_layer.group_add(self._room_group_name,
                                                 self.channel_name)
@@ -316,3 +312,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({"type": msg["status"],
                                               "data": msg["data"]}))
             await self.close()
+
+
+    async def logout(self, msg):
+        await self.close()
