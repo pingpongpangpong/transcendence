@@ -75,6 +75,7 @@ function connect(data) {
 		websocket = null;
 		window.removeEventListener("keydown", keyDown);
 		window.removeEventListener("keyup", keyUp);
+		closeGame();
 	}
 	websocket.onmessage = (event) => {
 		const json = JSON.parse(event.data);
@@ -180,13 +181,8 @@ export function quitRoom() {
 		"data": null
 	};
 	websocket.send(JSON.stringify(body));
-	sessionStorage.removeItem("game");
-	sessionStorage.removeItem("isReady");
+	closeGame();
 	sessionStorage.setItem("status", "online");
-	DOM.hostStatus.innerHTML = "";
-	DOM.guestStatus.innerHTML = "";
-	DOM.room.style.display = "none";
-	DOM.onlineContent.style.display = "block";
 	websocket.close();
 }
 
@@ -194,9 +190,13 @@ export function exitGame(data) {
 	alert(`${data.winner}${lang[langIndex].win}`);
 	websocket.close();
 	onlineGameExit();
+	closeGame();
+	sessionStorage.setItem("status", "inRoom");
+}
+
+function closeGame() {
 	sessionStorage.removeItem("game");
 	sessionStorage.removeItem("isReady");
-	sessionStorage.setItem("status", "inRoom");
 	DOM.hostStatus.innerHTML = "";
 	DOM.guestStatus.innerHTML = "";
 	DOM.onlineContent.style.display = "block";
