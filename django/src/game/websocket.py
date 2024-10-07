@@ -327,5 +327,5 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.close()
 
 
-    async def logout(self):
+    async def logout(self, msg):
         await self.close()
