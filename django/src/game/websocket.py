@@ -210,6 +210,9 @@ class GameConsumer(AsyncWebsocketConsumer):
             self._role = settings.PLAYER1
         elif self._user_id == msg["id"]["player2"]:
             self._role = settings.PLAYER2
+
+        msg["data"]["ready1"] = False
+        msg["data"]["ready2"] = False
         await self.send(text_data=json.dumps({"type": msg["status"],
                                               "data": msg["data"]}))
         
