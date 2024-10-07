@@ -7,10 +7,19 @@ import { closeRoomSetting, openRoomSetting, showRoomList } from "./content/onlin
 import { lang, langIndex } from "./lang.js";
 import { onlineGameExit } from "./object/onlineGame.js";
 
+export function onOffline() {
+	DOM.offlineContent.style.display = "block";
+	DOM.tournamentContent.style.display = "none";
+	DOM.onlineContent.style.display = "none";
+	sessionStorage.setItem("status", "offline");
+	sessionStorage.removeItem("game");
+}
+
 function onTournament() {
 	DOM.offlineContent.style.display = "none";
 	DOM.tournamentContent.style.display = "block";
 	DOM.onlineContent.style.display = "none";
+	DOM.room.style.display = "none";
 	sessionStorage.setItem("status", "tournament");
 	sessionStorage.removeItem("game");
 }
@@ -43,14 +52,6 @@ function moveTo(where) {
 		onlineGameExit();
 	}
 	where();
-}
-
-export function onOffline() {
-	DOM.offlineContent.style.display = "block";
-	DOM.tournamentContent.style.display = "none";
-	DOM.onlineContent.style.display = "none";
-	sessionStorage.setItem("status", "offline");
-	sessionStorage.removeItem("game");
 }
 
 export function removeValue() {
