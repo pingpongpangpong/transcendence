@@ -165,11 +165,11 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 REDIS_HOST = os.getenv("REDIS_HOST")
@@ -207,7 +207,7 @@ CHANNEL_LAYERS = {
     }
 }
 
-ALLOWED_HOSTS = ['backend', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [SERVER_HOST, 'backend', '127.0.0.1']
 
 ## GAEN
 PLAYER1 = "player1"
