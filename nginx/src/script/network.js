@@ -182,6 +182,7 @@ export function quitRoom() {
 	};
 	websocket.send(JSON.stringify(body));
 	closeGame();
+	DOM.onlineContent.style.display = "block";
 	sessionStorage.setItem("status", "online");
 	websocket.close();
 }
@@ -191,6 +192,7 @@ export function exitGame(data) {
 	websocket.close();
 	onlineGameExit();
 	closeGame();
+	DOM.onlineContent.style.display = "block";
 	sessionStorage.setItem("status", "inRoom");
 }
 
@@ -199,7 +201,6 @@ function closeGame() {
 	sessionStorage.removeItem("isReady");
 	DOM.hostStatus.innerHTML = "";
 	DOM.guestStatus.innerHTML = "";
-	DOM.onlineContent.style.display = "block";
 	DOM.room.style.display = "none";
 }
 
