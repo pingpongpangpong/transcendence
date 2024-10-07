@@ -61,7 +61,7 @@ def save_room(roomname: str, password: str, goal_point: int, player1: str, playe
 		'roomid': roomid
 	}
 	r.set(room_key, json.dumps(room_data))
-	e.set(player1_id, True)
+	e.set(player1_id, json.dumps(True))
 	return roomid
 
 def get_roomlist() -> list:
@@ -120,7 +120,7 @@ def join_room(roomid: uuid, password: str, player2: str, player2_id) -> tuple:
 	room_data['player2_id'] = player2_id
 	room_data['status'] = False 
 	r.set(room_key, json.dumps(room_data)) 
-	e.set(player2_id, True)
+	e.set(player2_id, json.dumps(True))
 	return room_data.get('player1'), room_data.get('player1_id'), room_data.get('player2'), room_data.get('player2_id'), True
 
 def search_room(input: str, option: str) -> list:
