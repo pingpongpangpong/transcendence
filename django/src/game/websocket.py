@@ -1,4 +1,4 @@
-import json, asyncio
+import json, asyncio, uuid
 from .game_manager import GameManager
 from user.models import OauthToken
 from .room_manager import save_room, ready_game, join_room, leave_room, start_game, delete_room
@@ -39,14 +39,21 @@ class GameConsumer(AsyncWebsocketConsumer):
             self._username, self._user_id = await getUsername(sessionid)
             await self.channel_layer.group_add(f'usergroup_{self._user_id}',
                                                self.channel_name)
-            if len(self.channel_layer.groups[f'usergroup_{self._user_id}']) == 1:
-                await self.accept()
-            else:
-                await self.channel_layer.group_discard(f'usergroup_{self._user_id}',
-                                               self.channel_name)
+            await self.accept()
+            self._uuid = str(uuid.uuid4())
+            await self.channel_layer.group_send(f'usergroup_{self._user_id}',
+                                                {
+                                                    "type": "onlyBeOne",
+                                                    "uuid": self._uuid
+                                                })
 
         except Exception as e:
             await self.sendOne("exception", {"detail": str(e)})
+            await self.close()
+
+
+    async def onlyBeOne(self, msg):
+        if self._uuid != msg["uuid"]:
             await self.close()
 
 
@@ -318,5 +325,5 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.close()
 
 
-    async def logout(self, msg):
+    async def logout(self):
         await self.close()
