@@ -113,6 +113,8 @@ def join_room(roomid: uuid, password: str, player2: str, player2_id) -> tuple:
 	room_data['player2'] = player2
 	room_data['player2_id'] = player2_id
 	room_data['status'] = False 
+	room_data['ready1'] = False 
+	room_data['ready2'] = False 
 	r.set(room_key, json.dumps(room_data)) 
 	return room_data.get('player1'), room_data.get('player1_id'), room_data.get('player2'), room_data.get('player2_id'), True
 
