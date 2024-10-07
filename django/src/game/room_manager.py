@@ -79,7 +79,7 @@ def get_roomlist() -> list:
 
 	for key in keys:
 		room_data = get_redis_data(key)
-		if room_data.get('status') == True and room_data.get('play'):
+		if room_data.get('status') == True and not room_data.get('play'):
 			filtered_room = {
 				'roomname': room_data.get('roomname'),
 				'roomid':room_data.get('roomid'),
