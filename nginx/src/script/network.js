@@ -89,6 +89,8 @@ function connect(data) {
 				DOM.room.style.display = "flex";
 				DOM.hostName.innerHTML = data.player1;
 				DOM.guestName.innerHTML = (data.player2 ? data.player2 : "");
+				DOM.hostStatus.innerHTML = (data.ready1 ? lang[langIndex].ready : "");
+				DOM.guestStatus.innerHTML = (data.ready2 ? lang[langIndex].ready : "");
 				DOM.readyBtn.innerHTML = lang[langIndex].ready;
 				sessionStorage.removeItem("isReady");
 				break;
