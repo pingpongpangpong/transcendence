@@ -1,11 +1,8 @@
 import re
 from rest_framework import serializers
 from django.contrib.auth.models import User
-# from django.contrib.auth import authenticate
-# from django.utils import timezone
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken
-
 from .models import EmailVerification
 
 # Email 발송

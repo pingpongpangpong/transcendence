@@ -1,14 +1,11 @@
-import random
-import requests
-import threading
+import random, requests, threading
 from django.utils.crypto import get_random_string
 from .models import LoginSession, EmailVerification, OauthToken
-from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, update_last_login
 from django.contrib.sessions.models import Session
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 from .serializers import UserSignupSerializer, UserSendEmail, UserTokenRefreshSerializer
 from rest_framework import generics, status
 from rest_framework.views import APIView
@@ -22,6 +19,17 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.settings import api_settings
 
+def send_html(code, to_email):
+    subject = 'PingPongPangPong Email Verification Code'
+    text_content = f'Your verification code is [{code}]'
+    html_content = f'<p>Your verification code is [<strong>{code}</strong>]</p>'
+    email = EmailMultiAlternatives(subject,
+                                   text_content,
+                                   settings.DEFAULT_FROM_EMAIL,
+                                   [to_email])
+    email.attach_alternative(html_content, "text/html")
+    email.send()
+
 def send_email(email):
     try:
         email_verification = EmailVerification.objects.get(email=email)
@@ -29,16 +37,11 @@ def send_email(email):
     except EmailVerification.DoesNotExist:
         pass
 
-    verification_code = random.randint(100000, 999999)
+    verification_code = get_random_string(12)
     email_verification = EmailVerification.objects.create(email=email, code=verification_code)
     email_verification.save()
 
-    thread = threading.Thread(target=send_mail, args=(
-        'PingPongPangPong Email Verification Code',
-        f'Your verification code is {verification_code}',
-        settings.DEFAULT_FROM_EMAIL,
-        [email],
-    ))
+    thread = threading.Thread(target=send_html, args=(verification_code, email))
     thread.start()
 
     return Response({"message": "Email sent successfully."}, status=status.HTTP_200_OK)
@@ -76,7 +79,7 @@ class UserCheckEmailView(APIView):
     authentication_classes = ([])
     def post(self, request):
         email = request.data.get('email')
-        verification_code = int(request.data.get('code'))
+        verification_code = request.data.get('code')
         return check_email(email, verification_code)
 
 class UserSendEmailView(APIView):
@@ -142,7 +145,7 @@ class UserLoginView(APIView):
 
     def post(self, request):
         user = request.user
-        verification_code = int(request.data.get('code'))
+        verification_code = request.data.get('code')
         if user and verification_code:
             response = check_email(user.email, verification_code)
             if response.status_code == 200:

@@ -15,13 +15,13 @@ class OauthToken(models.Model):
 
 class EmailVerification(models.Model):
 	email = models.EmailField()
-	code = models.IntegerField()
+	code = models.CharField(max_length=12)
 	is_verified = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	@property
 	def is_expired(self):
-		expiration_time = self.created_at + timedelta(minutes=10)
+		expiration_time = self.created_at + timedelta(minutes=3)
 		return timezone.now() > expiration_time
 
 	def __str__(self):
