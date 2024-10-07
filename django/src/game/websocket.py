@@ -177,6 +177,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def leaveRoom(self):
         if self._connection:
+            self._connection = False
             player1, player1_id, player2, player2_id = leave_room(self._room_name, self._role)
             if self._in_game:
                 delete_room(self._room_name)
@@ -204,12 +205,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                         "player2": player2_id
                                                         }
                                                 })
-        if self._gamemanager:
-            self._game_session.cancel()
-            try:
-                await self._game_session
-            except asyncio.CancelledError:
-                pass
 
 
     async def sendJoin(self, msg):
@@ -316,6 +311,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 
     async def sendOver(self, msg):
+        if self._gamemanager:
+            self._game_session.cancel()
+            try:
+                await self._game_session
+            except asyncio.CancelledError:
+                pass
+
         if self._connection:
             self._connection = False
             self._in_game = False
