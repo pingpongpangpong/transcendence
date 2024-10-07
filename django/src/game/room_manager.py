@@ -227,7 +227,7 @@ def start_game(roomid: uuid) -> dict:
 		'player2': room_data.get('player2'),
 		'goalpoint': room_data.get('goal_point')
 		}
-	return result
+	return result, room_data.get('player1_id'), room_data.get('player2_id')
 
 def ready_game(roomid: uuid, role: str, ready: bool) -> tuple:
 	"""

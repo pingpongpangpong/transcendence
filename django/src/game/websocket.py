@@ -1,7 +1,7 @@
 import json, asyncio
 from .game_manager import GameManager
 from user.models import OauthToken
-from .room import save_room, ready_game, join_room, leave_room, start_game
+from .room_manager import save_room, ready_game, join_room, leave_room, start_game
 from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.contrib.auth.models import User
@@ -181,9 +181,13 @@ class GameConsumer(AsyncWebsocketConsumer):
                                             {
                                                 "type": "sendOver",
                                                 "status": "over",
-                                                "data": {"winner": player1}
+                                                "data": {"winner": player1},
+                                                "id": {
+                                                    "player1": player1_id,
+                                                    "player2": player2_id
+                                                }
                                             })
-                if self._gamemanager != None:
+                if self._gamemanager:
                     self._game_session.cancel()
                     try:
                         await self._game_session
@@ -201,7 +205,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                                                     "id": {
                                                         "player1": player1_id,
                                                         "player2": player2_id
-                                                    }
+                                                        }
                                                 })
 
 
@@ -240,7 +244,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         if self._in_game:
             raise Exception("already is started")
 
-        room = start_game(self._room_name, )
+        room, player1_id, player2_id = start_game(self._room_name)
         await self.channel_layer.group_send(self._room_group_name,
                                             {
                                                 "type": "sendStart",
@@ -264,7 +268,11 @@ class GameConsumer(AsyncWebsocketConsumer):
                                         {
                                             "type": "sendOver",
                                             "status": "over",
-                                            "data": {"winner": winner}
+                                            "data": {"winner": winner},
+                                            "id": {
+                                                "player1": player1_id,
+                                                "player2": player2_id
+                                                }
                                         })
         del self._gamemanager
         self._gamemanager = None
@@ -301,8 +309,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def sendOver(self, msg):
         if self._connection:
-            
-            self._role = None
+            if self._user_id == msg["id"]["player1"]:
+                self._role = settings.PLAYER1
+            elif self._user_id == msg["id"]["player2"]:
+                self._role = settings.PLAYER2
             await self.send(text_data=json.dumps({"type": msg["status"],
                                               "data": msg["data"]}))
             await self.close()
