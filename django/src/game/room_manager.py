@@ -8,6 +8,7 @@ REDIS_HOST = settings.REDIS_HOST
 REDIS_PORT = settings.REDIS_PORT
 
 r = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=0)
+e = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=1)
 
 def get_redis_data(room_key: str) -> dict:
 	room_byte = r.get(room_key)
@@ -34,6 +35,9 @@ def save_room(roomname: str, password: str, goal_point: int, player1: str, playe
 	Return:
 		None
 	"""
+	if (e.exists(player1_id)):
+		raise ValueError("already in the room")
+	
 	roomid = str(uuid.uuid4())
 	room_key = f'room:{roomid}'
 	if (password == ''):
@@ -56,8 +60,8 @@ def save_room(roomname: str, password: str, goal_point: int, player1: str, playe
 		'play': False,
 		'roomid': roomid
 	}
-    
 	r.set(room_key, json.dumps(room_data))
+	e.set(player1_id, True)
 	return roomid
 
 def get_roomlist() -> list:
@@ -75,7 +79,7 @@ def get_roomlist() -> list:
 
 	for key in keys:
 		room_data = get_redis_data(key)
-		if room_data.get('status') == True:
+		if room_data.get('status') == True and not room_data.get('play'):
 			filtered_room = {
 				'roomname': room_data.get('roomname'),
 				'roomid':room_data.get('roomid'),
@@ -100,19 +104,23 @@ def join_room(roomid: uuid, password: str, player2: str, player2_id) -> tuple:
 	Return:
 		tuple: 참여 성공시 (player1, player2, True), 참여 실패시 (None, None, False)
 	"""
+	if (e.exists(player2_id)):
+		raise ValueError("already in the room")
+	
 	room_key = f'room:{roomid}'
 	room_data = get_redis_data(room_key)
 
 	if room_data.get("password") != password:
 		raise ValueError(f"Invalid password input")
 
-	if room_data.get('player2') is not None:
+	if room_data.get('status') and not room_data.get('play'):
 		raise ValueError("this room is full")
 
 	room_data['player2'] = player2
 	room_data['player2_id'] = player2_id
 	room_data['status'] = False 
 	r.set(room_key, json.dumps(room_data)) 
+	e.set(player2_id, True)
 	return room_data.get('player1'), room_data.get('player1_id'), room_data.get('player2'), room_data.get('player2_id'), True
 
 def search_room(input: str, option: str) -> list:
@@ -178,6 +186,7 @@ def leave_room(roomid: uuid, role: str) -> tuple:
 		raise ValueError("Invalid user")
 
 	if (role == settings.PLAYER1):
+		e.delete(room_data.get('player1_id'))
 		if participants is None:
 			delete_room(roomid)
 			return None, None
@@ -191,6 +200,7 @@ def leave_room(roomid: uuid, role: str) -> tuple:
 			room_data['ready2'] = False
 
 	elif (role == settings.PLAYER2):
+		e.delete(participants_id)
 		room_data['player2'] = None
 		room_data['player2_id'] = None
 		room_data['status'] = True
