@@ -5,6 +5,18 @@ import { canvas, ctx, initBracket, paintBracket } from "./bracket.js";
 
 let isRunning = true;
 
+async function showBracket(players, round, second) {
+	const time = second * 1000;
+	paintBracket(players, round);
+	await new Promise((resolve, reject) => setTimeout(() => {
+		if (isRunning) {
+			DOM.bracket.style.display = "none";
+			resolve();
+		} else {
+			reject(new Error());
+		}
+		}, time));
+}
 export async function offline(gamePoint, name1, name2) {
 	const game = new Game(gamePoint, "offline");
 	game.awake(name1, name2);
@@ -25,25 +37,18 @@ export async function tournament(gamePoint, nameList) {
 	let round = 0;
 	while (isRunning) {
 		try {
-			paintBracket(players, round);
-			await new Promise((resolve, reject) => setTimeout(() => {
-				if (isRunning) {
-					DOM.bracket.style.display = "none";
-					resolve();
-				} else {
-					reject(new Error());
-				}
-			}, 5000));
 			if (!isRunning) {
 				break;
 			}
 			if (players.length === 1) {
+				await showBracket(players, round, 2);
 				alert(`${players[0]} ${lang[langIndex].win}`);
 				DOM.tournamentContent.style.display = "block";
 				return;
 			}
 			let winnerList = [];
 			for (let i = 0; i < players.length; i += 2) {
+				await showBracket(players, round, 5);
 				const game = new Game(gamePoint, "tournament");
 				game.awake(players[i], players[i + 1]);
 				await game.update();
