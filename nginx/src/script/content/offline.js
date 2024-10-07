@@ -1,6 +1,7 @@
 import * as DOM from "../document.js";
 import { checkUser } from "../tab.js";
 import { offline, getGamePoint, checkName } from "./feature.js";
+import { lang, langIndex } from "../lang.js";
 
 DOM.offlineSubmit.addEventListener("click", () => {
 	checkUser();

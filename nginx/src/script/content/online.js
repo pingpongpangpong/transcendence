@@ -35,6 +35,7 @@ function makeRoom(room) {
 		input = document.createElement("input");
 		input.id = inputId;
 		input.className = "password-input";
+		input.style.width = "100%";
 		input.setAttribute("type", "password");
 
 		password.appendChild(label);
