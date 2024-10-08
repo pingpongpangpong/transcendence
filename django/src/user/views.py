@@ -97,6 +97,7 @@ class UserSendEmailView(APIView):
     
 class UserRegistrationView(generics.CreateAPIView):
     permission_classes = [AllowAny]
+    authentication_classes = ([])
     serializer_class = UserSignupSerializer
 
     def create(self, request):
