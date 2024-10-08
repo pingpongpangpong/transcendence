@@ -29,7 +29,7 @@ function sendCode(code) {
 			window.history.replaceState({}, document.title, "/");
 			toContent(onOffline);
 		} else {
-			throw lang[langIndex].failsignin;
+			alert(lang[langIndex].failsignin);
 		}
 	};
 	NET.requestPost("/user/login/", header, body, resFunc, alert);
@@ -110,8 +110,9 @@ DOM.signin2factor.addEventListener("click", () => {
 				DOM.signinCodeLabel.style.display = "block";
 				DOM.signinCode.style.display = "block";
 				DOM.signinSubmitBtn.style.display = "block";
+				DOM.oauthBtn.style.display = "none";
 			} else {
-				throw lang[langIndex].failCode;
+				alert(lang[langIndex].failCode);
 			}
 		}
 		NET.requestPost("/user/pre-login/", NET.header, body, resFunc, alert);
@@ -158,7 +159,7 @@ DOM.signupEmailSubmit.addEventListener("click", () => {
 				DOM.signupCodeLabel.style.display = "block";
 				DOM.signupCodeSubmit.style.display = "block";
 			} else {
-				throw lang[langIndex].failCode;
+				alert(lang[langIndex].failCode);
 			}
 		}
 		NET.requestPost("/user/email/", NET.header, body, resFunc, alert);
@@ -180,7 +181,7 @@ DOM.signupCodeSubmit.addEventListener("click", () => {
 				alert(lang[langIndex].successVerify);
 				DOM.signupSubmit.style.display = "block";
 			} else {
-				throw lang[langIndex].failVerify;
+				alert(lang[langIndex].failVerify);
 			}
 		};
 		NET.requestPost("/user/email-check/", NET.header, body, resFunc, alert);

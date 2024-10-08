@@ -33,8 +33,8 @@ def send_html(code, to_email):
     email.send()
 
     try:
-        email = EmailVerification.objects.get(email=to_email)
-        if email.created_at == True:
+        email = EmailVerification.objects.all(email=to_email)
+        if email.is_expired == True:
             email.delete()
     except:
         pass

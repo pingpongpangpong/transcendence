@@ -169,7 +169,7 @@ TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
-USE_TZ = False
+USE_TZ = True
 
 
 REDIS_HOST = os.getenv("REDIS_HOST")
