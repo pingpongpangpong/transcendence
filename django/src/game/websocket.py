@@ -30,6 +30,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         self._connection = False
         self._in_game = False
         self._gamemanager: GameManager = None
+        self._game_session = None
         sessionid = self.scope["cookies"].get("sessionid", None)
 
         try:
@@ -182,14 +183,12 @@ class GameConsumer(AsyncWebsocketConsumer):
             if self._in_game:
                 delete_room(self._room_name)
                 await self.channel_layer.group_send(self._room_group_name,
+                                            {"type": "gameOver"})
+                await self.channel_layer.group_send(self._room_group_name,
                                             {
                                                 "type": "sendOver",
                                                 "status": "over",
-                                                "data": {"winner": player1},
-                                                "id": {
-                                                    "player1": player1_id,
-                                                    "player2": player2_id
-                                                }
+                                                "data": {"winner": player1}
                                             })
             else:
                 await self.channel_layer.group_send(self._room_group_name,
@@ -272,11 +271,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                                         {
                                             "type": "sendOver",
                                             "status": "over",
-                                            "data": {"winner": winner},
-                                            "id": {
-                                                "player1": player1_id,
-                                                "player2": player2_id
-                                                }
+                                            "data": {"winner": winner}
                                         })
         
 
@@ -310,18 +305,20 @@ class GameConsumer(AsyncWebsocketConsumer):
             self._gamemanager.playerInput(data["who"], data["input"], data["value"])
 
 
-    async def sendOver(self, msg):
-        if self._gamemanager:
+    async def gameOver(self, msg):
+        if self._game_session:
             self._game_session.cancel()
             try:
                 await self._game_session
             except asyncio.CancelledError:
-                pass
+                self._game_session = None
+                del self._gamemanager
+                self._gamemanager = None
 
+
+    async def sendOver(self, msg):
         if self._connection:
             self._connection = False
-            self._in_game = False
-            self._role = None
             await self.send(text_data=json.dumps({"type": msg["status"],
                                               "data": msg["data"]}))
             await self.close()
