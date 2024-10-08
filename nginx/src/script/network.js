@@ -1,5 +1,6 @@
 import * as DOM from "./document.js";
 import { lang, langIndex } from "./lang.js";
+import { showRoomList } from "./content/online.js";
 import { Online, onlineGameExit } from "./object/onlineGame.js";
 
 export const header = {
@@ -204,6 +205,7 @@ function closeGame() {
 	DOM.hostStatus.innerHTML = "";
 	DOM.guestStatus.innerHTML = "";
 	DOM.room.style.display = "none";
+	showRoomList();
 }
 
 window.addEventListener("beforeunload", () => {

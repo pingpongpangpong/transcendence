@@ -85,6 +85,7 @@ export function changeLang() {
 
 DOM.langSelect.addEventListener("change", (e) => {
 	langIndex = e.target.value;
+	sessionStorage.setItem("lang", langIndex);
 	changeLang();
 });
 
@@ -123,5 +124,12 @@ window.onload = function () {
 	} else {
 		DOM.signinInput.style.display = "grid";
 		DOM.oauthInput.style.display = "none";
+	}
+
+	const langItem = sessionStorage.getItem("lang");
+	if (langItem) {
+		langIndex = langItem;
+		DOM.langSelect.value = langIndex;
+		changeLang();
 	}
 }
