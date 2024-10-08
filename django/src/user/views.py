@@ -34,7 +34,7 @@ def send_html(code, to_email):
     
 
     try:
-        email = EmailVerification.objects.all(email=to_email)
+        email = EmailVerification.objects.all()
         if email.is_expired == True:
             email.delete()
     except:
