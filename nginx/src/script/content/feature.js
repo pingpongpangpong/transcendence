@@ -36,6 +36,7 @@ export async function tournament(gamePoint, nameList) {
 	isRunning = true;
 	let round = 0;
 	while (isRunning) {
+		DOM.gamePoint.innerHTML = `${lang[langIndex].gamePoint}: ${gamePoint}`;
 		try {
 			if (!isRunning) {
 				break;
@@ -43,6 +44,7 @@ export async function tournament(gamePoint, nameList) {
 			if (players.length === 1) {
 				await showBracket(players, round, 2);
 				alert(`${players[0]} ${lang[langIndex].win}`);
+				DOM.gamePoint.innerHTML = `${lang[langIndex].gamePoint}: `;
 				DOM.tournamentContent.style.display = "block";
 				return;
 			}

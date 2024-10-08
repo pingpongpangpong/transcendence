@@ -83,6 +83,10 @@ export function checkUser() {
 			fetch("/user/refresh/").then((res) => {
 				if (res.status !== 200) {
 					alert(lang[langIndex].invalidTsubmiten);
+					removeValue();
+					exit();
+					closeBracket();
+					logout();
 				}
 			});
 		} else {

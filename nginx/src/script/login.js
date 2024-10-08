@@ -23,7 +23,7 @@ function sendCode(code) {
 	};
 	const resFunc = function(res) {
 		if (res.status === 200) {
-			sessionStorage.clear();
+			sessionStorage.removeItem("auth");
 			DOM.signinInput.style.display = "grid";
 			DOM.oauthInput.style.display = "none";
 			window.history.replaceState({}, document.title, "/");
