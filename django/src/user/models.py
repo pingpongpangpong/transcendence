@@ -23,9 +23,15 @@ class EmailVerification(models.Model):
 	@property
 	def is_expired(self):
 		expiration_time = self.created_at + timedelta(minutes=1)
-		if timezone.now() >= expiration_time:
-			return True
-		return False
+		return timezone.now() >= expiration_time
+
+	@classmethod
+	def delete_expired(cls):
+		expiration_time = timezone.now() - timedelta(minutes=3)
+		expired_records = cls.objects.filter(created_at__lt=expiration_time)
+
+		count, _ = expired_records.delete()
+		return count 
 
 	def __str__(self):
 		return f"{self.user.email}"

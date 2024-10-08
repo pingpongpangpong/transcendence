@@ -31,18 +31,10 @@ def send_html(code, to_email):
                                    [to_email])
     email.attach_alternative(html_content, "text/html")
     email.send()
-    
-
-    try:
-        email = EmailVerification.objects.all()
-        if email.is_expired == True:
-            email.delete()
-    except:
-        pass
-        
 
 def send_email(email):
     try:
+        deleted_count = EmailVerification.delete_expired()
         email_verification = EmailVerification.objects.get(email=email)
         return Response({"error": "already sent the code."}, status=status.HTTP_400_BAD_REQUEST)
     except EmailVerification.DoesNotExist:
