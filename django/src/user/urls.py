@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 from . import views
 
 urlpatterns = [
@@ -11,4 +11,5 @@ urlpatterns = [
     path('email/', views.UserSendEmailView.as_view(), name='email'),
     path('email-check/', views.UserCheckEmailView.as_view(), name='email-check'),
     path('check/', views.LoginCheckView, name='check'),
+    path('session/', views.LoginSessionCheckView, name='session'),
 ]

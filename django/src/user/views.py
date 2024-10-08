@@ -11,7 +11,7 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -31,6 +31,7 @@ def send_html(code, to_email):
                                    [to_email])
     email.attach_alternative(html_content, "text/html")
     email.send()
+    
 
 def send_email(email):
     try:
@@ -106,7 +107,6 @@ class UserRegistrationView(generics.CreateAPIView):
             self.perform_create(serializer)
             return Response({"result": "ok"}, status=status.HTTP_201_CREATED)
         else:
-            # 첫번째 에러만 반환하는 로직
             first_error_key = next(iter(serializer.errors))
             first_error_message = serializer.errors[first_error_key][0]
             return Response({first_error_key: first_error_message}, status=status.HTTP_400_BAD_REQUEST)
@@ -142,6 +142,8 @@ class UserPreLoginView(APIView):
     authentication_classes = ([])
 
     def post(self, request):
+        if request.user:
+            logout(request)
         user = authenticate(username=request.data.get('username'), password=request.data.get('password'))
         login(request, user)
         session = Session.objects.get(pk = request.session.session_key)
@@ -243,6 +245,8 @@ class UserOauthView(APIView):
             return Response({"detail": "Failed to get code"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
+            if request.user:
+                logout(request)
             access_token = self.get_access_token(code)
             user_info = self.get_user_data(access_token)
             user = self.create_or_get(access_token, user_info)
@@ -278,4 +282,10 @@ class UserRefreshView(TokenRefreshView):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def LoginCheckView(request):
+    return Response({'detail': 'This is a protected view.'})
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def LoginSessionCheckView(request):
     return Response({'detail': 'This is a protected view.'})
