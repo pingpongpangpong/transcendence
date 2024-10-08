@@ -41,9 +41,6 @@ export function logout() {
 	DOM.logoutBtn.style.display = "none";
 	DOM.offlineContent.style.display = "block";
 	DOM.signinContent.style.display = "flex";
-	DOM.signinCodeLabel.style.display = "none";
-	DOM.signinCode.style.display = "none";
-	DOM.signinSubmitBtn.style.display = "none";
 	DOM.clearInput(DOM.windowContent);
 	sessionStorage.setItem("status", "signin");
 	sessionStorage.removeItem("game");
@@ -107,10 +104,6 @@ DOM.signin2factor.addEventListener("click", () => {
 		const resFunc = function (res) {
 			if (res.status === 200) {
 				alert(lang[langIndex].sendCode);
-				DOM.signinCodeLabel.style.display = "block";
-				DOM.signinCode.style.display = "block";
-				DOM.signinSubmitBtn.style.display = "block";
-				DOM.oauthBtn.style.display = "none";
 			} else {
 				alert(lang[langIndex].failCode);
 			}
