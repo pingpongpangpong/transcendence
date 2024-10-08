@@ -54,6 +54,8 @@ def check_email(email, verification_code):
 
     try:
         email_verification = EmailVerification.objects.get(email=email, code=verification_code)
+        if email_verification.is_expired == True:
+            return Response({"error": "email code is expired"}, status=status.HTTP_400_BAD_REQUEST)
         email_verification.is_verified = True
         email_verification.save()
         return Response(status=status.HTTP_200_OK)
