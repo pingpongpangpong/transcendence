@@ -53,12 +53,6 @@ def check_email(email, verification_code):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        expired_verifications = EmailVerification.objects.all()
-
-        for verification in expired_verifications:
-            if verification.is_expired:
-                verification.delete()
-
         email_verification = EmailVerification.objects.get(email=email, code=verification_code)
         email_verification.is_verified = True
         email_verification.save()
