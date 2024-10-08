@@ -32,6 +32,14 @@ def send_html(code, to_email):
     email.attach_alternative(html_content, "text/html")
     email.send()
 
+    try:
+        email = EmailVerification.objects.get(email=to_email)
+        if email.created_at == True:
+            email.delete()
+    except:
+        pass
+        
+
 def send_email(email):
     try:
         email_verification = EmailVerification.objects.get(email=email)
@@ -159,21 +167,23 @@ class UserLoginView(APIView):
     def post(self, request):
         user = request.user
         verification_code = request.data.get('code')
-        if user and verification_code:
-            response = check_email(user.email, verification_code)
-            if response.status_code == 200:
-                check = EmailVerification.objects.get(code=verification_code)
-                check.delete()
-                refresh = RefreshToken.for_user(user)
-                response.set_cookie('refresh', str(refresh),max_age=settings.SIMPLE_JWT['REFRESH_COOKIE_AGE'], httponly=True, secure=True)
-                response.set_cookie('access', str(refresh.access_token),max_age=settings.SIMPLE_JWT['ACCESS_COOKIE_AGE'], httponly=True, secure=True)
+        try:
+            if user and verification_code:
+                response = check_email(user.email, verification_code)
+                if response.status_code == 200:
+                    check = EmailVerification.objects.get(code=verification_code)
+                    check.delete()
+                    refresh = RefreshToken.for_user(user)
+                    response.set_cookie('refresh', str(refresh),max_age=settings.SIMPLE_JWT['REFRESH_COOKIE_AGE'], httponly=True, secure=True)
+                    response.set_cookie('access', str(refresh.access_token),max_age=settings.SIMPLE_JWT['ACCESS_COOKIE_AGE'], httponly=True, secure=True)
 
-                if api_settings.UPDATE_LAST_LOGIN:
-                    update_last_login(None, user)
-                user_login_session(request, user)
+                    if api_settings.UPDATE_LAST_LOGIN:
+                        update_last_login(None, user)
+                    user_login_session(request, user)
 
-                return response
-        return Response({"detail": "sessione or code is not correct."},status=status.HTTP_400_BAD_REQUEST)
+                    return response
+        except:
+            return Response({"detail": "sessione or code is not correct."},status=status.HTTP_400_BAD_REQUEST)
     
 class UserOauthView(APIView):
     permission_classes = [AllowAny]
