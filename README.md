@@ -2,7 +2,7 @@
 
 ### Not about Johnny Depp's movie.
 
-<img alt="main" src="https://github.com/leebo155/ft_transcendence/blob/main/img/readme/transcendence.jpg">
+<img alt="main" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/readme/transcendence.jpg">
 
 ## Introduction
 * 이번 프로젝트는 지금 까지 배워온 지식을 바탕으로 **Pong** 게임을 즐길 수 있는 웹사이트를 구현하는 것이 목표입니다.
@@ -34,14 +34,14 @@
     
 ### Flow Diagram
 
-<img alt="flowchart" src="https://github.com/leebo155/ft_transcendence/blob/main/img/readme/transcendence_flow.jpg">
+<img alt="flowchart" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/readme/transcendence_flow.jpg">
 
 
 ### WebSocket Communication Diagram
 
-<img alt="flowchart" src="https://github.com/leebo155/ft_transcendence/blob/main/img/readme/pingpong_websocket_1.jpg">
-<img alt="flowchart" src="https://github.com/leebo155/ft_transcendence/blob/main/img/readme/pingpong_websocket_2.jpg">
-<img alt="flowchart" src="https://github.com/leebo155/ft_transcendence/blob/main/img/readme/pingpong_websocket_3.jpg">
+<img alt="flowchart" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/readme/pingpong_websocket_1.jpg">
+<img alt="flowchart" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/readme/pingpong_websocket_2.jpg">
+<img alt="flowchart" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/readme/pingpong_websocket_3.jpg">
 
 ### Made by
 |<img src="https://github.com/leebo155.png" width=240>|<img src="https://github.com/juhyeonlee134.png" width="240">|<img src="https://github.com/jmsmg.png" width=240>|
@@ -109,27 +109,27 @@
 ## Screenshots
 
 ### Login
-<img alt="screenshot" src="https://github.com/leebo155/ft_transcendence/blob/main/img/screenshots/login.png">
+<img alt="screenshot" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/screenshots/login.png">
 
 ### Signup
-<img alt="screenshot" src="https://github.com/leebo155/ft_transcendence/blob/main/img/screenshots/signup.png">
+<img alt="screenshot" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/screenshots/signup.png">
 
 ### 2 Fector Authentication
-<img alt="screenshot" src="https://github.com/leebo155/ft_transcendence/blob/main/img/screenshots/2FA.png">
+<img alt="screenshot" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/screenshots/2FA.png">
 
 ### Offline
-<img alt="screenshot" src="https://github.com/leebo155/ft_transcendence/blob/main/img/screenshots/offline.png">
+<img alt="screenshot" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/screenshots/offline.png">
 
 ### Tournament
-<img alt="screenshot" src="https://github.com/leebo155/ft_transcendence/blob/main/img/screenshots/tournament.png">
-<img alt="screenshot" src="https://github.com/leebo155/ft_transcendence/blob/main/img/screenshots/tournament4player.png">
-<img alt="screenshot" src="https://github.com/leebo155/ft_transcendence/blob/main/img/screenshots/tournament4playerchart.png">
+<img alt="screenshot" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/screenshots/tournament.png">
+<img alt="screenshot" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/screenshots/tournament4player.png">
+<img alt="screenshot" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/screenshots/tournament4playerchart.png">
 
 ### Online
-<img alt="screenshot" src="https://github.com/leebo155/ft_transcendence/blob/main/img/screenshots/online.png">
+<img alt="screenshot" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/screenshots/online.png">
 
 ### Room
-<img alt="screenshot" src="https://github.com/leebo155/ft_transcendence/blob/main/img/screenshots/room.png">
+<img alt="screenshot" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/screenshots/room.png">
 
 ### Game
-<img alt="screenshot" src="https://github.com/leebo155/ft_transcendence/blob/main/img/screenshots/ingame.png">
+<img alt="screenshot" src="https://github.com/pingpongpangpong/transcendence/blob/master/img/screenshots/ingame.png">
